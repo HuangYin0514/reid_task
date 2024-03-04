@@ -17,10 +17,11 @@ sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
 from dataloader import getDataLoader
-from loss.crossEntropyLabelSmoothLoss import CrossEntropyLabelSmoothLoss
+from loss.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
+from loss.triplet_loss import TripletLoss
 from metrics import distance, rank
 from metrics.test_function import test_function
-from model import PCB
+from model import pcb_ffm
 from record import Recorder
 from utils import (
     Logger,
@@ -37,17 +38,18 @@ def brain(config, logger):
     logger.info("#" * 50)
 
     # Dataset
-    train_loader, query_loader, gallery_loader, num_classes = getDataLoader(config.dataset_name, config.dataset_path, args=config)
-    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getDataLoader(config.dataset_name, config.dataset_path, args=config)
+    train_loader, query_loader, gallery_loader, num_classes = getDataLoader(config.dataset_name, config.dataset_path, config=config)
+    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getDataLoader(config.dataset_name, config.dataset_path, config=config)
 
     val_loader = [query_loader, gallery_loader]
     test_loader = [test_query_loader, test_gallery_loader]
 
     # Model
-    model = PCB(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
+    model = pcb_ffm(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
 
     # Loss function
-    ce_labelsmooth_loss = CrossEntropyLabelSmoothLoss(num_classes=num_classes)
+    ce_labelsmooth_loss = CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
+    triplet_loss = TripletLoss(margin=0.3)
 
     # Optimizer
     base_param_ids = set(map(id, model.backbone.parameters()))
@@ -79,15 +81,25 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            parts_scores = model(inputs)
+            parts_scores, gloab_features, fusion_feature = model(inputs)
 
             ### Loss
-            #### Part loss
+            #### Gloab loss
+            gloab_loss = triplet_loss(gloab_features, labels)
+
+            #### Fusion loss
+            fusion_loss = triplet_loss(fusion_feature, labels)
+
+            #### Parts loss
             part_loss = 0
             for logits in parts_scores:
                 stripe_loss = ce_labelsmooth_loss(logits, labels)
                 part_loss += stripe_loss
-            loss = part_loss
+
+            #### all of loss
+            loss_alph = 1
+            loss_beta = 0.01
+            loss = 0.1 * part_loss + loss_alph * gloab_loss[0] + loss_beta * fusion_loss[0]
 
             ### Update the parameters
             loss.backward()
@@ -103,9 +115,7 @@ def brain(config, logger):
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
             time_remaining_H = time_remaining // 3600
             time_remaining_M = time_remaining / 60 % 60
-            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(
-                epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M
-            )
+            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M)
             logger.info(message)
 
             ### Record train information
@@ -172,11 +182,11 @@ if __name__ == "__main__":
     logger.info(f"Using data type: {config.dtype}")
 
     # Set environment
-    torch.manual_seed(config.seed)
-    torch.cuda.manual_seed_all(config.seed)
-    torch.cuda.manual_seed(config.seed)
-    np.random.seed(config.seed)
     random.seed(config.seed)
+    np.random.seed(config.seed)
+    torch.manual_seed(config.seed)
+    torch.cuda.manual_seed(config.seed)
+    torch.cuda.manual_seed_all(config.seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False  # The result cannot be reproduced when True
 

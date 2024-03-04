@@ -22,8 +22,8 @@ outputs_path = os.path.join(current_directory, outputs_dir)
 ########################################################################
 # For data settings
 # Path setting
-# dataset_path = "/home/hy/project/reid/datasets/Market-1501-v15.09.15-test"
-dataset_path = "/home/hy/project/reid/datasets/Market-1501-v15.09.15"
+dataset_path = "/home/hy/project/reid/datasets/Market-1501-v15.09.15-test"
+# dataset_path = "/home/hy/project/reid/datasets/Market-1501-v15.09.15"
 dataset_name = "market1501"
 
 batch_size = 60

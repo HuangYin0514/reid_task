@@ -17,7 +17,7 @@ sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
 from dataloader import getDataLoader
-from loss.crossEntropyLabelSmoothLoss import CrossEntropyLabelSmoothLoss
+from reid.loss.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
 from metrics import distance, rank
 from metrics.test_function import test_function
 from model import PCB
@@ -37,8 +37,8 @@ def brain(config, logger):
     logger.info("#" * 50)
 
     # Dataset
-    train_loader, query_loader, gallery_loader, num_classes = getDataLoader(config.dataset_name, config.dataset_path, args=config)
-    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getDataLoader(config.dataset_name, config.dataset_path, args=config)
+    train_loader, query_loader, gallery_loader, num_classes = getDataLoader(config.dataset_name, config.dataset_path, config=config)
+    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getDataLoader(config.dataset_name, config.dataset_path, config=config)
 
     val_loader = [query_loader, gallery_loader]
     test_loader = [test_query_loader, test_gallery_loader]
@@ -47,7 +47,7 @@ def brain(config, logger):
     model = PCB(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
 
     # Loss function
-    ce_labelsmooth_loss = CrossEntropyLabelSmoothLoss(num_classes=num_classes)
+    ce_labelsmooth_loss = CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
 
     # Optimizer
     base_param_ids = set(map(id, model.backbone.parameters()))
@@ -67,7 +67,7 @@ def brain(config, logger):
     # Train and Test
     for epoch in range(config.epochs):
         model.train()
-        scheduler.step(epoch)
+        scheduler.step()
 
         ## Train
         running_loss = 0.0
@@ -103,9 +103,7 @@ def brain(config, logger):
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
             time_remaining_H = time_remaining // 3600
             time_remaining_M = time_remaining / 60 % 60
-            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(
-                epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M
-            )
+            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M)
             logger.info(message)
 
             ### Record train information
@@ -172,11 +170,11 @@ if __name__ == "__main__":
     logger.info(f"Using data type: {config.dtype}")
 
     # Set environment
-    torch.manual_seed(config.seed)
-    torch.cuda.manual_seed_all(config.seed)
-    torch.cuda.manual_seed(config.seed)
-    np.random.seed(config.seed)
     random.seed(config.seed)
+    np.random.seed(config.seed)
+    torch.manual_seed(config.seed)
+    torch.cuda.manual_seed(config.seed)
+    torch.cuda.manual_seed_all(config.seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = False  # The result cannot be reproduced when True
 

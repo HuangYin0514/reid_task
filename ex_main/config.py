@@ -33,7 +33,8 @@ num_workers = 4
 img_height = 384
 img_width = 128
 
-data_sampler_type = "softmax"
+data_sampler_type = "RandomIdentitySampler"
+num_instance = 2
 
 ########################################################################
 # For training settings
