@@ -24,7 +24,6 @@ outputs_path = os.path.join(current_directory, outputs_dir)
 # Path setting
 # dataset_path = "/home/hy/project/reid/datasets/Market-1501-v15.09.15-test"
 dataset_path = "/home/hy/project/reid/datasets/Market-1501-v15.09.15"
-dataset_name = "market1501"
 
 batch_size = 60
 test_batch_size = 512
@@ -34,7 +33,6 @@ img_height = 384
 img_width = 128
 
 data_sampler_type = "RandomIdentitySampler"
-num_instance = 2
 
 ########################################################################
 # For training settings

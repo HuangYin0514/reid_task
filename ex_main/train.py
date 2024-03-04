@@ -16,7 +16,7 @@ PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from dataloader import getDataLoader
+from dataloader.getDataLoader import getData
 from loss.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
 from loss.triplet_loss import TripletLoss
 from metrics import distance, rank
@@ -38,8 +38,8 @@ def brain(config, logger):
     logger.info("#" * 50)
 
     # Dataset
-    train_loader, query_loader, gallery_loader, num_classes = getDataLoader(config.dataset_name, config.dataset_path, config=config)
-    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getDataLoader(config.dataset_name, config.dataset_path, config=config)
+    train_loader, query_loader, gallery_loader, num_classes = getData(opt=config)
+    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getData(opt=config)
 
     val_loader = [query_loader, gallery_loader]
     test_loader = [test_query_loader, test_gallery_loader]
@@ -129,7 +129,7 @@ def brain(config, logger):
             CMC, mAP = test_function(model, val_loader, config)
 
             ### Log test information
-            message = ("Testing: dataset_name: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_name, CMC[0], CMC[4], CMC[9], mAP)
+            message = ("Testing: dataset_path: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_path, CMC[0], CMC[4], CMC[9], mAP)
             logger.info(message)
 
             ### Save model
