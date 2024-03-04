@@ -10,4 +10,4 @@
 #
 ####################################################################################
 
-python /home/hy/project/reid/01_PCB/train.py --config /home/hy/project/reid/01_PCB/config.py
+python ex_03_PCB/train.py --config ex_03_PCB/config.py

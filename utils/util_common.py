@@ -15,16 +15,6 @@ def read_config_file(config_file_path):
     return config_module
 
 
-def set_random_seed(random_seed=1):
-    torch.manual_seed(random_seed)
-    torch.cuda.manual_seed_all(random_seed)
-    np.random.seed(random_seed)
-    random.seed(random_seed)
-    torch.backends.cudnn.deterministic = True
-    torch.backends.cudnn.benchmark = True
-
-
-
 def tensors_to_numpy(*tensors):
     """
     Convert PyTorch tensors to NumPy arrays.

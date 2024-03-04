@@ -1,29 +1,36 @@
 import argparse
 import os
+import random
 import shutil
 import sys
 import time
 import traceback
-import numpy as np
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
-
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from utils import timing, Logger, read_config_file, set_random_seed, save_config, to_pickle, count_parameters
-
-from metrics import distance, rank
 from dataloader import getDataLoader
-from model import PCB
 from loss.crossEntropyLabelSmoothLoss import CrossEntropyLabelSmoothLoss
+from metrics import distance, rank
 from metrics.test_function import test_function
+from model import PCB
 from record import Recorder
+from utils import (
+    Logger,
+    count_parameters,
+    read_config_file,
+    save_config,
+    timing,
+    to_pickle,
+)
+
 
 @timing
 def brain(config, logger):
@@ -52,7 +59,7 @@ def brain(config, logger):
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
     # Information record
-    recorder = Recorder(config,logger)
+    recorder = Recorder(config, logger)
 
     # Time
     start_time = time.time()
@@ -89,9 +96,9 @@ def brain(config, logger):
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
 
-        # Logger
+        ## Logger
         if epoch % config.print_every == 0:
-            ## Log message
+            ### Log message
             epoch_loss = running_loss / len(train_loader.dataset)
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
             time_remaining_H = time_remaining // 3600
@@ -101,29 +108,30 @@ def brain(config, logger):
             )
             logger.info(message)
 
-            ## Record train information
-            recorder.train_epochs_list.append(epoch_loss)
+            ### Record train information
+            recorder.train_epochs_list.append(epoch + 1)
             recorder.train_loss_list.append(epoch_loss)
 
-
-
-        # Testing
+        ## Test
         if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
-            ## Test datset
+            ### Test datset
             torch.cuda.empty_cache()
             CMC, mAP = test_function(model, val_loader, config)
 
-            ## Log test information
+            ### Log test information
             message = ("Testing: dataset_name: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_name, CMC[0], CMC[4], CMC[9], mAP)
             logger.info(message)
 
-            ## Save model
-            model_path = os.path.join(config.outputs_path, "model_{}.tar".format(epoch))
+            ### Save model
+            model_path = os.path.join(config.outputs_path, "model_{}.tar".format(epoch + 1))
             torch.save(model.state_dict(), model_path)
 
-            ## Record test information 
-            recorder.train_epochs_list.append(epoch_loss)
-            recorder.train_loss_list.append(epoch_loss)
+            ### Record test information
+            recorder.val_epochs_list.append(epoch + 1)
+            recorder.val_CMC_list.append(CMC)
+            recorder.val_mAP_list.append(mAP)
+
+        recorder.save()
 
 
 if __name__ == "__main__":
@@ -160,10 +168,17 @@ if __name__ == "__main__":
     logger = Logger(outputs_path)
     logger.info("#" * 50)
     logger.info(f"Task: {config.taskname}")
-
-    # Set random seed
-    set_random_seed(config.seed)
     logger.info(f"Using device: {config.device}")
+    logger.info(f"Using data type: {config.dtype}")
+
+    # Set environment
+    torch.manual_seed(config.seed)
+    torch.cuda.manual_seed_all(config.seed)
+    torch.cuda.manual_seed(config.seed)
+    np.random.seed(config.seed)
+    random.seed(config.seed)
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False  # The result cannot be reproduced when True
 
     # Set device
     if config.device == "cuda":
@@ -174,16 +189,9 @@ if __name__ == "__main__":
         logger.info(f"Current device id: {torch.cuda.current_device()}")
     else:
         # raise Exception("Unsupported device for cpu!")
-        print("warining using CPU!" * 100)
+        logger.info("warining using CPU!" * 100)
 
-    # Set dtype
-    logger.info(f"Using data type: {config.dtype}")
-
-    ######################################################################
-    #
-    # traing
-    #
-    ######################################################################
+    # Training
     try:
         start_time = time.time()
         brain(config, logger)
@@ -193,7 +201,7 @@ if __name__ == "__main__":
 
     except Exception as e:
         logger.error(traceback.format_exc())
-        print("An error occurred: {}".format(e))
+        logger.info("An error occurred: {}".format(e))
 
     # Logs all the attributes and their values present in the given config object.
     save_config(config, logger)

@@ -40,7 +40,7 @@ data_sampler_type = "softmax"
 lr = 0.1
 epochs = 60
 print_every = 1
-test_every =20
+test_every = 20
 
 ########################################################################
 # For training settings

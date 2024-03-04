@@ -4,100 +4,33 @@ import shutil
 import sys
 import time
 import traceback
-import numpy as np
 
+import numpy as np
 import torch
 import torch.nn.functional as F
-
+from tqdm import tqdm
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from utils import timing, Logger, read_config_file, set_random_seed, save_config, to_pickle, count_parameters
-
-from metrics import distance, rank
 from dataloader import getDataLoader
-from model import PCB
 from loss.crossEntropyLabelSmoothLoss import CrossEntropyLabelSmoothLoss
+from metrics import distance, rank
+from metrics.test_function import test_function
+from model import PCB
+from record import Recorder
+from utils import (
+    Logger,
+    count_parameters,
+    read_config_file,
+    save_config,
+    set_random_seed,
+    timing,
+    to_pickle,
+)
 
-def _parse_data_for_eval(data):
-    imgs = data[0]
-    pids = data[1]
-    camids = data[2]
-    return imgs, pids, camids
-
-
-def _extract_features(model, input):
-    model.eval()
-    return model(input)
-
-@torch.no_grad()
-def test(model, test_loader, config, normalize_feature=False, dist_metric='cosine'):
-    model.eval()
-
-    # test dataloader------------------------------------------------------------
-    query_dataloader, gallery_dataloader = test_loader
-
-    # Extracting features from query set------------------------------------------------------------
-    print('Extracting features from query set ...')
-    qf, q_pids, q_camids = [], [], []  # query features, query person IDs and query camera IDs
-    q_score = []
-    for batch_idx, data in enumerate(query_dataloader):
-        imgs, pids, camids = _parse_data_for_eval(data)
-        imgs = imgs.to(config.device)
-        features = _extract_features(model, imgs)
-        qf.append(features)
-        q_pids.extend(pids)
-        q_camids.extend(camids)
-    qf = torch.cat(qf, 0)
-    q_pids = np.asarray(q_pids)
-    q_camids = np.asarray(q_camids)
-    print('Done, obtained {}-by-{} matrix'.format(qf.size(0), qf.size(1)))
-
-    # Extracting features from gallery set------------------------------------------------------------
-    print('Extracting features from gallery set ...')
-    gf, g_pids, g_camids = [], [], []  # gallery features, gallery person IDs and gallery camera IDs
-    g_score = []
-    for batch_idx, data in enumerate(gallery_dataloader):
-        imgs, pids, camids = _parse_data_for_eval(data)
-        imgs = imgs.to(config.device)
-        features = _extract_features(model, imgs)
-        gf.append(features)
-        g_pids.extend(pids)
-        g_camids.extend(camids)
-    gf = torch.cat(gf, 0)
-    g_pids = np.asarray(g_pids)
-    g_camids = np.asarray(g_camids)
-    print('Done, obtained {}-by-{} matrix'.format(gf.size(0), gf.size(1)))
-
-    # normalize_feature------------------------------------------------------------------------------
-    if normalize_feature:
-        print('Normalzing features with L2 norm ...')
-        qf = F.normalize(qf, p=2, dim=1)
-        gf = F.normalize(gf, p=2, dim=1)
-
-    # Computing distance matrix------------------------------------------------------------------------
-    print('Computing distance matrix with metric={} ...'.format(dist_metric))
-    qf = np.array(qf.cpu())
-    gf = np.array(gf.cpu())
-    dist = distance.cosine_dist(qf, gf)
-    rank_results = np.argsort(dist)[:, ::-1]
-
-    # Computing CMC and mAP------------------------------------------------------------------------
-    print('Computing CMC and mAP ...')
-    APs, CMC = [], []
-    for idx, data in enumerate(zip(rank_results, q_camids, q_pids)):
-        a_rank, query_camid, query_pid = data
-        ap, cmc = rank.compute_AP(a_rank, query_camid, query_pid, g_camids, g_pids)
-        APs.append(ap), CMC.append(cmc)
-    MAP = np.array(APs).mean()
-    min_len = min([len(cmc) for cmc in CMC])
-    CMC = [cmc[:min_len] for cmc in CMC]
-    CMC = np.mean(np.array(CMC), axis=0)
-
-    return CMC, MAP
 
 @timing
 def brain(config, logger):
@@ -125,6 +58,9 @@ def brain(config, logger):
     # Scheduler
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
+    # Information record
+    recorder = Recorder(config, logger)
+
     # Time
     start_time = time.time()
 
@@ -135,8 +71,7 @@ def brain(config, logger):
 
         ## Train
         running_loss = 0.0
-        for ind, data in enumerate(train_loader):
-            print("{}/{}".format(ind + 1, len(train_loader)), end="\r")
+        for ind, data in enumerate(tqdm(train_loader)):
             ### data
             inputs, labels = data
             inputs = inputs.to(config.device)
@@ -161,23 +96,39 @@ def brain(config, logger):
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
 
+        # Logger
         if epoch % config.print_every == 0:
+            ## Log message
             epoch_loss = running_loss / len(train_loader.dataset)
-            logger.info("Epoch {}/{}".format(epoch + 1, config.epochs))
-            logger.info("Training Loss: {:.4f}".format(epoch_loss))
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
-            logger.info("time remaining  is {:.0f}h : {:.0f}m".format(time_remaining // 3600, time_remaining / 60 % 60))
+            time_remaining_H = time_remaining // 3600
+            time_remaining_M = time_remaining / 60 % 60
+            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(
+                epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M
+            )
+            logger.info(message)
+
+            ## Record train information
+            # recorder.train_epochs_list.append(epoch_loss)
+            # recorder.train_loss_list.append(epoch_loss)
 
         # Testing
         if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
-            # test current datset
+            ## Test datset
             torch.cuda.empty_cache()
-            CMC, mAP = test(model, val_loader, config)
-            logger.info(config.dataset_name)
-            logger.info('Testing: top1:%.4f top5:%.4f top10:%.4f mAP:%.4f' % (CMC[0], CMC[4], CMC[9], mAP))
+            CMC, mAP = test_function(model, val_loader, config)
 
+            ## Log test information
+            message = ("Testing: dataset_name: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_name, CMC[0], CMC[4], CMC[9], mAP)
+            logger.info(message)
+
+            ## Save model
             model_path = os.path.join(config.outputs_path, "model_{}.tar".format(epoch))
             torch.save(model.state_dict(), model_path)
+
+            ## Record test information
+            # recorder.train_epochs_list.append(epoch_loss)
+            # recorder.train_loss_list.append(epoch_loss)
 
 
 if __name__ == "__main__":

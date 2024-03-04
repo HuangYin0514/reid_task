@@ -4,25 +4,31 @@ import shutil
 import sys
 import time
 import traceback
-import numpy as np
 
+import numpy as np
 import torch
 import torch.nn.functional as F
 from tqdm import tqdm
-
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from utils import timing, Logger, read_config_file, set_random_seed, save_config, to_pickle, count_parameters
-
-from metrics import distance, rank
 from dataloader import getDataLoader
-from model import PCB
 from loss.crossEntropyLabelSmoothLoss import CrossEntropyLabelSmoothLoss
+from metrics import distance, rank
 from metrics.test_function import test_function
+from model import PCB
+from utils import (
+    Logger,
+    count_parameters,
+    read_config_file,
+    save_config,
+    set_random_seed,
+    timing,
+    to_pickle,
+)
 
 
 @timing
@@ -60,6 +66,7 @@ def brain(config, logger):
         scheduler.step(epoch)
 
         ## Train
+        running_loss = 0.0
         for ind, data in enumerate(tqdm(train_loader)):
             ### data
             inputs, labels = data

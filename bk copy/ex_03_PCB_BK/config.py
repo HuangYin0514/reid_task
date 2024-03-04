@@ -30,7 +30,7 @@ batch_size = 60
 test_batch_size = 512
 num_workers = 4
 
-img_height = 256
+img_height = 384
 img_width = 128
 
 data_sampler_type = "softmax"
@@ -40,7 +40,7 @@ data_sampler_type = "softmax"
 lr = 0.1
 epochs = 60
 print_every = 1
-test_every =20
+test_every = 20
 
 ########################################################################
 # For training settings

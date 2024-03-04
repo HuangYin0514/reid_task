@@ -6,7 +6,7 @@ from utils import util_torchtool
 
 
 class Resnet50_Branch(nn.Module):
-    def __init__(self, ** kwargs):
+    def __init__(self, **kwargs):
         super(Resnet50_Branch, self).__init__()
 
         # backbone--------------------------------------------------------------------------
@@ -15,16 +15,14 @@ class Resnet50_Branch(nn.Module):
         resnet.layer4[0].downsample[0].stride = (1, 1)
         resnet.layer4[0].conv2.stride = (1, 1)
         # Remove avgpool and fc layer of resnet------------------------------
-        self.backbone = nn.Sequential(
-            resnet.conv1, resnet.bn1, resnet.relu, resnet.maxpool,
-            resnet.layer1, resnet.layer2, resnet.layer3, resnet.layer4)
+        self.backbone = nn.Sequential(resnet.conv1, resnet.bn1, resnet.relu, resnet.maxpool, resnet.layer1, resnet.layer2, resnet.layer3, resnet.layer4)
 
     def forward(self, x):
         return self.backbone(x)
 
 
 class PCBModel(nn.Module):
-    def __init__(self, num_classes, loss='softmax', ** kwargs):
+    def __init__(self, num_classes, loss="softmax", **kwargs):
 
         super(PCBModel, self).__init__()
         self.parts = 6
@@ -41,10 +39,7 @@ class PCBModel(nn.Module):
         # local_conv--------------------------------------------------------------------
         self.local_conv_list = nn.ModuleList()
         for _ in range(self.parts):
-            local_conv = nn.Sequential(
-                nn.Conv1d(2048, 256, kernel_size=1),
-                nn.BatchNorm1d(256),
-                nn.ReLU(inplace=True))
+            local_conv = nn.Sequential(nn.Conv1d(2048, 256, kernel_size=1), nn.BatchNorm1d(256), nn.ReLU(inplace=True))
             # local_conv.apply(torchtool.weights_init_kaiming)
             self.local_conv_list.append(local_conv)
 
@@ -84,7 +79,4 @@ class PCBModel(nn.Module):
 
 
 def PCB(num_classes, **kwargs):
-    return PCBModel(
-        num_classes=num_classes,
-        **kwargs
-    )
+    return PCBModel(num_classes=num_classes, **kwargs)
