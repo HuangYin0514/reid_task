@@ -10,7 +10,7 @@ class Resnet50_Branch(nn.Module):
         super(Resnet50_Branch, self).__init__()
 
         # backbone--------------------------------------------------------------------------
-        resnet = models.resnet50(pretrained=True)
+        resnet = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
         # Modifiy the stride of last conv layer----------------------------
         resnet.layer4[0].downsample[0].stride = (1, 1)
         resnet.layer4[0].conv2.stride = (1, 1)

@@ -67,7 +67,7 @@ def brain(config, logger):
     # Train and Test
     for epoch in range(config.epochs):
         model.train()
-        scheduler.step(epoch)
+        scheduler.step()
 
         ## Train
         running_loss = 0.0
