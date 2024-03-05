@@ -12,7 +12,7 @@ class CrossEntropyLabelSmoothLoss(nn.Module):
             epsilon (float): weight.
     """
 
-    def __init__(self, num_classes, epsilon=0.1, use_gpu=True, config=None, logger=None):
+    def __init__(self, num_classes, epsilon=0.1, config=None, logger=None):
         super(CrossEntropyLabelSmoothLoss, self).__init__()
         self.config = config
         self.logger = logger

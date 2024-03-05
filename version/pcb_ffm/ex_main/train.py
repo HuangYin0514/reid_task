@@ -17,14 +17,11 @@ sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
 from dataloader.getDataLoader import getData
-from loss.center_loss import CenterLoss
 from loss.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
-from loss.softmax_triplet_loss import Softmax_Triplet_loss
 from loss.triplet_loss import TripletLoss
 from metrics import distance, rank
 from metrics.test_function import test_function
-from model import baseline_apnet
-from optim.WarmupMultiStepLR import WarmupMultiStepLR
+from model import pcb_ffm
 from record import Recorder
 from utils import (
     Logger,
@@ -48,35 +45,21 @@ def brain(config, logger):
     test_loader = [test_query_loader, test_gallery_loader]
 
     # Model
-    model = baseline_apnet(num_classes=num_classes).to(config.device)
+    model = pcb_ffm(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
 
     # Loss function
-    criterion = Softmax_Triplet_loss(num_class=num_classes, margin=0.3, epsilon=0.1, config=config, logger=logger)
-
-    center_loss = CenterLoss(num_classes=num_classes, feature_dim=2048, config=config, logger=logger)
+    ce_labelsmooth_loss = CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
+    triplet_loss = TripletLoss(margin=0.3)
 
     # Optimizer
-    # base_param_ids = set(map(id, model.backbone.parameters()))
-    # new_params = [p for p in model.parameters() if id(p) not in base_param_ids]
-    # param_groups = [{"params": model.backbone.parameters(), "lr": config.lr / 10}, {"params": new_params, "lr": config.lr}]
-    # optimizer = torch.optim.SGD(param_groups, momentum=0.9, weight_decay=5e-4, nesterov=True)
-    optimizer = torch.optim.Adam(
-        model.parameters(),
-        lr=0.00035,
-        weight_decay=0.0005,
-    )
-    optimizer_centerloss = torch.optim.SGD(center_loss.parameters(), lr=0.5)
+    base_param_ids = set(map(id, model.backbone.parameters()))
+    new_params = [p for p in model.parameters() if id(p) not in base_param_ids]
+    param_groups = [{"params": model.backbone.parameters(), "lr": config.lr / 10}, {"params": new_params, "lr": config.lr}]
+    optimizer = torch.optim.SGD(param_groups, momentum=0.9, weight_decay=5e-4, nesterov=True)
 
     # Scheduler
-    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
-    scheduler = WarmupMultiStepLR(
-        optimizer,
-        milestones=[40, 70],
-        gamma=0.1,
-        warmup_factor=0.01,
-        warmup_iters=10,
-        warmup_method="linear",
-    )
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
+
     # Information record
     recorder = Recorder(config, logger)
 
@@ -97,15 +80,29 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            score, feat = model(inputs)
+            parts_scores, gloab_features, fusion_feature = model(inputs)
 
             ### Loss
-            loss = criterion(score, feat, labels) + center_loss(feat, labels) * 0.0005
+            #### Gloab loss
+            gloab_loss = triplet_loss(gloab_features, labels)
+
+            #### Fusion loss
+            fusion_loss = triplet_loss(fusion_feature, labels)
+
+            #### Parts loss
+            part_loss = 0
+            for logits in parts_scores:
+                stripe_loss = ce_labelsmooth_loss(logits, labels)
+                part_loss += stripe_loss
+
+            #### all of loss
+            loss_alph = 1
+            loss_beta = 0.01
+            loss = 0.1 * part_loss + loss_alph * gloab_loss[0] + loss_beta * fusion_loss[0]
 
             ### Update the parameters
             loss.backward()
             optimizer.step()
-            optimizer_centerloss.step()
 
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
@@ -127,7 +124,7 @@ def brain(config, logger):
             recorder.train_loss_list.append(epoch_loss)
 
         ## Test
-        if epoch + 1 == config.epochs or ((epoch + 1) >= config.epoch_start_test and (epoch + 1) % config.test_every == 0):
+        if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
             ### Test datset
             torch.cuda.empty_cache()
             CMC, mAP = test_function(model, val_loader, config)
