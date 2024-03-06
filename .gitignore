@@ -8,9 +8,8 @@
 .DS_Store
 
 # dir
-outputs/
-training_file/
 *data/
+*analysis/results/
 *.ipynb_checkpoints/
 
 # file
@@ -19,12 +18,11 @@ training_file/
 *.pkl
 *.tar
 *.jpg
-# *.png
 *.pdf
 *.npy
 *.gif
 *.mp4
-*.log
 *.mat
 *.json
-
+# *.log
+# *.png

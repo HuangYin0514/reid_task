@@ -1,0 +1,17 @@
+2024-03-05 14:31:13 INFO ##################################################
+2024-03-05 14:31:13 INFO Task: PCB
+2024-03-05 14:31:13 INFO Using device: cuda
+2024-03-05 14:31:13 INFO Using data type: torch.float32
+2024-03-05 14:31:13 INFO Number of GPUs: 1
+2024-03-05 14:31:13 INFO GPU is_available: True
+2024-03-05 14:31:13 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-03-05 14:31:13 INFO CUDA version: 12.1
+2024-03-05 14:31:13 INFO Current device id: 0
+2024-03-05 14:31:13 INFO ##################################################
+2024-03-05 14:31:18 INFO Epoch 1/5	Training Loss: 3.8698	Time remaining is 0h:0m
+2024-03-05 14:31:20 INFO Epoch 2/5	Training Loss: 3.1422	Time remaining is 0h:0m
+2024-03-05 14:31:22 INFO Epoch 3/5	Training Loss: 3.6644	Time remaining is 0h:0m
+2024-03-05 14:31:25 INFO Epoch 4/5	Training Loss: 3.4747	Time remaining is 0h:0m
+2024-03-05 14:31:27 INFO Epoch 5/5	Training Loss: 3.1654	Time remaining is 0h:0m
+2024-03-05 14:32:04 INFO Testing: dataset_path: /home/hy/project/reid/datasets/Market-1501-v15.09.15-test top1:0.0083 top5:0.0276 top10:0.0493 mAP:0.0043
+2024-03-05 14:32:04 INFO The running time of training: 5.14079e+01 s
