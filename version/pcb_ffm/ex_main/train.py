@@ -16,40 +16,31 @@ PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from ex_main.train_dataloader import getData
-from loss_funciton.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
-from loss_funciton.triplet_loss import TripletLoss
-from metrics import distance, rank
-from metrics.test_function import test_function
-from model import pcb_ffm
+from model import *
 from record import Recorder
-from utils import (
-    Logger,
-    count_parameters,
-    read_config_file,
-    save_config,
-    timing,
-    to_pickle,
-)
+from train_dataloader import getData
+
+import loss_funciton
+import metrics
+import optim
+import utils
 
 
-@timing
+@utils.timing
 def brain(config, logger):
     logger.info("#" * 50)
 
     # Dataset
-    train_loader, query_loader, gallery_loader, num_classes = getData(opt=config)
-    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getData(opt=config)
+    train_loader, query_loader, gallery_loader, num_classes = getData(config=config)
 
     val_loader = [query_loader, gallery_loader]
-    test_loader = [test_query_loader, test_gallery_loader]
 
     # Model
     model = pcb_ffm(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
 
     # Loss function
-    ce_labelsmooth_loss = CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
-    triplet_loss = TripletLoss(margin=0.3)
+    ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
+    triplet_loss = loss_funciton.TripletLoss(margin=0.3)
 
     # Optimizer
     base_param_ids = set(map(id, model.backbone.parameters()))
@@ -69,6 +60,7 @@ def brain(config, logger):
     # Train and Test
     for epoch in range(config.epochs):
         model.train()
+        scheduler.step()
 
         ## Train
         running_loss = 0.0
@@ -107,8 +99,6 @@ def brain(config, logger):
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
 
-        scheduler.step()
-
         ## Logger
         if epoch % config.print_every == 0:
             ### Log message
@@ -124,13 +114,13 @@ def brain(config, logger):
             recorder.train_loss_list.append(epoch_loss)
 
         ## Test
-        if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
+        if (epoch + 1) % config.test_every == 0 or (epoch + 1) == config.epochs:
             ### Test datset
             torch.cuda.empty_cache()
-            CMC, mAP = test_function(model, val_loader, config)
+            CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)
 
             ### Log test information
-            message = ("Testing: dataset_path: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_path, CMC[0], CMC[4], CMC[9], mAP)
+            message = ("Testing: dataset_name: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_name, CMC[0], CMC[4], CMC[9], mAP)
             logger.info(message)
 
             ### Save model
@@ -160,7 +150,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ## Read the configuration from the provided file
     config_file_path = args.config_file
-    config = read_config_file(config_file_path)
+    config = utils.read_config_file(config_file_path)
     ## Set command-line to config
     ## config.some_float = args.some_float
 
@@ -176,7 +166,7 @@ if __name__ == "__main__":
     os.makedirs(outputs_path)
 
     # Initialize a logger tool
-    logger = Logger(outputs_path)
+    logger = utils.Logger(outputs_path)
     logger.info("#" * 50)
     logger.info(f"Task: {config.taskname}")
     logger.info(f"Using device: {config.device}")
@@ -215,4 +205,4 @@ if __name__ == "__main__":
         logger.info("An error occurred: {}".format(e))
 
     # Logs all the attributes and their values present in the given config object.
-    save_config(config, logger)
+    utils.save_config(config, logger)

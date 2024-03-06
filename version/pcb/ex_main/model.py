@@ -68,15 +68,16 @@ class PCBModel(nn.Module):
             features_H.append(stripe_features_H)
 
         if self.training:
-            # Classifier for parts module ([N, num_classes]）
+            # Classifier for parts module (6 x [N, num_classes]）
             batch_size = x.size(0)
             logits_list = [self.fc_list[i](features_H[i].view(batch_size, -1)) for i in range(self.parts)]
             return logits_list
         else:
-            # Cat features ([N, 1536+512])
+            # Cat features ([N, 1536])
             v_g = torch.cat(features_H, dim=2)
             v_g = F.normalize(v_g, p=2, dim=1)
-            return v_g.view(v_g.size(0), -1)
+            v_g = v_g.view(v_g.size(0), -1)
+            return v_g
 
 
 def PCB(num_classes, **kwargs):

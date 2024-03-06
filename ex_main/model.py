@@ -129,28 +129,28 @@ class pcb_ffm(nn.Module):
         # Backbone ([N, 2048, 24, 8])
         resnet_features = self.backbone(x)
 
-        # Gloab module ([N, 512])
+        # Gloab module ([N, 256])
         gloab_features = self.k11_conv(resnet_features)
         gloab_features = self.rga_att(gloab_features)
-        gloab_features = self.gloab_agp(gloab_features).view(batch_size, 512, -1)  # ([N, 512, 1])
-        gloab_features = self.gloab_conv(gloab_features).squeeze()  # ([N, 512])
+        gloab_features = self.gloab_agp(gloab_features).view(batch_size, 512, -1)
+        gloab_features = self.gloab_conv(gloab_features).squeeze()
 
         # Part module (6 x [N, 256, 1])
-        features_G = self.avgpool(resnet_features)  # tensor ([N, 2048, 6, 1])
+        features_G = self.avgpool(resnet_features)
         features_H = []
         for i in range(self.parts):
             stripe_features_H = self.local_conv_list[i](features_G[:, :, i, :])
             features_H.append(stripe_features_H)
 
-        # Feature fusion module
+        # Feature fusion module  ([N, 256])
         fusion_feature = self.ffm(gloab_features, features_H)
 
         if self.training:
-            # Classifier for parts module ([N, num_classes]）
+            # Classifier for parts module (6 x [N, num_classes]）
             parts_score_list = [self.parts_classifier_list[i](features_H[i].view(batch_size, -1)) for i in range(self.parts)]
             return parts_score_list, gloab_features, fusion_feature
         else:
-            # Cat features ([N, 1536+512])
+            # Cat features ([N, 1536])
             v_g = torch.cat(features_H, dim=1)
             v_g = F.normalize(v_g, p=2, dim=1)
             return v_g.view(v_g.size(0), -1)
