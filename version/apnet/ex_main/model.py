@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+
 from model_module.backbones.resnet50 import resnet50
 from model_module.model_utils.init_param import (
     weights_init_classifier,

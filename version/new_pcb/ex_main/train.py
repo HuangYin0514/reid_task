@@ -16,45 +16,33 @@ PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from ex_main.train_dataloader import getData
-from loss_funciton.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
-from loss_funciton.triplet_loss import TripletLoss
-from metrics import distance, rank
-from metrics.test_function import test_function
-from model import pcb_ffm
+import dataloader
+import loss_funciton
+import metrics
+import optim
+import utils
+from model import *
 from record import Recorder
-from utils import (
-    Logger,
-    count_parameters,
-    read_config_file,
-    save_config,
-    timing,
-    to_pickle,
-)
 
 
-@timing
+@utils.timing
 def brain(config, logger):
     logger.info("#" * 50)
 
     # Dataset
-    train_loader, query_loader, gallery_loader, num_classes = getData(opt=config)
-    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getData(opt=config)
-
-    val_loader = [query_loader, gallery_loader]
-    test_loader = [test_query_loader, test_gallery_loader]
+    train_loader, query_loader, gallery_loader, num_classes = dataloader.getData(opt=config)
 
     # Model
-    model = pcb_ffm(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
+    model = PCB(num_classes=num_classes).to(config.device)
 
     # Loss function
-    ce_labelsmooth_loss = CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
-    triplet_loss = TripletLoss(margin=0.3)
+    ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
 
     # Optimizer
+    lr = 0.1
     base_param_ids = set(map(id, model.backbone.parameters()))
     new_params = [p for p in model.parameters() if id(p) not in base_param_ids]
-    param_groups = [{"params": model.backbone.parameters(), "lr": config.lr / 10}, {"params": new_params, "lr": config.lr}]
+    param_groups = [{"params": model.backbone.parameters(), "lr": lr / 10}, {"params": new_params, "lr": lr}]
     optimizer = torch.optim.SGD(param_groups, momentum=0.9, weight_decay=5e-4, nesterov=True)
 
     # Scheduler
@@ -69,6 +57,7 @@ def brain(config, logger):
     # Train and Test
     for epoch in range(config.epochs):
         model.train()
+        scheduler.step()
 
         ## Train
         running_loss = 0.0
@@ -80,25 +69,14 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            parts_scores, gloab_features, fusion_feature = model(inputs)
+            parts_scores = model(inputs)
 
             ### Loss
-            #### Gloab loss
-            gloab_loss = triplet_loss(gloab_features, labels)
-
-            #### Fusion loss
-            fusion_loss = triplet_loss(fusion_feature, labels)
-
-            #### Parts loss
             part_loss = 0
             for logits in parts_scores:
                 stripe_loss = ce_labelsmooth_loss(logits, labels)
                 part_loss += stripe_loss
-
-            #### all of loss
-            loss_alph = 1
-            loss_beta = 0.01
-            loss = 0.1 * part_loss + loss_alph * gloab_loss[0] + loss_beta * fusion_loss[0]
+            loss = part_loss
 
             ### Update the parameters
             loss.backward()
@@ -106,8 +84,6 @@ def brain(config, logger):
 
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
-
-        scheduler.step()
 
         ## Logger
         if epoch % config.print_every == 0:
@@ -124,13 +100,13 @@ def brain(config, logger):
             recorder.train_loss_list.append(epoch_loss)
 
         ## Test
-        if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
+        if epoch + 1 == config.epochs or ((epoch + 1) >= config.epoch_start_test and (epoch + 1) % config.test_every == 0):
             ### Test datset
             torch.cuda.empty_cache()
-            CMC, mAP = test_function(model, val_loader, config)
+            CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)
 
             ### Log test information
-            message = ("Testing: dataset_path: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_path, CMC[0], CMC[4], CMC[9], mAP)
+            message = ("Testing: dataset_name: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_name, CMC[0], CMC[4], CMC[9], mAP)
             logger.info(message)
 
             ### Save model
@@ -160,7 +136,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ## Read the configuration from the provided file
     config_file_path = args.config_file
-    config = read_config_file(config_file_path)
+    config = utils.read_config_file(config_file_path)
     ## Set command-line to config
     ## config.some_float = args.some_float
 
@@ -176,7 +152,7 @@ if __name__ == "__main__":
     os.makedirs(outputs_path)
 
     # Initialize a logger tool
-    logger = Logger(outputs_path)
+    logger = utils.Logger(outputs_path)
     logger.info("#" * 50)
     logger.info(f"Task: {config.taskname}")
     logger.info(f"Using device: {config.device}")
@@ -215,4 +191,4 @@ if __name__ == "__main__":
         logger.info("An error occurred: {}".format(e))
 
     # Logs all the attributes and their values present in the given config object.
-    save_config(config, logger)
+    utils.save_config(config, logger)

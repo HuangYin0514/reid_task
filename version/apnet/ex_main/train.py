@@ -16,44 +16,30 @@ PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from dataloader.getDataLoader import getData
-from loss.center_loss import CenterLoss
-from loss.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
-from loss.softmax_triplet_loss import Softmax_Triplet_loss
-from loss.triplet_loss import TripletLoss
-from metrics import distance, rank
-from metrics.test_function import test_function
 from model import baseline_apnet
-from optim.WarmupMultiStepLR import WarmupMultiStepLR
 from record import Recorder
-from utils import (
-    Logger,
-    count_parameters,
-    read_config_file,
-    save_config,
-    timing,
-    to_pickle,
-)
+
+import dataloader
+import loss_funciton
+import metrics
+import optim
+import utils
 
 
-@timing
+@utils.timing
 def brain(config, logger):
     logger.info("#" * 50)
 
     # Dataset
-    train_loader, query_loader, gallery_loader, num_classes = getData(opt=config)
-    test_loader, test_query_loader, test_gallery_loader, test_num_classes = getData(opt=config)
-
-    val_loader = [query_loader, gallery_loader]
-    test_loader = [test_query_loader, test_gallery_loader]
+    train_loader, query_loader, gallery_loader, num_classes = dataloader.getData(opt=config)
+    # test_loader, test_query_loader, test_gallery_loader, test_num_classes = dataloader.getData(opt=config)
 
     # Model
     model = baseline_apnet(num_classes=num_classes).to(config.device)
 
     # Loss function
-    criterion = Softmax_Triplet_loss(num_class=num_classes, margin=0.3, epsilon=0.1, config=config, logger=logger)
-
-    center_loss = CenterLoss(num_classes=num_classes, feature_dim=2048, config=config, logger=logger)
+    criterion = loss_funciton.Softmax_Triplet_loss(num_class=num_classes, margin=0.3, epsilon=0.1, config=config, logger=logger)
+    center_loss = loss_funciton.CenterLoss(num_classes=num_classes, feature_dim=2048, config=config, logger=logger)
 
     # Optimizer
     # base_param_ids = set(map(id, model.backbone.parameters()))
@@ -69,7 +55,7 @@ def brain(config, logger):
 
     # Scheduler
     # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
-    scheduler = WarmupMultiStepLR(
+    scheduler = optim.WarmupMultiStepLR(
         optimizer,
         milestones=[40, 70],
         gamma=0.1,
@@ -119,7 +105,9 @@ def brain(config, logger):
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
             time_remaining_H = time_remaining // 3600
             time_remaining_M = time_remaining / 60 % 60
-            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M)
+            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(
+                epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M
+            )
             logger.info(message)
 
             ### Record train information
@@ -130,10 +118,10 @@ def brain(config, logger):
         if epoch + 1 == config.epochs or ((epoch + 1) >= config.epoch_start_test and (epoch + 1) % config.test_every == 0):
             ### Test datset
             torch.cuda.empty_cache()
-            CMC, mAP = test_function(model, val_loader, config)
+            CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)
 
             ### Log test information
-            message = ("Testing: dataset_path: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_path, CMC[0], CMC[4], CMC[9], mAP)
+            message = ("Testing: dataset_name: {} top1:{:.4f} top5:{:.4f} top10:{:.4f} mAP:{:.4f}").format(config.dataset_name, CMC[0], CMC[4], CMC[9], mAP)
             logger.info(message)
 
             ### Save model
@@ -163,7 +151,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ## Read the configuration from the provided file
     config_file_path = args.config_file
-    config = read_config_file(config_file_path)
+    config = utils.read_config_file(config_file_path)
     ## Set command-line to config
     ## config.some_float = args.some_float
 
@@ -179,7 +167,7 @@ if __name__ == "__main__":
     os.makedirs(outputs_path)
 
     # Initialize a logger tool
-    logger = Logger(outputs_path)
+    logger = utils.Logger(outputs_path)
     logger.info("#" * 50)
     logger.info(f"Task: {config.taskname}")
     logger.info(f"Using device: {config.device}")
@@ -218,4 +206,4 @@ if __name__ == "__main__":
         logger.info("An error occurred: {}".format(e))
 
     # Logs all the attributes and their values present in the given config object.
-    save_config(config, logger)
+    utils.save_config(config, logger)

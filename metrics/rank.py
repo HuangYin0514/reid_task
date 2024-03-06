@@ -1,6 +1,20 @@
 import numpy as np
 
 
+def in1d(array1, array2, invert=False):
+    """
+    :param set1: np.array, 1d
+    :param set2: np.array, 1d
+    :return:
+    """
+    mask = np.in1d(array1, array2, invert=invert)
+    return array1[mask]
+
+
+def notin1d(array1, array2):
+    return in1d(array1, array2, invert=True)
+
+
 def compute_AP(a_rank, query_camid, query_pid, gallery_camids, gallery_pids, mode="inter-camera"):
     """given a query and all galleries, compute its ap and cmc"""
 
@@ -37,15 +51,16 @@ def compute_AP(a_rank, query_camid, query_pid, gallery_camids, gallery_pids, mod
     return AP, cmc
 
 
-def in1d(array1, array2, invert=False):
-    """
-    :param set1: np.array, 1d
-    :param set2: np.array, 1d
-    :return:
-    """
-    mask = np.in1d(array1, array2, invert=invert)
-    return array1[mask]
+def eval_rank(rank_results, q_camids, q_pids, g_camids, g_pids):
 
+    APs, CMC = [], []
+    for _, data in enumerate(zip(rank_results, q_camids, q_pids)):
+        a_rank, query_camid, query_pid = data
+        ap, cmc = compute_AP(a_rank, query_camid, query_pid, g_camids, g_pids)
+        APs.append(ap), CMC.append(cmc)
+    MAP = np.array(APs).mean()
+    min_len = min([len(cmc) for cmc in CMC])
+    CMC = [cmc[:min_len] for cmc in CMC]
+    CMC = np.mean(np.array(CMC), axis=0)
 
-def notin1d(array1, array2):
-    return in1d(array1, array2, invert=True)
+    return CMC, MAP

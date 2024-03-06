@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from loss.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
-from loss.triplet_loss import TripletLoss_v2
+from loss_funciton.crossentropy_labelsmooth_loss import CrossEntropyLabelSmoothLoss
+from loss_funciton.triplet_loss import TripletLoss_v2
 
 
 class Softmax_Triplet_loss(nn.Module):

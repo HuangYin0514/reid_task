@@ -10,6 +10,7 @@
 # dir
 outputs/
 training_file/
+*data/
 *.ipynb_checkpoints/
 
 # file
