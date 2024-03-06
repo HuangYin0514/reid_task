@@ -33,7 +33,7 @@ def getData(config):
     # Dataloder
     ## Train dataloder
     train_set = dataloader.ImageDataset(dataset.train, train_transforms)
-    train_loader = torch.utils.data.DataLoader(train_set, batch_size=config.batch_size, shuffle=True, collate_fn=dataloader.train_collate_fn)
+    train_loader = torch.utils.data.DataLoader(train_set, sampler=dataloader.samplers.RandomIdentitySampler(train_set.dataset, config.batch_size, num_instances=4), batch_size=config.batch_size, collate_fn=dataloader.train_collate_fn)
 
     ## Query dataloder
     query_set = dataloader.ImageDataset(dataset.query, test_transforms)

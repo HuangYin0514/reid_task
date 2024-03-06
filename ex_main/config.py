@@ -7,7 +7,7 @@ import torch
 # config.py
 ########################################################################
 # For general settings
-taskname = "PCB"
+taskname = "PCB_ffm"
 seed = 1
 device = "cuda" if torch.cuda.is_available() else "cpu"
 # device = "cpu"

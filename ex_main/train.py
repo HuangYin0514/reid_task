@@ -36,10 +36,11 @@ def brain(config, logger):
     val_loader = [query_loader, gallery_loader]
 
     # Model
-    model = PCB(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
+    model = pcb_ffm(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
 
     # Loss function
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
+    triplet_loss = loss_funciton.TripletLoss(margin=0.3)
 
     # Optimizer
     base_param_ids = set(map(id, model.backbone.parameters()))
@@ -71,15 +72,25 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            parts_scores = model(inputs)
+            parts_scores, gloab_features, fusion_feature = model(inputs)
 
             ### Loss
-            #### Part loss
+            #### Gloab loss
+            gloab_loss = triplet_loss(gloab_features, labels)
+
+            #### Fusion loss
+            fusion_loss = triplet_loss(fusion_feature, labels)
+
+            #### Parts loss
             part_loss = 0
             for logits in parts_scores:
                 stripe_loss = ce_labelsmooth_loss(logits, labels)
                 part_loss += stripe_loss
-            loss = part_loss
+
+            #### all of loss
+            loss_alph = 1
+            loss_beta = 0.01
+            loss = 0.1 * part_loss + loss_alph * gloab_loss[0] + loss_beta * fusion_loss[0]
 
             ### Update the parameters
             loss.backward()
