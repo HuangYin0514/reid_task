@@ -8,3 +8,15 @@
 2024-03-06 20:38:50 INFO CUDA version: 12.1
 2024-03-06 20:38:50 INFO Current device id: 0
 2024-03-06 20:38:50 INFO ##################################################
+2024-03-06 20:40:23 INFO Epoch 1/60	Training Loss: 4.4731	Time remaining is 1h:32m
+2024-03-06 20:41:53 INFO Epoch 2/60	Training Loss: 3.7887	Time remaining is 1h:30m
+2024-03-06 20:43:24 INFO Epoch 3/60	Training Loss: 3.6973	Time remaining is 1h:28m
+2024-03-06 20:44:55 INFO Epoch 4/60	Training Loss: 3.5947	Time remaining is 1h:26m
+2024-03-06 20:46:26 INFO Epoch 5/60	Training Loss: 3.5109	Time remaining is 1h:25m
+2024-03-06 20:47:56 INFO Epoch 6/60	Training Loss: 3.4183	Time remaining is 1h:23m
+2024-03-06 20:49:28 INFO Epoch 7/60	Training Loss: 3.3646	Time remaining is 1h:22m
+2024-03-06 20:50:59 INFO Epoch 8/60	Training Loss: 3.2945	Time remaining is 1h:20m
+2024-03-06 20:52:29 INFO Epoch 9/60	Training Loss: 3.2098	Time remaining is 1h:19m
+2024-03-06 20:54:00 INFO Epoch 10/60	Training Loss: 3.1552	Time remaining is 1h:17m
+2024-03-06 20:55:30 INFO Epoch 11/60	Training Loss: 3.0806	Time remaining is 1h:16m
+2024-03-06 20:57:02 INFO Epoch 12/60	Training Loss: 3.0420	Time remaining is 1h:14m

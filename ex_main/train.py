@@ -114,7 +114,7 @@ def brain(config, logger):
             recorder.train_loss_list.append(epoch_loss)
 
         ## Test
-        if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
+        if (epoch + 1) % config.test_every == 0 or (epoch + 1) == config.epochs:
             ### Test datset
             torch.cuda.empty_cache()
             CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)
