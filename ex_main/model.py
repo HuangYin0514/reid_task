@@ -146,11 +146,11 @@ class pcb_ffm(nn.Module):
         fusion_feature = self.ffm(gloab_features, features_H)
 
         if self.training:
-            # Parts list（[N, num_classes]）
+            # Classifier for parts module ([N, num_classes]）
             parts_score_list = [self.parts_classifier_list[i](features_H[i].view(batch_size, -1)) for i in range(self.parts)]
             return parts_score_list, gloab_features, fusion_feature
         else:
-            # Features ([N, 1536+512])
+            # Cat features ([N, 1536+512])
             v_g = torch.cat(features_H, dim=1)
             v_g = F.normalize(v_g, p=2, dim=1)
             return v_g.view(v_g.size(0), -1)

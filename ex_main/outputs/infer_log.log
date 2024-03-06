@@ -37,3 +37,7 @@
 2024-03-06 21:19:00 INFO Epoch 26/60	Training Loss: 2.3413	Time remaining is 0h:54m
 2024-03-06 21:20:31 INFO Epoch 27/60	Training Loss: 2.3223	Time remaining is 0h:52m
 2024-03-06 21:22:02 INFO Epoch 28/60	Training Loss: 2.3092	Time remaining is 0h:51m
+2024-03-06 21:23:32 INFO Epoch 29/60	Training Loss: 2.2993	Time remaining is 0h:49m
+2024-03-06 21:25:03 INFO Epoch 30/60	Training Loss: 2.2851	Time remaining is 0h:48m
+2024-03-06 21:26:33 INFO Epoch 31/60	Training Loss: 2.2701	Time remaining is 0h:46m
+2024-03-06 21:28:04 INFO Epoch 32/60	Training Loss: 2.2655	Time remaining is 0h:45m

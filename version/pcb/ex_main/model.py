@@ -3,7 +3,7 @@ from torch import nn
 from torch.nn import functional as F
 from torchvision import models
 
-from utils import util_torchtool
+import network
 
 
 class Resnet50_Branch(nn.Module):
@@ -11,7 +11,8 @@ class Resnet50_Branch(nn.Module):
         super(Resnet50_Branch, self).__init__()
 
         # Backbone
-        resnet = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
+        # resnet = models.resnet50(weights=models.ResNet50_Weights.IMAGENET1K_V1)
+        resnet = network.backbones.resnet50(pretrained=True)
 
         # Modifiy backbone
         ## Modifiy the stride of last conv layer
@@ -38,13 +39,13 @@ class PCBModel(nn.Module):
         ## Avgpool
         self.avgpool = nn.AdaptiveAvgPool2d((self.parts, 1))
         # self.dropout = nn.Dropout(p=0.5)
-        
+
         ## Local_conv
         self.local_conv_list = nn.ModuleList()
         for _ in range(self.parts):
             local_conv = nn.Sequential(nn.Conv1d(2048, 256, kernel_size=1), nn.BatchNorm1d(256), nn.ReLU(inplace=True))
             self.local_conv_list.append(local_conv)
-            
+
         ## Classifier
         self.fc_list = nn.ModuleList()
         for _ in range(self.parts):
@@ -67,12 +68,12 @@ class PCBModel(nn.Module):
             features_H.append(stripe_features_H)
 
         if self.training:
-            # Parts list（[N, num_classes]）
+            # Classifier for parts module ([N, num_classes]）
             batch_size = x.size(0)
             logits_list = [self.fc_list[i](features_H[i].view(batch_size, -1)) for i in range(self.parts)]
             return logits_list
         else:
-            # Features
+            # Cat features ([N, 1536+512])
             v_g = torch.cat(features_H, dim=2)
             v_g = F.normalize(v_g, p=2, dim=1)
             return v_g.view(v_g.size(0), -1)
