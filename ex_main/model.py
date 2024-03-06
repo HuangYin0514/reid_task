@@ -9,13 +9,14 @@ class Resnet_Backbone(nn.Module):
     def __init__(self):
         super(Resnet_Backbone, self).__init__()
 
-        # backbone--------------------------------------------------------------------------
-        # change the model different from pcb
+        # Backbone
         resnet = network.backbones.resnet50(pretrained=True)
-        # Modifiy the stride of last conv layer----------------------------
+
+        # Modifiy backbone
+        ## Modifiy the stride of last conv layer
         resnet.layer4[0].downsample[0].stride = (1, 1)
         resnet.layer4[0].conv2.stride = (1, 1)
-        # Remove avgpool and fc layer of resnet------------------------------
+        ## Remove avgpool and fc layer of resnet
         self.resnet_conv1 = resnet.conv1
         self.resnet_bn1 = resnet.bn1
         self.resnet_relu = resnet.relu
@@ -34,7 +35,6 @@ class Resnet_Backbone(nn.Module):
         x = self.resnet_layer2(x)
         x = self.resnet_layer3(x)
         x = self.resnet_layer4(x)
-
         return x
 
 
@@ -51,12 +51,10 @@ class Feature_Fusion_Module(nn.Module):
     def forward(self, gloab_feature, parts_features):
         batch_size = gloab_feature.size(0)
 
-        ########################################################################################################
-        # compute the weigth of parts features --------------------------------------------------
+        # compute the weigth of parts features
         w_of_parts = torch.sigmoid(self.fc1(gloab_feature))
 
-        ########################################################################################################
-        # compute the features,with weigth --------------------------------------------------
+        # compute the features with weigth
         weighted_feature = torch.zeros_like(parts_features[0])
         for i in range(self.parts):
             new_feature = parts_features[i] * w_of_parts[:, i].view(batch_size, 1, 1).expand(parts_features[i].shape)
@@ -88,38 +86,29 @@ def custom_RGA_Module():
 
 
 class pcb_ffm(nn.Module):
-    def __init__(self, num_classes, loss="softmax", **kwargs):
+    def __init__(self, num_classes, **kwargs):
 
         super(pcb_ffm, self).__init__()
         self.parts = 6
         self.num_classes = num_classes
-        self.loss = loss
-        ########################################################################################################
-        # backbone--------------------------------------------------------------------------
+
+        # Backbone
         self.backbone = Resnet_Backbone()
 
-        ########################################################################################################
-        # feature fusion module--------------------------------------------------------------------------
-        self.ffm = Feature_Fusion_Module(self.parts)
-
-        ########################################################################################################
-        # gloab--------------------------------------------------------------------------
+        # Gloab module
         self.k11_conv = nn.Conv2d(2048, 512, kernel_size=1)
         self.gloab_agp = nn.AdaptiveAvgPool2d((1, 1))
         self.gloab_conv = nn.Sequential(nn.Conv1d(512, 256, kernel_size=1), nn.BatchNorm1d(256), nn.ReLU(inplace=True))
         self.gloab_conv.apply(network.utils.weights_init_kaiming)
-
         self.rga_att = custom_RGA_Module()
 
-        ########################################################################################################
-        # part(pcb）--------------------------------------------------------------------------
+        # Part module
         self.avgpool = nn.AdaptiveAvgPool2d((self.parts, 1))
         self.local_conv_list = nn.ModuleList()
         for _ in range(self.parts):
             local_conv = nn.Sequential(nn.Conv1d(2048, 256, kernel_size=1), nn.BatchNorm1d(256), nn.ReLU(inplace=True))
             self.local_conv_list.append(local_conv)
-
-        # Classifier for each stripe （parts feature）-------------------------------------
+        ## Classifier
         self.parts_classifier_list = nn.ModuleList()
         for _ in range(self.parts):
             fc = nn.Linear(256, num_classes)
@@ -127,8 +116,9 @@ class pcb_ffm(nn.Module):
             nn.init.constant_(fc.bias, 0)
             self.parts_classifier_list.append(fc)
 
-        ########################################################################################################
-        # fusion_feature_classifier（fusion feature）--------------------------------------------------------------------------
+        # Feature fusion module
+        self.ffm = Feature_Fusion_Module(self.parts)
+        ## Classifier
         self.fusion_feature_classifier = nn.Linear(256, num_classes)
         nn.init.normal_(self.fusion_feature_classifier.weight, std=0.001)
         nn.init.constant_(self.fusion_feature_classifier.bias, 0)
@@ -136,39 +126,31 @@ class pcb_ffm(nn.Module):
     def forward(self, x):
         batch_size = x.size(0)
 
-        ######################################################################################################################
-        # backbone(Tensor T) --------------------------------------------------------------------------
-        resnet_features = self.backbone(x)  # ([N, 2048, 24, 8])
+        # Backbone ([N, 2048, 24, 8])
+        resnet_features = self.backbone(x)
 
-        # gloab([N, 512]) --------------------------------------------------------------------------
+        # Gloab module ([N, 512])
         gloab_features = self.k11_conv(resnet_features)
         gloab_features = self.rga_att(gloab_features)
         gloab_features = self.gloab_agp(gloab_features).view(batch_size, 512, -1)  # ([N, 512, 1])
         gloab_features = self.gloab_conv(gloab_features).squeeze()  # ([N, 512])
 
-        # parts --------------------------------------------------------------------------
-        features_G = self.avgpool(resnet_features)  # tensor g([N, 2048, 6, 1])
-        features_H = []  # contains 6 ([N, 256, 1])
+        # Part module (6 x [N, 256, 1])
+        features_G = self.avgpool(resnet_features)  # tensor ([N, 2048, 6, 1])
+        features_H = []
         for i in range(self.parts):
             stripe_features_H = self.local_conv_list[i](features_G[:, :, i, :])
             features_H.append(stripe_features_H)
 
-        # feature fusion module--------------------------------------------------------------------------
+        # Feature fusion module
         fusion_feature = self.ffm(gloab_features, features_H)
 
-        ######################################################################################################################
-        # Return the features_H if inference--------------------------------------------------------------------------
-        if not self.training:
-            # features_H.append(gloab_features.unsqueeze_(2))  # ([N,1536+512])
+        if self.training:
+            # Parts list（[N, num_classes]）
+            parts_score_list = [self.parts_classifier_list[i](features_H[i].view(batch_size, -1)) for i in range(self.parts)]
+            return parts_score_list, gloab_features, fusion_feature
+        else:
+            # Features ([N, 1536+512])
             v_g = torch.cat(features_H, dim=1)
             v_g = F.normalize(v_g, p=2, dim=1)
             return v_g.view(v_g.size(0), -1)
-
-        ######################################################################################################################
-        # classifier(parts)--------------------------------------------------------------------------
-        parts_score_list = [self.parts_classifier_list[i](features_H[i].view(batch_size, -1)) for i in range(self.parts)]  # shape list（[N, C=num_classes]）
-
-        # classifier(fusion feature)--------------------------------------------------------------------------
-        # fusion_score = self.fusion_feature_classifier(fusion_feature)
-
-        return parts_score_list, gloab_features, fusion_feature
