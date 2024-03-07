@@ -2,11 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from model_module.backbones.resnet50 import resnet50
-from model_module.model_utils.init_param import (
-    weights_init_classifier,
-    weights_init_kaiming,
-)
+import network
 
 
 class SAMS(nn.Module):
@@ -76,7 +72,7 @@ class BN2d(nn.Module):
         super(BN2d, self).__init__()
         self.bottleneck2 = nn.BatchNorm2d(planes)
         self.bottleneck2.bias.requires_grad_(False)  # no shift
-        self.bottleneck2.apply(weights_init_kaiming)
+        self.bottleneck2.apply(network.utils.weights_init_kaiming)
 
     def forward(self, x):
         return self.bottleneck2(x)
@@ -89,7 +85,7 @@ class Resnet_Backbone(nn.Module):
 
         # backbone--------------------------------------------------------------------------
         # change the model different from pcb
-        resnet = resnet50(pretrained=True)
+        resnet = network.backbones.resnet50(pretrained=True)
         # Modifiy the stride of last conv layer----------------------------
         resnet.layer4[0].downsample[0].stride = (1, 1)
         resnet.layer4[0].conv2.stride = (1, 1)
@@ -186,8 +182,8 @@ class baseline_apnet(nn.Module):
         self.bottleneck = nn.BatchNorm1d(2048)
         self.bottleneck.bias.requires_grad_(False)
         self.classifier = nn.Linear(2048, self.num_classes, bias=False)
-        self.bottleneck.apply(weights_init_kaiming)
-        self.classifier.apply(weights_init_classifier)
+        self.bottleneck.apply(network.utils.weights_init_kaiming)
+        self.classifier.apply(network.utils.weights_init_classifier)
 
     def forward(self, x):
         batch_size = x.size(0)

@@ -16,10 +16,10 @@ PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from model import baseline_apnet
+from model import *
 from record import Recorder
+from train_dataloader import getData
 
-import dataloader
 import loss_funciton
 import metrics
 import optim
@@ -31,8 +31,7 @@ def brain(config, logger):
     logger.info("#" * 50)
 
     # Dataset
-    train_loader, query_loader, gallery_loader, num_classes = dataloader.getData(opt=config)
-    # test_loader, test_query_loader, test_gallery_loader, test_num_classes = dataloader.getData(opt=config)
+    train_loader, query_loader, gallery_loader, num_classes = getData(config=config)
 
     # Model
     model = baseline_apnet(num_classes=num_classes).to(config.device)
@@ -42,10 +41,6 @@ def brain(config, logger):
     center_loss = loss_funciton.CenterLoss(num_classes=num_classes, feature_dim=2048, config=config, logger=logger)
 
     # Optimizer
-    # base_param_ids = set(map(id, model.backbone.parameters()))
-    # new_params = [p for p in model.parameters() if id(p) not in base_param_ids]
-    # param_groups = [{"params": model.backbone.parameters(), "lr": config.lr / 10}, {"params": new_params, "lr": config.lr}]
-    # optimizer = torch.optim.SGD(param_groups, momentum=0.9, weight_decay=5e-4, nesterov=True)
     optimizer = torch.optim.Adam(
         model.parameters(),
         lr=0.00035,
@@ -54,7 +49,6 @@ def brain(config, logger):
     optimizer_centerloss = torch.optim.SGD(center_loss.parameters(), lr=0.5)
 
     # Scheduler
-    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
     scheduler = optim.WarmupMultiStepLR(
         optimizer,
         milestones=[40, 70],
@@ -63,6 +57,7 @@ def brain(config, logger):
         warmup_iters=10,
         warmup_method="linear",
     )
+
     # Information record
     recorder = Recorder(config, logger)
 
@@ -105,9 +100,7 @@ def brain(config, logger):
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
             time_remaining_H = time_remaining // 3600
             time_remaining_M = time_remaining / 60 % 60
-            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(
-                epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M
-            )
+            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M)
             logger.info(message)
 
             ### Record train information
@@ -115,7 +108,9 @@ def brain(config, logger):
             recorder.train_loss_list.append(epoch_loss)
 
         ## Test
-        if epoch + 1 == config.epochs or ((epoch + 1) >= config.epoch_start_test and (epoch + 1) % config.test_every == 0):
+        condition1 = epoch + 1 == config.epochs
+        condition2 = (epoch + 1) >= config.epoch_start_test and (epoch + 1) % config.test_every == 0
+        if condition1 or condition2:
             ### Test datset
             torch.cuda.empty_cache()
             CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)

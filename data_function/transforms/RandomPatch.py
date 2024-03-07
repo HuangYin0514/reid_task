@@ -3,7 +3,7 @@ import random
 import math
 from collections import deque
 
-from torchvision.transforms import *
+# from torchvision.transforms import *
 
 class RandomPatch(object):
     """Random patch data augmentation.
