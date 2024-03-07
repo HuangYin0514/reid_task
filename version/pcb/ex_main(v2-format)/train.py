@@ -40,7 +40,6 @@ def brain(config, logger):
 
     # Loss function
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
-    triplet_loss = loss_funciton.TripletLoss_v2(margin=0.3)
 
     # Optimizer
     base_param_ids = set(map(id, model.backbone.parameters()))
@@ -60,6 +59,7 @@ def brain(config, logger):
     # Train and Test
     for epoch in range(config.epochs):
         model.train()
+        scheduler.step()
 
         ## Train
         running_loss = 0.0
@@ -71,21 +71,15 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            parts_score_list, gloab_score, gloab_feat = model(inputs)
+            parts_scores = model(inputs)
 
             ### Loss
             #### Part loss
             part_loss = 0
-            for logits in parts_score_list:
+            for logits in parts_scores:
                 stripe_loss = ce_labelsmooth_loss(logits, labels)
                 part_loss += stripe_loss
-
-            #### Gloab loss
-            gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
-            gloab_triplet_loss = triplet_loss(gloab_feat, labels)
-
-            #### All loss
-            loss = part_loss + gloab_ce_loss + gloab_triplet_loss
+            loss = part_loss
 
             ### Update the parameters
             loss.backward()
@@ -93,8 +87,6 @@ def brain(config, logger):
 
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
-
-        scheduler.step()
 
         ## Logger
         if epoch % config.print_every == 0:
