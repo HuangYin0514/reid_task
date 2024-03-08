@@ -5,6 +5,7 @@ import data_function
 
 
 def getData(config):
+    num_workers = 4  # Resulting in the inability to reproduce results
 
     # Transforms
     train_transforms = T.Compose(
@@ -13,7 +14,7 @@ def getData(config):
             T.RandomHorizontalFlip(),
             T.RandomCrop((config.img_height, config.img_width)),
             T.ToTensor(),
-            # data_function.transforms.RandomErasing(probability=0.5, mean=[0.485, 0.456, 0.406]),
+            data_function.transformsRandomErasing(probability=0.5, mean=[0.485, 0.456, 0.406]),
             T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )

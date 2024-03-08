@@ -43,21 +43,10 @@ def brain(config, logger):
     triplet_loss = loss_funciton.TripletLoss(margin=0.3)
 
     # Optimizer
-    optimizer = torch.optim.Adam(
-        model.parameters(),
-        lr=0.00035,
-        weight_decay=0.0005,
-    )
-
-    # Scheduler
-    scheduler = optim.WarmupMultiStepLR(
-        optimizer,
-        milestones=[40, 70],
-        gamma=0.1,
-        warmup_factor=0.01,
-        warmup_iters=10,
-        warmup_method="linear",
-    )
+    base_param_ids = set(map(id, model.backbone.parameters()))
+    new_params = [p for p in model.parameters() if id(p) not in base_param_ids]
+    param_groups = [{"params": model.backbone.parameters(), "lr": config.lr / 10}, {"params": new_params, "lr": config.lr}]
+    optimizer = torch.optim.SGD(param_groups, momentum=0.9, weight_decay=5e-4, nesterov=True)
 
     # Scheduler
     scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
@@ -82,17 +71,14 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            part_score_list, part_feat, gloab_feat, fusion_feat = model(inputs)
+            parts_score_list, gloab_feat, fusion_feat = model(inputs)
 
             ### Loss
             #### Part loss
             part_loss = 0
-            for score in part_score_list:
-                ce_loss = ce_labelsmooth_loss(score, labels)
-                part_loss += ce_loss
-
-            tri_loss = triplet_loss(part_feat, labels)
-            part_loss += 0.1 * tri_loss[0]
+            for logits in parts_score_list:
+                stripe_loss = ce_labelsmooth_loss(logits, labels)
+                part_loss += stripe_loss
 
             #### Gloab loss
             gloab_loss = triplet_loss(gloab_feat, labels)
@@ -129,9 +115,7 @@ def brain(config, logger):
             recorder.train_loss_list.append(epoch_loss)
 
         ## Test
-        condition1 = epoch + 1 == config.epochs
-        condition2 = (epoch + 1) >= config.epoch_start_test and (epoch + 1) % config.test_every == 0
-        if condition1 or condition2:            
+        if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
             ### Test datset
             torch.cuda.empty_cache()
             CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)

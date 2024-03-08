@@ -7,7 +7,7 @@ import network
 
 
 class Resnet50_Branch(nn.Module):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super(Resnet50_Branch, self).__init__()
 
         # Backbone
@@ -41,6 +41,7 @@ class Resnet50_Branch(nn.Module):
 
 
 class Feature_Fusion_Module(nn.Module):
+    # 自定义特征融合模块
     def __init__(self, parts, **kwargs):
         super(Feature_Fusion_Module, self).__init__()
 
@@ -52,10 +53,12 @@ class Feature_Fusion_Module(nn.Module):
     def forward(self, gloab_feature, parts_features):
         batch_size = gloab_feature.size(0)
 
-        # Compute the weigth of parts features
+        ########################################################################################################
+        # compute the weigth of parts features --------------------------------------------------
         w_of_parts = torch.sigmoid(self.fc1(gloab_feature))
 
-        # Compute the features,with weigth
+        ########################################################################################################
+        # compute the features,with weigth --------------------------------------------------
         weighted_feature = torch.zeros_like(parts_features[0])
         for i in range(self.parts):
             new_feature = parts_features[i] * w_of_parts[:, i].view(batch_size, 1, 1).expand(parts_features[i].shape)

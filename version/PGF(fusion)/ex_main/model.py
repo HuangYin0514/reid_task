@@ -7,7 +7,7 @@ import network
 
 
 class Resnet50_Branch(nn.Module):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super(Resnet50_Branch, self).__init__()
 
         # Backbone
@@ -41,6 +41,7 @@ class Resnet50_Branch(nn.Module):
 
 
 class Feature_Fusion_Module(nn.Module):
+    # 自定义特征融合模块
     def __init__(self, parts, **kwargs):
         super(Feature_Fusion_Module, self).__init__()
 
@@ -52,10 +53,12 @@ class Feature_Fusion_Module(nn.Module):
     def forward(self, gloab_feature, parts_features):
         batch_size = gloab_feature.size(0)
 
-        # Compute the weigth of parts features
+        ########################################################################################################
+        # compute the weigth of parts features --------------------------------------------------
         w_of_parts = torch.sigmoid(self.fc1(gloab_feature))
 
-        # Compute the features,with weigth
+        ########################################################################################################
+        # compute the features,with weigth --------------------------------------------------
         weighted_feature = torch.zeros_like(parts_features[0])
         for i in range(self.parts):
             new_feature = parts_features[i] * w_of_parts[:, i].view(batch_size, 1, 1).expand(parts_features[i].shape)
@@ -133,15 +136,13 @@ class ReidNet(nn.Module):
             # Classifier for parts module (6 x [N, num_classes]）
             part_score_list = [self.part_classifier_list[i](part_feat[i].view(batch_size, -1)) for i in range(self.parts)]
 
-            part_feat = torch.cat(part_feat, dim=2)
-            part_feat = F.normalize(part_feat, p=2, dim=1)
-            part_feat = part_feat.view(batch_size, -1)
-            return part_score_list, part_feat, gloab_feat, fusion_feat
+            return part_score_list, gloab_feat, fusion_feat
         else:
             # Part features ([N, 1536])
             part_feat = torch.cat(part_feat, dim=2)
             part_feat = F.normalize(part_feat, p=2, dim=1)
             part_feat = part_feat.view(batch_size, -1)
+            all_feat = part_feat
 
             # # Gloab features ([N, 256])
             # gloab_feat = F.normalize(gloab_feat, p=2, dim=1)
@@ -150,4 +151,4 @@ class ReidNet(nn.Module):
             # # Gloab features ([N, 1792])
             # all_feat = torch.cat([part_feat, gloab_feat], dim=-1)
 
-            return part_feat
+            return all_feat

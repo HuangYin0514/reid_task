@@ -5,15 +5,15 @@ import data_function
 
 
 def getData(config):
+    num_workers = 4  # Resulting in the inability to reproduce results
 
     # Transforms
     train_transforms = T.Compose(
         [
             T.Resize((config.img_height, config.img_width), interpolation=3),
             T.RandomHorizontalFlip(),
-            T.RandomCrop((config.img_height, config.img_width)),
             T.ToTensor(),
-            # data_function.transforms.RandomErasing(probability=0.5, mean=[0.485, 0.456, 0.406]),
+            # RandomErasing(probability=0.5, mean=[0.485, 0.456, 0.406]),
             T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
         ]
     )
@@ -33,12 +33,7 @@ def getData(config):
     # Dataloder
     ## Train dataloder
     train_set = data_function.ImageDataset(dataset.train, train_transforms)
-    train_loader = torch.utils.data.DataLoader(
-        train_set,
-        sampler=data_function.samplers.RandomIdentitySampler(dataset.train, config.batch_size, num_instances=4),
-        batch_size=config.batch_size,
-        collate_fn=data_function.train_collate_fn,
-    )
+    train_loader = torch.utils.data.DataLoader(train_set, batch_size=config.batch_size, collate_fn=data_function.train_collate_fn)
 
     ## Query dataloder
     query_set = data_function.ImageDataset(dataset.query, test_transforms)

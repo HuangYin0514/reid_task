@@ -40,7 +40,6 @@ epochs = 6
 print_every = 1
 test_every = 2
 
-epochs = 120
+epochs = 60
 print_every = 1
-test_every = 10
-epoch_start_test = 90
+test_every = 20
