@@ -1,48 +1,11 @@
-2024-03-09 20:14:32 INFO ##################################################
-2024-03-09 20:14:32 INFO Task: PCB
-2024-03-09 20:14:32 INFO Using device: cuda
-2024-03-09 20:14:32 INFO Using data type: torch.float32
-2024-03-09 20:14:32 INFO Number of GPUs: 1
-2024-03-09 20:14:32 INFO GPU is_available: True
-2024-03-09 20:14:32 INFO GPU name: NVIDIA GeForce RTX 3060
-2024-03-09 20:14:32 INFO CUDA version: 12.1
-2024-03-09 20:14:32 INFO Current device id: 0
-2024-03-09 20:14:32 INFO ##################################################
-2024-03-09 20:14:37 INFO Epoch 1/6	Training Loss: 13.0681	Time remaining is 0h:0m
-2024-03-09 20:14:39 INFO Epoch 2/6	Training Loss: 13.0472	Time remaining is 0h:0m
-2024-03-09 20:14:42 INFO Epoch 3/6	Training Loss: 12.9919	Time remaining is 0h:0m
-2024-03-09 20:14:44 INFO Epoch 4/6	Training Loss: 12.9361	Time remaining is 0h:0m
-2024-03-09 20:14:46 INFO Epoch 5/6	Training Loss: 12.8489	Time remaining is 0h:0m
-2024-03-09 20:14:48 INFO Epoch 6/6	Training Loss: 10.6638	Time remaining is 0h:0m
-2024-03-09 20:15:26 INFO Testing: dataset_name: market1501 top1:0.0229 top5:0.0692 top10:0.1036 mAP:0.0082
-2024-03-09 20:15:26 INFO The running time of training: 5.37710e+01 s
-2024-03-09 20:15:26 DEBUG Config values:
-batch_size: 60
-current_directory: /home/hy/project/reid/ex_main
-dataset_name: market1501
-dataset_path: /home/hy/project/reid/data/Market-1501-v15.09.15-test
-device: cuda
-dtype: torch.float32
-epoch_start_test: 5
-epochs: 6
-img_height: 256
-img_width: 128
-lr: 0.1
-np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>
-os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>
-outputs_dir: ./outputs/
-outputs_path: /home/hy/project/reid/ex_main/./outputs/
-print_every: 1
-seed: 1
-taskname: PCB
-test_batch_size: 256
-test_every: 2
-torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
-2024-03-09 20:15:31 INFO ##################################################
-2024-03-09 20:15:31 INFO Task: PCB
-2024-03-09 20:15:31 INFO Using device: cuda
-2024-03-09 20:15:31 INFO Using data type: torch.float32
-2024-03-09 20:15:53 INFO ##################################################
-2024-03-09 20:15:53 INFO Task: PCB
-2024-03-09 20:15:53 INFO Using device: cuda
-2024-03-09 20:15:53 INFO Using data type: torch.float32
+2024-03-09 21:23:44 INFO ##################################################
+2024-03-09 21:23:44 INFO Task: ReID_Task
+2024-03-09 21:23:44 INFO Using device: cuda
+2024-03-09 21:23:44 INFO Using data type: torch.float32
+2024-03-09 21:23:44 INFO Number of GPUs: 1
+2024-03-09 21:23:44 INFO GPU is_available: True
+2024-03-09 21:23:44 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-03-09 21:23:44 INFO CUDA version: 12.1
+2024-03-09 21:23:44 INFO Current device id: 0
+2024-03-09 21:23:44 INFO ##################################################
+2024-03-09 21:25:01 INFO Epoch 1/120	Training Loss: 8.2213	Time remaining is 2h:31m

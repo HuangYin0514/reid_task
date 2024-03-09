@@ -40,7 +40,7 @@ def brain(config, logger):
 
     # Loss function
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
-    triplet_loss = loss_funciton.TripletLoss(margin=0.3)
+    triplet_loss = loss_funciton.TripletLoss_v2(margin=0.3)
 
     # Optimizer
     optimizer = torch.optim.Adam(
@@ -89,16 +89,16 @@ def brain(config, logger):
                 part_ce_loss += ce_loss
 
             part_tri_loss = triplet_loss(part_feat, labels)
-            part_loss = part_ce_loss + part_tri_loss[0]
+            part_loss = part_ce_loss + part_tri_loss
 
             #### Gloab loss
             gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
-            gloab_loss = gloab_ce_loss + gloab_tri_loss[0]
+            gloab_loss = gloab_ce_loss + gloab_tri_loss
 
             #### Fusion loss
             fusion_tri_loss = triplet_loss(fusion_feat, labels)
-            fusion_loss = fusion_tri_loss[0]
+            fusion_loss = fusion_tri_loss
 
             #### All loss
             loss_alph = 0.01

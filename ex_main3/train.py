@@ -96,14 +96,9 @@ def brain(config, logger):
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
             gloab_loss = gloab_ce_loss + gloab_tri_loss[0]
 
-            #### Fusion loss
-            fusion_tri_loss = triplet_loss(fusion_feat, labels)
-            fusion_loss = fusion_tri_loss[0]
-
             #### All loss
             loss_alph = 0.01
-            loss_beta = 0.01
-            loss = gloab_loss + loss_alph * part_loss + loss_beta * fusion_loss
+            loss = gloab_loss + loss_alph * part_loss
 
             ### Update the parameters
             loss.backward()

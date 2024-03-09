@@ -1,0 +1,12 @@
+2024-03-09 21:30:03 INFO ##################################################
+2024-03-09 21:30:03 INFO Task: ReID_Task
+2024-03-09 21:30:03 INFO Using device: cuda
+2024-03-09 21:30:03 INFO Using data type: torch.float32
+2024-03-09 21:30:03 INFO Number of GPUs: 1
+2024-03-09 21:30:03 INFO GPU is_available: True
+2024-03-09 21:30:03 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-03-09 21:30:03 INFO CUDA version: 12.1
+2024-03-09 21:30:03 INFO Current device id: 0
+2024-03-09 21:30:03 INFO ##################################################
+2024-03-09 21:31:19 INFO Epoch 1/120	Training Loss: 8.1562	Time remaining is 2h:31m
+2024-03-09 21:32:34 INFO Epoch 2/120	Training Loss: 7.3811	Time remaining is 2h:28m

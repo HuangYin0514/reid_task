@@ -52,7 +52,6 @@ def load_network(network, file_path, device):
     return network
 
 
-# open_specified_layers-----------------------------------------------------------
 def open_specified_layers(model, open_layers):
     r"""Opens specified layers in model for training while keeping
     other layers frozen.
@@ -88,7 +87,6 @@ def open_specified_layers(model, open_layers):
                 p.requires_grad = False
 
 
-# open_all_layers-----------------------------------------------------------
 def open_all_layers(model):
     r"""Opens all layers in model for training.
     Examples::
@@ -98,26 +96,3 @@ def open_all_layers(model):
     model.train()
     for p in model.parameters():
         p.requires_grad = True
-
-
-# weights_init_kaiming----------------------------------------------------------
-def weights_init_kaiming(m):
-    classname = m.__class__.__name__
-    if classname.find("Conv2d") != -1:
-        torch.nn.init.kaiming_normal_(m.weight.data, mode="fan_out", nonlinearity="relu")
-    elif classname.find("Linear") != -1:
-        torch.nn.init.kaiming_normal_(m.weight.data, a=0, mode="fan_out")
-        torch.nn.init.constant_(m.bias.data, 0.0)
-    elif classname.find("BatchNorm1d") != -1:
-        torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
-        torch.nn.init.constant_(m.bias.data, 0.0)
-    elif classname.find("BatchNorm2d") != -1:
-        torch.nn.init.constant_(m.weight.data, 1)
-        torch.nn.init.constant_(m.bias.data, 0)
-
-
-def weights_init_classifier(m):
-    classname = m.__class__.__name__
-    if classname.find("Linear") != -1:
-        torch.nn.init.normal_(m.weight.data, std=0.001)
-        torch.nn.init.constant_(m.bias.data, 0.0)
