@@ -27,9 +27,9 @@ dataset_path = "/home/hy/project/reid/data/Market-1501-v15.09.15"
 dataset_name = "market1501"
 
 batch_size = 60
-test_batch_size = 512
+test_batch_size = 256
 
-img_height = 384
+img_height = 256
 img_width = 128
 
 ########################################################################
@@ -39,7 +39,9 @@ lr = 0.1
 epochs = 6
 print_every = 1
 test_every = 2
+epoch_start_test = 5
 
-epochs = 60
+epochs = 120
 print_every = 1
-test_every = 20
+test_every = 10
+epoch_start_test = 90

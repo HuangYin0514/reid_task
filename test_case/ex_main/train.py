@@ -36,19 +36,28 @@ def brain(config, logger):
     val_loader = [query_loader, gallery_loader]
 
     # Model
-    model = PCB(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
+    model = ReidNet(num_classes=num_classes).to(config.device)
 
     # Loss function
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
+    triplet_loss = loss_funciton.TripletLoss(margin=0.3)
 
     # Optimizer
-    base_param_ids = set(map(id, model.backbone.parameters()))
-    new_params = [p for p in model.parameters() if id(p) not in base_param_ids]
-    param_groups = [{"params": model.backbone.parameters(), "lr": config.lr / 10}, {"params": new_params, "lr": config.lr}]
-    optimizer = torch.optim.SGD(param_groups, momentum=0.9, weight_decay=5e-4, nesterov=True)
+    optimizer = torch.optim.Adam(
+        model.parameters(),
+        lr=0.00035,
+        weight_decay=0.0005,
+    )
 
     # Scheduler
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
+    scheduler = optim.WarmupMultiStepLR(
+        optimizer,
+        milestones=[40, 70],
+        gamma=0.1,
+        warmup_factor=0.01,
+        warmup_iters=10,
+        warmup_method="linear",
+    )
 
     # Information record
     recorder = Recorder(config, logger)
@@ -59,7 +68,6 @@ def brain(config, logger):
     # Train and Test
     for epoch in range(config.epochs):
         model.train()
-        scheduler.step()
 
         ## Train
         running_loss = 0.0
@@ -71,15 +79,28 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            parts_scores = model(inputs)
+            part_score_list, part_feat, gloab_feat, fusion_feat = model(inputs)
 
             ### Loss
             #### Part loss
             part_loss = 0
-            for logits in parts_scores:
-                stripe_loss = ce_labelsmooth_loss(logits, labels)
-                part_loss += stripe_loss
-            loss = part_loss
+            for score in part_score_list:
+                ce_loss = ce_labelsmooth_loss(score, labels)
+                part_loss += ce_loss
+
+            tri_loss = triplet_loss(part_feat, labels)
+            part_loss += 0.1 * tri_loss[0]
+
+            #### Gloab loss
+            gloab_loss = triplet_loss(gloab_feat, labels)
+
+            #### Gloab loss
+            fusion_loss = triplet_loss(fusion_feat, labels)
+
+            #### All loss
+            loss_alph = 0.1
+            loss_beta = 0.01
+            loss = part_loss + loss_alph * gloab_loss[0] + loss_beta * fusion_loss[0]
 
             ### Update the parameters
             loss.backward()
@@ -87,6 +108,8 @@ def brain(config, logger):
 
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
+
+        scheduler.step()
 
         ## Logger
         if epoch % config.print_every == 0:
@@ -103,7 +126,9 @@ def brain(config, logger):
             recorder.train_loss_list.append(epoch_loss)
 
         ## Test
-        if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
+        condition1 = epoch + 1 == config.epochs
+        condition2 = (epoch + 1) >= config.epoch_start_test and (epoch + 1) % config.test_every == 0
+        if condition1 or condition2:
             ### Test datset
             torch.cuda.empty_cache()
             CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)

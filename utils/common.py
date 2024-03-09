@@ -1,11 +1,29 @@
+import errno
 import importlib
+import json
+import os
+import os.path as osp
 import pickle
 import random
+import sys
 import time
+import warnings
 from functools import wraps
 
 import numpy as np
+import PIL
 import torch
+from PIL import Image
+
+
+def mkdir_if_missing(dirname):
+    """Creates dirname if it is missing."""
+    if not osp.exists(dirname):
+        try:
+            os.makedirs(dirname)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
 
 
 def read_config_file(config_file_path):
@@ -13,6 +31,21 @@ def read_config_file(config_file_path):
     config_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(config_module)
     return config_module
+
+
+def check_isfile(fpath):
+    """Checks if the given path is a file.
+
+    Args:
+        fpath (str): file path.
+
+    Returns:
+       bool
+    """
+    isfile = osp.isfile(fpath)
+    if not isfile:
+        warnings.warn('No file found at "{}"'.format(fpath))
+    return isfile
 
 
 def tensors_to_numpy(*tensors):
@@ -62,10 +95,6 @@ def save_str_info(content, file_path):
         f.write(content)
 
 
-def count_parameters(model):
-    return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-
 def timing(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
@@ -94,47 +123,6 @@ def deprecated(func):
         raise Exception(f" {func.__name__} function was deprecated!")
 
     return wrapper
-
-
-def find_class_in_module(module_name, class_name):
-    """
-    在指定模块中查找给定名称的类。
-
-    参数：
-        module_name (str): 要查找类的模块的名称。
-        class_name (str): 要查找的类的名称。
-
-    返回：
-        class_obj (type): 找到的类对象，如果找不到则返回 None。
-    """
-
-    try:
-        module = importlib.import_module(module_name)
-        class_obj = getattr(module, class_name)
-        return class_obj
-    except (ImportError, AttributeError):
-        return None
-
-
-def initialize_class(module_name, class_name, **kwargs):
-    """
-    根据给定的类名初始化类的实例对象。
-
-    参数：
-        class_name (str): 要初始化的类的名称。
-        **kwargs: 要传递给类构造函数的关键字参数。
-
-    返回：
-        instance (object): 初始化后的类实例对象。
-
-    异常：
-        ValueError: 如果在 'path' 模块中找不到给定的类名，将引发此异常。
-    """
-    class_obj = find_class_in_module(module_name, class_name)
-    if class_obj is not None:
-        return class_obj(**kwargs)
-    else:
-        raise ValueError(f"Class '{class_name}' not found in the 'dynamics' module.")
 
 
 def to_pickle(thing, path):  # save something

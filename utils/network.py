@@ -1,14 +1,55 @@
-
-from collections import OrderedDict
-import shutil
-import warnings
 import os
 import os.path as osp
-from functools import partial
 import pickle
+import shutil
+import warnings
+from collections import OrderedDict
+from functools import partial
 
 import torch
 import torch.nn as nn
+
+
+def count_parameters(model):
+    return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def load_network(network, file_path, device):
+    if not os.path.exists(file_path):
+        raise RuntimeError("Cannot find pretrained network at '{}'".format(file_path))
+
+    # Original saved file with DataParallel
+    state_dict = torch.load(file_path, map_location=torch.device(device))
+
+    # state dict
+    model_dict = network.state_dict()
+    new_state_dict = OrderedDict()
+    matched_layers, discarded_layers = [], []
+
+    # load model state ---->{matched_layers, discarded_layers}
+    for k, v in state_dict.items():
+        if k.startswith("module."):
+            print("discarded_layers {}".format(k[:8]))
+            k = k[7:]  # discard module.
+
+        if k in model_dict and model_dict[k].size() == v.size():
+            new_state_dict[k] = v
+            matched_layers.append(k)
+        else:
+            discarded_layers.append(k)
+
+    model_dict.update(new_state_dict)
+    network.load_state_dict(model_dict)
+
+    # assert model state
+    if len(matched_layers) == 0:
+        warnings.warn('The pretrained weights "{}" cannot be loaded, ' "please check the key names manually " "(** ignored and continue **)".format(matched_layers))
+    else:
+        print('Successfully loaded pretrained weights from "{}"'.format(file_path))
+        if len(discarded_layers) > 0:
+            print("** The following layers are discarded " "due to unmatched keys or layer size: {}".format(discarded_layers))
+
+    return network
 
 
 # open_specified_layers-----------------------------------------------------------
@@ -58,26 +99,25 @@ def open_all_layers(model):
     for p in model.parameters():
         p.requires_grad = True
 
+
 # weights_init_kaiming----------------------------------------------------------
-
-
 def weights_init_kaiming(m):
     classname = m.__class__.__name__
-    if classname.find('Conv2d') != -1:
-        torch.nn.init.kaiming_normal_(m.weight.data, mode='fan_out', nonlinearity='relu')
-    elif classname.find('Linear') != -1:
-        torch.nn.init.kaiming_normal_(m.weight.data, a=0, mode='fan_out')
+    if classname.find("Conv2d") != -1:
+        torch.nn.init.kaiming_normal_(m.weight.data, mode="fan_out", nonlinearity="relu")
+    elif classname.find("Linear") != -1:
+        torch.nn.init.kaiming_normal_(m.weight.data, a=0, mode="fan_out")
         torch.nn.init.constant_(m.bias.data, 0.0)
-    elif classname.find('BatchNorm1d') != -1:
+    elif classname.find("BatchNorm1d") != -1:
         torch.nn.init.normal_(m.weight.data, 1.0, 0.02)
         torch.nn.init.constant_(m.bias.data, 0.0)
-    elif classname.find('BatchNorm2d') != -1:
+    elif classname.find("BatchNorm2d") != -1:
         torch.nn.init.constant_(m.weight.data, 1)
         torch.nn.init.constant_(m.bias.data, 0)
 
 
 def weights_init_classifier(m):
     classname = m.__class__.__name__
-    if classname.find('Linear') != -1:
+    if classname.find("Linear") != -1:
         torch.nn.init.normal_(m.weight.data, std=0.001)
         torch.nn.init.constant_(m.bias.data, 0.0)

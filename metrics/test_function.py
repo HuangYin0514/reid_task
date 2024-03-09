@@ -18,7 +18,7 @@ from . import distance, feature_extractor, rank
 
 
 @torch.no_grad()
-def test_function(model, q_loader, g_loader, normalize_feature=True, config=None, logger=None):
+def test_function(model, q_loader, g_loader, normalize_feature=True, save_features=True, config=None, logger=None):
     model.eval()
 
     device = config.device
@@ -30,9 +30,15 @@ def test_function(model, q_loader, g_loader, normalize_feature=True, config=None
     # Extracting features from gallery set(matrix size is gf.size(0), gf.size(1))
     gf, g_pids, g_camids = feature_extractor.feature_extract(g_loader, model, device)
 
-    # normalize_feature
+    # Save feature
+    if save_features:
+        print("Save features ...")
+        torch.save(qf, os.path.join(config.outputs_path, "query_features_" + config.dataset_name + ".pt"))
+        torch.save(gf, os.path.join(config.outputs_path, "gallery_features_" + config.dataset_name + ".pt"))
+
+    # Normalize feature
     if normalize_feature:
-        # print("Normalzing features with L2 norm ...")
+        print("Normalzing features with L2 norm ...")
         qf = F.normalize(qf, p=2, dim=1)
         gf = F.normalize(gf, p=2, dim=1)
 

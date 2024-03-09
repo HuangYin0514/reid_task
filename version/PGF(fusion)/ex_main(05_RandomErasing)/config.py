@@ -23,7 +23,7 @@ outputs_path = os.path.join(current_directory, outputs_dir)
 # For data settings
 # Path setting
 dataset_path = "/home/hy/project/reid/data/Market-1501-v15.09.15-test"
-# dataset_path = "/home/hy/project/reid/data/Market-1501-v15.09.15"
+dataset_path = "/home/hy/project/reid/data/Market-1501-v15.09.15"
 dataset_name = "market1501"
 
 batch_size = 60
@@ -41,7 +41,7 @@ print_every = 1
 test_every = 2
 epoch_start_test = 5
 
-# epochs = 120
-# print_every = 1
-# test_every = 10
-# epoch_start_test = 90
+epochs = 120
+print_every = 1
+test_every = 10
+epoch_start_test = 90

@@ -237,9 +237,6 @@ class ReidNet(nn.Module):
         nn.init.normal_(self.fusion_feature_classifier.weight, std=0.001)
         nn.init.constant_(self.fusion_feature_classifier.bias, 0)
 
-    def heatmap(self, x):
-        return self.backbone(x)
-
     def forward(self, x):
         batch_size = x.size(0)
 

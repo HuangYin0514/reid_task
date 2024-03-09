@@ -26,7 +26,7 @@ import optim
 import utils
 
 
-@utils.common.timing
+@utils.timing
 def brain(config, logger):
     logger.info("#" * 50)
 
@@ -164,7 +164,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     ## Read the configuration from the provided file
     config_file_path = args.config_file
-    config = utils.common.read_config_file(config_file_path)
+    config = utils.read_config_file(config_file_path)
     ## Set command-line to config
     ## config.some_float = args.some_float
 
@@ -180,7 +180,7 @@ if __name__ == "__main__":
     os.makedirs(outputs_path)
 
     # Initialize a logger tool
-    logger = utils.logger.Logger(outputs_path)
+    logger = utils.Logger(outputs_path)
     logger.info("#" * 50)
     logger.info(f"Task: {config.taskname}")
     logger.info(f"Using device: {config.device}")
@@ -219,4 +219,4 @@ if __name__ == "__main__":
         logger.info("An error occurred: {}".format(e))
 
     # Logs all the attributes and their values present in the given config object.
-    utils.common.save_config(config, logger)
+    utils.save_config(config, logger)

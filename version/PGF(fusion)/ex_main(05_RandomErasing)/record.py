@@ -4,7 +4,8 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torchvision import models
-import utils
+from utils import to_pickle
+
 
 class Recorder:
     def __init__(self, config, logger, **kwargs):
@@ -32,4 +33,4 @@ class Recorder:
 
         filename = f"recorder.pkl"
         path = os.path.join(self.config.outputs_path, filename)
-        utils.common.to_pickle(stats, path)
+        to_pickle(stats, path)
