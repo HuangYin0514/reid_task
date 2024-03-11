@@ -33,12 +33,15 @@ def brain(config, logger):
     # Dataset
     train_loader, query_loader, gallery_loader, num_classes = getData(config=config)
 
+    val_loader = [query_loader, gallery_loader]
+
     # Model
     model = ReidNet(num_classes=num_classes).to(config.device)
 
     # Loss function
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
     triplet_loss = loss_funciton.TripletLoss(margin=0.3)
+    center_loss = loss_funciton.CenterLoss(num_classes=num_classes, feature_dim=2048, config=config, logger=logger)
 
     # Optimizer
     optimizer = torch.optim.Adam(
@@ -46,6 +49,7 @@ def brain(config, logger):
         lr=0.00035,
         weight_decay=0.0005,
     )
+    optimizer_centerloss = torch.optim.SGD(center_loss.parameters(), lr=0.5)
 
     # Scheduler
     scheduler = optim.WarmupMultiStepLR(
@@ -80,17 +84,34 @@ def brain(config, logger):
             part_score_list, part_feat, gloab_score, gloab_feat, fusion_feat = model(inputs)
 
             ### Loss
+            ### Part loss
+            part_ce_loss = 0.0
+            for score in part_score_list:
+                ce_loss = ce_labelsmooth_loss(score, labels)
+                part_ce_loss += ce_loss
+
+            part_tri_loss = triplet_loss(part_feat, labels)
+            part_loss = part_ce_loss + part_tri_loss
+
             #### Gloab loss
             gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
-            gloab_loss = gloab_ce_loss + gloab_tri_loss
+            gloab_cen_loss = center_loss(gloab_feat, labels)
+            gloab_loss = gloab_ce_loss + gloab_tri_loss + 0.0005 * gloab_cen_loss
+
+            ### Fusion loss
+            fusion_tri_loss = triplet_loss(fusion_feat, labels)
+            fusion_loss = fusion_tri_loss
 
             #### All loss
-            loss = gloab_loss
+            loss_alph = 0.01
+            loss_beta = 0.01
+            loss = gloab_loss + loss_alph * part_loss + loss_beta * fusion_loss
 
             ### Update the parameters
             loss.backward()
             optimizer.step()
+            optimizer_centerloss.step()
 
             ### record Loss
             running_loss += loss.item() * inputs.size(0)

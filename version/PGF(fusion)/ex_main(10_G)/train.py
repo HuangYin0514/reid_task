@@ -33,6 +33,8 @@ def brain(config, logger):
     # Dataset
     train_loader, query_loader, gallery_loader, num_classes = getData(config=config)
 
+    val_loader = [query_loader, gallery_loader]
+
     # Model
     model = ReidNet(num_classes=num_classes).to(config.device)
 
@@ -80,13 +82,28 @@ def brain(config, logger):
             part_score_list, part_feat, gloab_score, gloab_feat, fusion_feat = model(inputs)
 
             ### Loss
+            #### Part loss
+            part_ce_loss = 0.0
+            for score in part_score_list:
+                ce_loss = ce_labelsmooth_loss(score, labels)
+                part_ce_loss += ce_loss
+
+            part_tri_loss = triplet_loss(part_feat, labels)
+            part_loss = part_ce_loss + part_tri_loss
+
             #### Gloab loss
             gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
             gloab_loss = gloab_ce_loss + gloab_tri_loss
 
+            #### Fusion loss
+            fusion_tri_loss = triplet_loss(fusion_feat, labels)
+            fusion_loss = fusion_tri_loss
+
             #### All loss
-            loss = gloab_loss
+            loss_alph = 0.01
+            loss_beta = 0.01
+            loss = gloab_loss 
 
             ### Update the parameters
             loss.backward()
