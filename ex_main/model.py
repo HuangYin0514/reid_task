@@ -197,24 +197,10 @@ class ReidNet(nn.Module):
     def __init__(self, num_classes, **kwargs):
 
         super(ReidNet, self).__init__()
-        self.parts = 6
         self.num_classes = num_classes
 
         # Backbone
         self.backbone = Resnet50_Branch()
-
-        # Part module
-        self.part_avgpool = nn.AdaptiveAvgPool2d((self.parts, 1))
-        self.part_local_conv_list = nn.ModuleList()
-        for _ in range(self.parts):
-            local_conv = nn.Sequential(nn.Conv1d(2048, 256, kernel_size=1), nn.BatchNorm1d(256), nn.ReLU(inplace=True))
-            self.part_local_conv_list.append(local_conv)
-        self.part_classifier_list = nn.ModuleList()
-        for _ in range(self.parts):
-            fc = nn.Linear(256, num_classes)
-            nn.init.normal_(fc.weight, std=0.001)
-            nn.init.constant_(fc.bias, 0)
-            self.part_classifier_list.append(fc)
 
         # Gloab module
         self.gloab_avgpool = nn.AdaptiveAvgPool2d(1)
@@ -223,12 +209,6 @@ class ReidNet(nn.Module):
         self.gloab_classifier = nn.Linear(2048, self.num_classes, bias=False)
         self.gloab_bottleneck.apply(network.utils.weights_init_kaiming)
         self.gloab_classifier.apply(network.utils.weights_init_classifier)
-
-        # Feature fusion module
-        self.ffm = Feature_Fusion_Module(self.parts)
-        self.fusion_feature_classifier = nn.Linear(256, num_classes)
-        nn.init.normal_(self.fusion_feature_classifier.weight, std=0.001)
-        nn.init.constant_(self.fusion_feature_classifier.bias, 0)
 
     def heatmap(self, x):
         return self.backbone(x)
@@ -239,33 +219,14 @@ class ReidNet(nn.Module):
         # Backbone ([N, 2048, 24, 8])
         resnet_feat = self.backbone(x)
 
-        # Part module (6 x [N, 256, 1])
-        feat_G = self.part_avgpool(resnet_feat)
-        part_feat = []
-        for i in range(self.parts):
-            stripe_feat_H = self.part_local_conv_list[i](feat_G[:, :, i, :])
-            part_feat.append(stripe_feat_H)
-
         # Gloab module ([N, 2048])
         gloab_feat = self.gloab_avgpool(resnet_feat)  # (batch_size, 2048, 1, 1)
         gloab_feat = gloab_feat.view(batch_size, -1)  # (batch_size, 2048)
         norm_gloab_feat = self.gloab_bottleneck(gloab_feat)  # (batch_size, 2048)
 
-        # Feature fusion module ([N, 256])
-        fusion_feat = self.ffm(gloab_feat, part_feat)
-
         if self.training:
-            # Parts module to classifier(6 x [N, num_classes]）
-            part_score_list = [self.part_classifier_list[i](part_feat[i].view(batch_size, -1)) for i in range(self.parts)]
-
-            # Part features
-            part_feat = torch.cat(part_feat, dim=2)
-            part_feat = F.normalize(part_feat, p=2, dim=1)
-            part_feat = part_feat.view(batch_size, -1)
-
             # Gloab module to classifier([N, num_classes]）
             gloab_score = self.gloab_classifier(norm_gloab_feat)
-
-            return part_score_list, part_feat, gloab_score, gloab_feat, fusion_feat
+            return gloab_score, gloab_feat
         else:
             return norm_gloab_feat
