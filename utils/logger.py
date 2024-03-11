@@ -21,15 +21,15 @@ class Logger(logging.Logger):
         file_handler_info = logging.FileHandler(os.path.join(self.dir_path, "train_log.log"))
         file_handler_info.setLevel(logging.INFO)  # Only INFO level and above will be written to this file
 
-        file_handler_error = logging.FileHandler(os.path.join(self.dir_path, "infer_log.log"))
-        file_handler_error.setLevel(logging.DEBUG)  # Only ERROR level and above will be written to this file
+        # file_handler_error = logging.FileHandler(os.path.join(self.dir_path, "infer_log.log"))
+        # file_handler_error.setLevel(logging.DEBUG)  # Only ERROR level and above will be written to this file
 
         log_format = logging.Formatter("%(asctime)s %(levelname)s %(message)s", datefmt="%Y-%m-%d %H:%M:%S")
 
         console_handler.setFormatter(log_format)
         file_handler_info.setFormatter(log_format)
-        file_handler_error.setFormatter(log_format)
+        # file_handler_error.setFormatter(log_format)
 
         self.addHandler(console_handler)
         self.addHandler(file_handler_info)
-        self.addHandler(file_handler_error)
+        # self.addHandler(file_handler_error)
