@@ -137,12 +137,12 @@ def from_pickle(path):  # load something
     return thing
 
 
-def save_config(config, logger):
+def pares_config(config, logger):
     keys_values_pairs = []  # List to store attribute-name and attribute-value pairs
     for attr_name in dir(config):
         if not attr_name.startswith("__"):  # Exclude private attributes
             attr_value = getattr(config, attr_name)  # Get the attribute value
             keys_values_pairs.append("{}: {}".format(attr_name, attr_value))  # Store the pair
     # Join the attribute-name and attribute-value pairs with newline separator
-    full_output = "\n".join(keys_values_pairs)
-    logger.debug("Config values:\n%s", full_output)
+    full_output = "\t".join(keys_values_pairs)
+    return full_output

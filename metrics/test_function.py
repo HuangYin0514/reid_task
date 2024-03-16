@@ -33,8 +33,8 @@ def test_function(model, q_loader, g_loader, normalize_feature=True, save_featur
     # Save feature
     if save_features:
         print("Save features ...")
-        torch.save(qf, os.path.join(config.outputs_path, "query_features_" + config.dataset_name + ".pt"))
-        torch.save(gf, os.path.join(config.outputs_path, "gallery_features_" + config.dataset_name + ".pt"))
+        torch.save(qf, os.path.join(config.temps_outputs_path, "query_features_" + config.dataset_name + ".pt"))
+        torch.save(gf, os.path.join(config.temps_outputs_path, "gallery_features_" + config.dataset_name + ".pt"))
 
     # Normalize feature
     if normalize_feature:
