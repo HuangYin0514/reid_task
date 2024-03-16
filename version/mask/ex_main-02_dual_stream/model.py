@@ -57,24 +57,40 @@ class ReidNet(nn.Module):
         self.gloab_bottleneck.apply(network.utils.weights_init_kaiming)
         self.gloab_classifier.apply(network.utils.weights_init_classifier)
 
+        # Gloab module
+        self.mask_avgpool = nn.AdaptiveAvgPool2d(1)
+        self.mask_bottleneck = nn.BatchNorm1d(2048)
+        self.mask_bottleneck.bias.requires_grad_(False)
+        self.mask_classifier = nn.Linear(2048, self.num_classes, bias=False)
+        self.mask_bottleneck.apply(network.utils.weights_init_kaiming)
+        self.mask_classifier.apply(network.utils.weights_init_classifier)
+
     def heatmap(self, x):
         return self.backbone(x)
 
-    def forward(self, x):
+    def forward(self, x, mask):
         batch_size = x.size(0)
 
         resnet_feat = self.backbone(x)
+        mask_feat = self.backbone(mask)
 
         # Gloab module ([N, 2048])
         gloab_feat = self.gloab_avgpool(resnet_feat)  # (batch_size, 2048, 1, 1)
         gloab_feat = gloab_feat.view(batch_size, -1)  # (batch_size, 2048)
         norm_gloab_feat = self.gloab_bottleneck(gloab_feat)  # (batch_size, 2048)
 
+        # Mask module ([N, 2048])
+        mask_feat = self.mask_avgpool(resnet_feat)  # (batch_size, 2048, 1, 1)
+        mask_feat = mask_feat.view(batch_size, -1)  # (batch_size, 2048)
+        norm_mask_feat = self.mask_bottleneck(mask_feat)  # (batch_size, 2048)
+
         if self.training:
             # Gloab module to classifier([N, num_classes]）
             gloab_score = self.gloab_classifier(norm_gloab_feat)
 
-            return gloab_score, gloab_feat
+            # Mask module to classifier([N, num_classes]）
+            mask_score = self.mask_classifier(norm_mask_feat)
+            return gloab_score, gloab_feat, mask_score, mask_feat
 
         else:
             return norm_gloab_feat

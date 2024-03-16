@@ -60,7 +60,7 @@ class ReidNet(nn.Module):
     def heatmap(self, x):
         return self.backbone(x)
 
-    def forward(self, x):
+    def forward(self, x, mask):
         batch_size = x.size(0)
 
         resnet_feat = self.backbone(x)
@@ -73,8 +73,6 @@ class ReidNet(nn.Module):
         if self.training:
             # Gloab module to classifier([N, num_classes]）
             gloab_score = self.gloab_classifier(norm_gloab_feat)
-
             return gloab_score, gloab_feat
-
         else:
             return norm_gloab_feat

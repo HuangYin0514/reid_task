@@ -47,6 +47,7 @@ def brain(config, logger):
         lr=0.00035,
         weight_decay=0.0005,
     )
+    optimizer_centerloss = torch.optim.SGD(center_loss.parameters(), lr=0.5)
 
     # Scheduler
     scheduler = optim.WarmupMultiStepLR(
