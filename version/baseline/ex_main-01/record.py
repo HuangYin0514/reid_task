@@ -4,7 +4,9 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from torchvision import models
+
 import utils
+
 
 class Recorder:
     def __init__(self, config, logger, **kwargs):
@@ -31,5 +33,5 @@ class Recorder:
         stats["val_mAP_list"] = self.val_mAP_list
 
         filename = f"recorder.pkl"
-        path = os.path.join(self.config.outputs_path, filename)
+        path = os.path.join(self.config.temps_outputs_path, filename)
         utils.common.to_pickle(stats, path)
