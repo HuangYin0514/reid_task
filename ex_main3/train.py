@@ -89,8 +89,7 @@ def brain(config, logger):
 
             #### ODEnet loss
             ode_ce_loss = ce_labelsmooth_loss(ode_score, labels)
-            ode_tri_loss = triplet_loss(ode_feat, labels)
-            ode_loss = ode_ce_loss + ode_tri_loss
+            ode_loss = ode_ce_loss
 
             #### All loss
             loss = gloab_loss + 0.1 * ode_loss

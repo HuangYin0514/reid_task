@@ -18,9 +18,9 @@ def conv1x1(in_planes, out_planes, stride=1):
 
 
 def norm(dim):
-    gn = nn.GroupNorm(min(32, dim), dim)
-    # bn = nn.BatchNorm2d(dim)
-    return gn
+    # gn = nn.GroupNorm(min(32, dim), dim)
+    bn = nn.BatchNorm2d(dim)
+    return bn
 
 
 class ODEfunc(nn.Module):

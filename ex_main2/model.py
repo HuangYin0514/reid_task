@@ -1,3 +1,6 @@
+import math
+import random
+
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -5,6 +8,38 @@ from torchvision import models
 
 import network
 from torchdiffeq import odeint_adjoint as odeint
+
+
+class FeatureMapErasing:
+    def __init__(self):
+        super(FeatureMapErasing, self).__init__()
+        self.lower = 0.02
+        self.upper = 0.4
+        self.ratio = 0.3
+
+    def __call__(self, features_map):
+        size = features_map.size(0)
+        h, w = features_map.size(2), features_map.size(3)
+
+        area = h * w
+
+        erasing_features_map = torch.zeros(features_map.size()).cuda()
+        ones_map = torch.ones([h, w]).cuda()
+
+        for attempt in range(100):
+            target_e_area = random.uniform(self.lower, self.upper) * area
+            aspect_e_ratio = random.uniform(self.ratio, 1 / self.ratio)
+            target_e_h = int(round(math.sqrt(target_e_area * aspect_e_ratio)))
+            target_e_w = int(round(math.sqrt(target_e_area / aspect_e_ratio)))
+            if target_e_h < h and target_e_w < w:
+                x_e = random.randint(0, w - target_e_w)
+                y_e = random.randint(0, h - target_e_h)
+                ones_map[y_e : y_e + target_e_h, x_e : x_e + target_e_w] = 0.0
+                for i in range(size):
+                    erasing_features_map[i] = (features_map[i] * ones_map).unsqueeze(0)
+                break
+
+        return erasing_features_map
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -142,6 +177,13 @@ class ReidNet(nn.Module):
         ode_feat = ode_feat.view(batch_size, -1)  # (batch_size, 2048)
         norm_ode_feat = self.ode_bottleneck(ode_feat)  # (batch_size, 2048)
 
+        # Transforming module
+        e_feat = FeatureMapErasing().__call__(resnet_feat)
+        e_feat = self.ode_avgpool(e_feat)  # (batch_size, 2048, 1, 1)
+        e_feat = self.ode_net(e_feat)
+        e_feat = e_feat.view(batch_size, -1)  # (batch_size, 2048)
+        norm_e_feat = self.ode_bottleneck(e_feat)  # (batch_size, 2048)
+
         if self.training:
             # Gloab module to classifier([N, num_classes]）
             gloab_score = self.gloab_classifier(norm_gloab_feat)
@@ -149,7 +191,10 @@ class ReidNet(nn.Module):
             # ODEnet module to classifier([N, num_classes]）
             ode_score = self.ode_classifier(norm_ode_feat)
 
-            return gloab_score, gloab_feat, ode_score, ode_feat
+            # ODEnet module to classifier([N, num_classes]）
+            e_score = self.ode_classifier(norm_e_feat)
+
+            return gloab_score, gloab_feat, ode_score, ode_feat, e_score
 
         else:
             return norm_gloab_feat
