@@ -11,8 +11,7 @@ class Resnet50_Baseline(nn.Module):
         super(Resnet50_Baseline, self).__init__()
 
         # Backbone
-        # resnet = network.backbones.resnet50(pretrained=True)
-        resnet = network.backbones.resnet50_ibn_a(pretrained=True)
+        resnet = network.backbones.resnet50(pretrained=True)
 
         # Modifiy backbone
         ## Modifiy the stride of last conv layer
@@ -42,11 +41,10 @@ class Resnet50_Baseline(nn.Module):
 
 
 class ReidNet(nn.Module):
-    def __init__(self, num_classes, config, logger, **kwargs):
+    def __init__(self, num_classes, **kwargs):
+
         super(ReidNet, self).__init__()
         self.num_classes = num_classes
-        self.config = config
-        self.logger = logger
 
         # Backbone
         self.backbone = Resnet50_Baseline()
@@ -55,8 +53,8 @@ class ReidNet(nn.Module):
         self.gloab_avgpool = nn.AdaptiveAvgPool2d(1)
         self.gloab_bottleneck = nn.BatchNorm1d(2048)
         self.gloab_bottleneck.bias.requires_grad_(False)
-        self.gloab_classifier = nn.Linear(2048, self.num_classes, bias=False)
         self.gloab_bottleneck.apply(network.utils.weights_init_kaiming)
+        self.gloab_classifier = nn.Linear(2048, self.num_classes, bias=False)
         self.gloab_classifier.apply(network.utils.weights_init_classifier)
 
     def heatmap(self, x):

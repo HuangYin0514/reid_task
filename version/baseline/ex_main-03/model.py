@@ -28,6 +28,11 @@ class Resnet50_Baseline(nn.Module):
         self.resnet_layer3 = resnet.layer3
         self.resnet_layer4 = resnet.layer4
 
+        self.nl1 = network.layers.NONLocalBlock2D(in_channels=256)
+        self.nl2 = network.layers.NONLocalBlock2D(in_channels=512)
+        self.nl3 = network.layers.NONLocalBlock2D(in_channels=1024)
+        self.nl4 = network.layers.NONLocalBlock2D(in_channels=2048)
+
     def forward(self, x):
         x = self.resnet_conv1(x)
         x = self.resnet_bn1(x)
@@ -35,9 +40,14 @@ class Resnet50_Baseline(nn.Module):
         x = self.resnet_maxpool(x)
 
         x = self.resnet_layer1(x)
+        x = self.nl1(x)
         x = self.resnet_layer2(x)
+        x = self.nl2(x)
         x = self.resnet_layer3(x)
+        x = self.nl3(x)
         x = self.resnet_layer4(x)
+        x = self.nl4(x)
+
         return x
 
 

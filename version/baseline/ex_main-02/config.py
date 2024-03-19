@@ -35,7 +35,7 @@ dataset_path = "/home/hy/project/data/Market-1501-v15.09.15"
 # For training settings
 epochs = 120
 print_every = 1
-test_every = 10
+test_every = 5
 epoch_start_test = 90
 
 # ########################################################################

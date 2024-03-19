@@ -63,7 +63,8 @@ class ReidNet(nn.Module):
     def forward(self, x):
         batch_size = x.size(0)
 
-        resnet_feat = self.backbone(x)
+        # Backbone
+        resnet_feat = self.backbone(x)  # (batch_size, 2048, 16, 8)
 
         # Gloab module ([N, 2048])
         gloab_feat = self.gloab_avgpool(resnet_feat)  # (batch_size, 2048, 1, 1)

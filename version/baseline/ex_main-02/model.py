@@ -11,7 +11,8 @@ class Resnet50_Baseline(nn.Module):
         super(Resnet50_Baseline, self).__init__()
 
         # Backbone
-        resnet = network.backbones.resnet50(pretrained=True)
+        # resnet = network.backbones.resnet50(pretrained=True)
+        resnet = network.backbones.resnet50_ibn_a(pretrained=True)
 
         # Modifiy backbone
         ## Modifiy the stride of last conv layer
@@ -41,10 +42,11 @@ class Resnet50_Baseline(nn.Module):
 
 
 class ReidNet(nn.Module):
-    def __init__(self, num_classes, **kwargs):
-
+    def __init__(self, num_classes, config, logger, **kwargs):
         super(ReidNet, self).__init__()
         self.num_classes = num_classes
+        self.config = config
+        self.logger = logger
 
         # Backbone
         self.backbone = Resnet50_Baseline()
@@ -63,7 +65,8 @@ class ReidNet(nn.Module):
     def forward(self, x):
         batch_size = x.size(0)
 
-        resnet_feat = self.backbone(x)
+        # Backbone
+        resnet_feat = self.backbone(x)  # (batch_size, 2048, 16, 8)
 
         # Gloab module ([N, 2048])
         gloab_feat = self.gloab_avgpool(resnet_feat)  # (batch_size, 2048, 1, 1)
