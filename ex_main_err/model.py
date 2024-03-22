@@ -60,7 +60,7 @@ class ODEBlock(nn.Module):
         self.integration_time = self.integration_time.type_as(x)
         # out = odeint(self.odefunc, x, self.integration_time, method="rk4", rtol=1e-3, atol=1e-3)
         out = odeint(self.odefunc, x, self.integration_time, rtol=1e-3, atol=1e-3)
-        return out[-1]
+        return out[-1], out[-1]
 
 
 class Resnet50_Baseline(nn.Module):

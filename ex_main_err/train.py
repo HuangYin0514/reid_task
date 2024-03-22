@@ -82,6 +82,7 @@ def brain(config, logger):
 
             ### Loss
             #### Gloab loss
+            gloab_loss = 
             gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
             gloab_cent_loss = center_loss(gloab_feat, labels)

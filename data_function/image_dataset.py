@@ -60,6 +60,7 @@ class ImageDatasetWithMask(Dataset):
 
         imname = os.path.basename(os.path.splitext(img_path)[0])
 
+        # TODO change the path for other dataset
         mask_path = os.path.splitext(img_path)[0] + ".pt"
         mask_path = mask_path.replace("Market-1501-v15.09.15", "Gray-Market-1501-v15.09.15")
         mask = torch.load(mask_path)

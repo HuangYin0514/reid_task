@@ -78,11 +78,18 @@ def visactmap(model, test_loader, save_dir, width, height, use_gpu, img_mean=Non
                 img_np = img_np.transpose((1, 2, 0))  # (c, h, w) -> (h, w, c)
 
                 # activation map
+                outputs[j, :2, :] = 0
+                outputs[j, -2:, :] = 0
+                outputs[j, :, :2] = 0
+                outputs[j, :, -2:] = 0
                 am = outputs[j, ...].numpy()
+                # am = outputs[j, 2:-2:, 2:-2].numpy()
                 am = cv2.resize(am, (width, height))
                 am = 255 * (am - np.min(am)) / (np.max(am) - np.min(am) + 1e-12)
                 am = np.uint8(np.floor(am))
                 am = cv2.applyColorMap(am, cv2.COLORMAP_JET)
+
+                # return img_np, am, outputs
 
                 # overlapped
                 overlapped = img_np * 0.3 + am * 0.7
