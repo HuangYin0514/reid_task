@@ -37,6 +37,7 @@ def brain(config, logger):
     model = ReidNet(num_classes=num_classes, config=config, logger=logger).to(config.device)
 
     # Loss function
+    mse_loss = nn.MSELoss()
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
     triplet_loss = loss_funciton.TripletLoss(margin=0.3)
     center_loss = loss_funciton.CenterLoss(num_classes=num_classes, feature_dim=2048, config=config, logger=logger)
@@ -78,22 +79,18 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            gloab_score, gloab_feat, ode_score, ode_feat = model(inputs)
+            gloab_score, gloab_feat = model(inputs)
 
             ### Loss
             #### Gloab loss
             gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
             gloab_cent_loss = center_loss(gloab_feat, labels)
+
             gloab_loss = gloab_ce_loss + gloab_tri_loss + 0.0005 * gloab_cent_loss
 
-            #### ODEnet loss
-            ode_ce_loss = ce_labelsmooth_loss(ode_score, labels)
-            ode_tri_loss = triplet_loss(ode_feat, labels)
-            ode_loss = ode_ce_loss + ode_tri_loss
-
             #### All loss
-            loss = gloab_loss + 0.1 * ode_loss
+            loss = gloab_loss
 
             ### Update the parameters
             loss.backward()

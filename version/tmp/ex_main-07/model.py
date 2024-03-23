@@ -1,3 +1,6 @@
+import math
+import random
+
 import torch
 from torch import nn
 from torch.nn import functional as F
@@ -126,30 +129,22 @@ class ReidNet(nn.Module):
         return self.backbone(x)
 
     def forward(self, x):
-        batch_size = x.size(0)
+        bs = x.size(0)
 
         # Backbone
-        resnet_feat = self.backbone(x)  # (batch_size, 2048, 16, 8)
+        resnet_feat = self.backbone(x)  # (bs, 2048, 16, 8)
 
         # Gloab module ([N, 2048])
-        gloab_feat = self.gloab_avgpool(resnet_feat)  # (batch_size, 2048, 1, 1)
-        gloab_feat = gloab_feat.view(batch_size, -1)  # (batch_size, 2048)
-        norm_gloab_feat = self.gloab_bottleneck(gloab_feat)  # (batch_size, 2048)
-
-        # ODEnet module
-        ode_feat = self.ode_avgpool(resnet_feat)  # (batch_size, 2048, 1, 1)
-        ode_feat = self.ode_net(ode_feat)
-        ode_feat = ode_feat.view(batch_size, -1)  # (batch_size, 2048)
-        norm_ode_feat = self.ode_bottleneck(ode_feat)  # (batch_size, 2048)
+        gloab_feat = self.gloab_avgpool(resnet_feat)  # (bs, 2048, 1, 1)
+        gloab_feat = self.ode_net(gloab_feat)
+        gloab_feat = gloab_feat.view(bs, -1)  # (bs, 2048)
+        norm_gloab_feat = self.gloab_bottleneck(gloab_feat)  # (bs, 2048)
 
         if self.training:
             # Gloab module to classifier([N, num_classes]）
             gloab_score = self.gloab_classifier(norm_gloab_feat)
 
-            # ODEnet module to classifier([N, num_classes]）
-            ode_score = self.ode_classifier(norm_ode_feat)
-
-            return gloab_score, gloab_feat, ode_score, ode_feat
+            return gloab_score, gloab_feat
 
         else:
             return norm_gloab_feat
