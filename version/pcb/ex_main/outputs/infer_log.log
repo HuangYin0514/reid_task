@@ -1,0 +1,95 @@
+2024-03-07 09:28:11 INFO ##################################################
+2024-03-07 09:28:11 INFO Task: PCB
+2024-03-07 09:28:11 INFO Using device: cuda
+2024-03-07 09:28:11 INFO Using data type: torch.float32
+2024-03-07 09:28:11 INFO Number of GPUs: 1
+2024-03-07 09:28:11 INFO GPU is_available: True
+2024-03-07 09:28:11 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-03-07 09:28:11 INFO CUDA version: 12.1
+2024-03-07 09:28:11 INFO Current device id: 0
+2024-03-07 09:28:11 INFO ##################################################
+2024-03-07 09:29:50 INFO Epoch 1/60	Training Loss: 30.3422	Time remaining is 1h:38m
+2024-03-07 09:31:27 INFO Epoch 2/60	Training Loss: 19.0045	Time remaining is 1h:36m
+2024-03-07 09:33:03 INFO Epoch 3/60	Training Loss: 14.2803	Time remaining is 1h:34m
+2024-03-07 09:34:39 INFO Epoch 4/60	Training Loss: 11.6968	Time remaining is 1h:32m
+2024-03-07 09:36:16 INFO Epoch 5/60	Training Loss: 10.1682	Time remaining is 1h:30m
+2024-03-07 09:37:52 INFO Epoch 6/60	Training Loss: 9.0814	Time remaining is 1h:29m
+2024-03-07 09:39:29 INFO Epoch 7/60	Training Loss: 8.3285	Time remaining is 1h:27m
+2024-03-07 09:41:05 INFO Epoch 8/60	Training Loss: 7.8542	Time remaining is 1h:25m
+2024-03-07 09:42:41 INFO Epoch 9/60	Training Loss: 7.4972	Time remaining is 1h:24m
+2024-03-07 09:44:18 INFO Epoch 10/60	Training Loss: 7.2220	Time remaining is 1h:22m
+2024-03-07 09:45:54 INFO Epoch 11/60	Training Loss: 7.0722	Time remaining is 1h:20m
+2024-03-07 09:47:31 INFO Epoch 12/60	Training Loss: 6.9719	Time remaining is 1h:19m
+2024-03-07 09:49:08 INFO Epoch 13/60	Training Loss: 6.8574	Time remaining is 1h:17m
+2024-03-07 09:50:44 INFO Epoch 14/60	Training Loss: 6.8198	Time remaining is 1h:16m
+2024-03-07 09:52:20 INFO Epoch 15/60	Training Loss: 6.7849	Time remaining is 1h:14m
+2024-03-07 09:53:57 INFO Epoch 16/60	Training Loss: 6.7585	Time remaining is 1h:12m
+2024-03-07 09:55:33 INFO Epoch 17/60	Training Loss: 6.7502	Time remaining is 1h:11m
+2024-03-07 09:57:10 INFO Epoch 18/60	Training Loss: 6.7305	Time remaining is 1h:9m
+2024-03-07 09:58:46 INFO Epoch 19/60	Training Loss: 6.7288	Time remaining is 1h:8m
+2024-03-07 10:00:23 INFO Epoch 20/60	Training Loss: 6.4998	Time remaining is 1h:6m
+2024-03-07 10:01:08 INFO Testing: dataset_name: market1501 top1:0.9261 top5:0.9712 top10:0.9807 mAP:0.7801
+2024-03-07 10:02:45 INFO Epoch 21/60	Training Loss: 6.3801	Time remaining is 1h:6m
+2024-03-07 10:04:22 INFO Epoch 22/60	Training Loss: 6.3497	Time remaining is 1h:4m
+2024-03-07 10:05:59 INFO Epoch 23/60	Training Loss: 6.3279	Time remaining is 1h:2m
+2024-03-07 10:07:35 INFO Epoch 24/60	Training Loss: 6.3168	Time remaining is 1h:1m
+2024-03-07 10:09:12 INFO Epoch 25/60	Training Loss: 6.3084	Time remaining is 0h:59m
+2024-03-07 10:10:48 INFO Epoch 26/60	Training Loss: 6.3014	Time remaining is 0h:57m
+2024-03-07 10:12:25 INFO Epoch 27/60	Training Loss: 6.2943	Time remaining is 0h:56m
+2024-03-07 10:14:02 INFO Epoch 28/60	Training Loss: 6.2861	Time remaining is 0h:54m
+2024-03-07 10:15:39 INFO Epoch 29/60	Training Loss: 6.2814	Time remaining is 0h:52m
+2024-03-07 10:17:15 INFO Epoch 30/60	Training Loss: 6.2780	Time remaining is 0h:51m
+2024-03-07 10:18:52 INFO Epoch 31/60	Training Loss: 6.2727	Time remaining is 0h:49m
+2024-03-07 10:20:28 INFO Epoch 32/60	Training Loss: 6.2679	Time remaining is 0h:47m
+2024-03-07 10:22:05 INFO Epoch 33/60	Training Loss: 6.2653	Time remaining is 0h:46m
+2024-03-07 10:23:41 INFO Epoch 34/60	Training Loss: 6.2643	Time remaining is 0h:44m
+2024-03-07 10:25:17 INFO Epoch 35/60	Training Loss: 6.2590	Time remaining is 0h:42m
+2024-03-07 10:26:54 INFO Epoch 36/60	Training Loss: 6.2545	Time remaining is 0h:41m
+2024-03-07 10:28:31 INFO Epoch 37/60	Training Loss: 6.2517	Time remaining is 0h:39m
+2024-03-07 10:30:07 INFO Epoch 38/60	Training Loss: 6.2484	Time remaining is 0h:37m
+2024-03-07 10:31:44 INFO Epoch 39/60	Training Loss: 6.2477	Time remaining is 0h:36m
+2024-03-07 10:33:21 INFO Epoch 40/60	Training Loss: 6.2373	Time remaining is 0h:34m
+2024-03-07 10:34:06 INFO Testing: dataset_name: market1501 top1:0.9252 top5:0.9709 top10:0.9807 mAP:0.7879
+2024-03-07 10:35:42 INFO Epoch 41/60	Training Loss: 6.2365	Time remaining is 0h:33m
+2024-03-07 10:37:19 INFO Epoch 42/60	Training Loss: 6.2362	Time remaining is 0h:31m
+2024-03-07 10:38:55 INFO Epoch 43/60	Training Loss: 6.2341	Time remaining is 0h:30m
+2024-03-07 10:40:31 INFO Epoch 44/60	Training Loss: 6.2333	Time remaining is 0h:28m
+2024-03-07 10:42:08 INFO Epoch 45/60	Training Loss: 6.2341	Time remaining is 0h:26m
+2024-03-07 10:43:44 INFO Epoch 46/60	Training Loss: 6.2333	Time remaining is 0h:25m
+2024-03-07 10:45:21 INFO Epoch 47/60	Training Loss: 6.2351	Time remaining is 0h:23m
+2024-03-07 10:46:58 INFO Epoch 48/60	Training Loss: 6.2314	Time remaining is 0h:21m
+2024-03-07 10:48:34 INFO Epoch 49/60	Training Loss: 6.2323	Time remaining is 0h:20m
+2024-03-07 10:50:11 INFO Epoch 50/60	Training Loss: 6.2317	Time remaining is 0h:18m
+2024-03-07 10:51:48 INFO Epoch 51/60	Training Loss: 6.2322	Time remaining is 0h:16m
+2024-03-07 10:53:25 INFO Epoch 52/60	Training Loss: 6.2323	Time remaining is 0h:15m
+2024-03-07 10:55:01 INFO Epoch 53/60	Training Loss: 6.2330	Time remaining is 0h:13m
+2024-03-07 10:56:38 INFO Epoch 54/60	Training Loss: 6.2306	Time remaining is 0h:11m
+2024-03-07 10:58:15 INFO Epoch 55/60	Training Loss: 6.2324	Time remaining is 0h:10m
+2024-03-07 10:59:52 INFO Epoch 56/60	Training Loss: 6.2310	Time remaining is 0h:8m
+2024-03-07 11:01:29 INFO Epoch 57/60	Training Loss: 6.2308	Time remaining is 0h:7m
+2024-03-07 11:03:05 INFO Epoch 58/60	Training Loss: 6.2298	Time remaining is 0h:5m
+2024-03-07 11:04:42 INFO Epoch 59/60	Training Loss: 6.2282	Time remaining is 0h:3m
+2024-03-07 11:06:19 INFO Epoch 60/60	Training Loss: 6.2281	Time remaining is 0h:2m
+2024-03-07 11:07:04 INFO Testing: dataset_name: market1501 top1:0.9252 top5:0.9709 top10:0.9801 mAP:0.7881
+2024-03-07 11:07:04 INFO The running time of training: 5.93332e+03 s
+2024-03-07 11:07:04 DEBUG Config values:
+batch_size: 60
+current_directory: /home/hy/project/reid/ex_main
+dataset_name: market1501
+dataset_path: /home/hy/project/reid/data/Market-1501-v15.09.15
+device: cuda
+dtype: torch.float32
+epochs: 60
+img_height: 384
+img_width: 128
+lr: 0.1
+np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>
+os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>
+outputs_dir: ./outputs/
+outputs_path: /home/hy/project/reid/ex_main/./outputs/
+print_every: 1
+seed: 1
+taskname: PCB
+test_batch_size: 512
+test_every: 20
+torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
