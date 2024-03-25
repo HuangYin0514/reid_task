@@ -44,10 +44,10 @@ class ODEfunc(nn.Module):
         return out
 
 
-class ODEBlock(nn.Module):
+class Robustness_ODEBlock(nn.Module):
 
     def __init__(self, config, logger):
-        super(ODEBlock, self).__init__()
+        super(Robustness_ODEBlock, self).__init__()
         self.odefunc = ODEfunc()
         # self.integration_time = torch.tensor([0, 0.01, 0.02, 0.03]).float()
         # self.integration_time = torch.tensor([0, 0.01]).float()
@@ -57,7 +57,7 @@ class ODEBlock(nn.Module):
         self.integration_time = self.integration_time.type_as(x)
         # out = odeint(self.odefunc, x, self.integration_time, method="rk4", rtol=1e-3, atol=1e-3)
         out = odeint(self.odefunc, x, self.integration_time, rtol=1e-3, atol=1e-3)
-        return out[-1]
+        return out[1].clone().detach(), out[-1]
 
 
 class Resnet50_Baseline(nn.Module):
@@ -114,7 +114,7 @@ class ReidNet(nn.Module):
         self.gloab_classifier.apply(network.utils.weights_init_classifier)
 
         # ODEnet module
-        self.ode_net = ODEBlock(config, logger)
+        self.ode_net = Robustness_ODEBlock(config, logger)
         self.ode_avgpool = nn.AdaptiveAvgPool2d(1)
         self.ode_bottleneck = nn.BatchNorm1d(2048)
         self.ode_bottleneck.bias.requires_grad_(False)
@@ -138,7 +138,7 @@ class ReidNet(nn.Module):
 
         # ODEnet module
         ode_feat = self.ode_avgpool(resnet_feat)  # (batch_size, 2048, 1, 1)
-        ode_feat = self.ode_net(ode_feat)
+        ode_feat_dt, ode_feat = self.ode_net(ode_feat)
         ode_feat = ode_feat.view(batch_size, -1)  # (batch_size, 2048)
         norm_ode_feat = self.ode_bottleneck(ode_feat)  # (batch_size, 2048)
 
@@ -148,8 +148,10 @@ class ReidNet(nn.Module):
 
             # ODEnet module to classifier([N, num_classes]）
             ode_score = self.ode_classifier(norm_ode_feat)
+            _, ode_feat_Tdt = self.ode_net(ode_feat_dt)
+            ode_feat_steady_diff = gloab_feat - ode_feat_Tdt.reshape(batch_size, -1)
 
-            return gloab_score, gloab_feat, ode_score, ode_feat
+            return gloab_score, gloab_feat, ode_score, ode_feat, ode_feat_steady_diff
 
         else:
             return norm_gloab_feat
