@@ -92,7 +92,6 @@ def brain(config, logger):
             ode_ce_loss = ce_labelsmooth_loss(ode_score, labels)
             ode_tri_loss = triplet_loss(ode_feat, labels)
             gloab_ode_loss = mse_loss(gloab_feat_steady_diff, torch.zeros_like(gloab_feat_steady_diff, requires_grad=False))
-
             ode_loss = ode_ce_loss + ode_tri_loss + 0.01 * gloab_ode_loss
 
             #### All loss
