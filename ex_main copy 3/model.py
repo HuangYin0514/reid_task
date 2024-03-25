@@ -54,7 +54,7 @@ class ODEBlock(nn.Module):
         self.odefunc = ODEfunc()
         # self.integration_time = torch.tensor([0, 0.01, 0.02, 0.03]).float()
         # self.integration_time = torch.tensor([0, 0.01]).float()
-        self.integration_time = torch.tensor([0, 0.02, 0.04]).float()
+        self.integration_time = torch.tensor([0, 0.01, 0.02, 0.03, 0.04]).float()
 
     def forward(self, x):
         self.integration_time = self.integration_time.type_as(x)

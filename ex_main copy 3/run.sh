@@ -4,4 +4,4 @@
 #
 ####################################################################################
 
-python ex_main/train.py --config ex_main/config.py
+python ex_main3/train.py --config ex_main3/config.py

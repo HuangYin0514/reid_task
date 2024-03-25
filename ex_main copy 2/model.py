@@ -60,7 +60,7 @@ class ODEBlock(nn.Module):
         self.integration_time = self.integration_time.type_as(x)
         # out = odeint(self.odefunc, x, self.integration_time, method="rk4", rtol=1e-3, atol=1e-3)
         out = odeint(self.odefunc, x, self.integration_time, rtol=1e-3, atol=1e-3)
-        return out[1].clone().detach(), out[-1]
+        return out[-1]
 
 
 class Resnet50_Baseline(nn.Module):
@@ -136,7 +136,7 @@ class ReidNet(nn.Module):
 
         # Gloab module ([N, 2048])
         gloab_feat = self.gloab_avgpool(resnet_feat)  # (bs, 2048, 1, 1)
-        gloab_feat_dt, gloab_feat = self.ode_net(gloab_feat)
+        gloab_feat = self.ode_net(gloab_feat)
         gloab_feat = gloab_feat.view(bs, -1)  # (bs, 2048)
         norm_gloab_feat = self.gloab_bottleneck(gloab_feat)  # (bs, 2048)
 
@@ -144,10 +144,7 @@ class ReidNet(nn.Module):
             # Gloab module to classifier([N, num_classes]）
             gloab_score = self.gloab_classifier(norm_gloab_feat)
 
-            _, gloab_feat_Tdt = self.ode_net(gloab_feat_dt)
-
-            gloab_feat_steady_diff = gloab_feat - gloab_feat_Tdt.reshape(bs, -1)
-            return gloab_score, gloab_feat, gloab_feat_steady_diff
+            return gloab_score, gloab_feat
 
         else:
             return norm_gloab_feat

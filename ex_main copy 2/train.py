@@ -79,16 +79,15 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            gloab_score, gloab_feat, gloab_feat_steady_diff = model(inputs)
+            gloab_score, gloab_feat = model(inputs)
 
             ### Loss
             #### Gloab loss
             gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
             gloab_cent_loss = center_loss(gloab_feat, labels)
-            gloab_ode_loss = mse_loss(gloab_feat_steady_diff, torch.zeros_like(gloab_feat_steady_diff, requires_grad=False))
 
-            gloab_loss = gloab_ce_loss + gloab_tri_loss + 0.0005 * gloab_cent_loss + 0.01 * gloab_ode_loss
+            gloab_loss = gloab_ce_loss + gloab_tri_loss + 0.0005 * gloab_cent_loss
 
             #### All loss
             loss = gloab_loss
