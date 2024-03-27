@@ -96,3 +96,32 @@ def open_all_layers(model):
     model.train()
     for p in model.parameters():
         p.requires_grad = True
+
+
+def save_checkpoint_state(dir, epoch, model, optimizer, scheduler):
+
+    checkpoint = {
+        "epoch": epoch,
+        "model_state_dict": model.state_dict(),
+        "optimizer_state_dict": optimizer.state_dict(),
+        "scheduler_state_dict": scheduler.state_dict(),
+    }
+
+    torch.save(checkpoint, os.path.join(dir, "checkpoint_{}.pth".format(epoch)))
+    # torch.save(checkpoint, os.path.join(dir, "checkpoint.pth"))
+
+
+def get_checkpoint_state(dir, model, optimizer, scheduler):
+    print("Resume from checkpoint...")
+    # checkpoint = torch.load(os.path.join(dir, "checkpoint.pth"))
+    checkpoint = torch.load(os.path.join(dir, "checkpoint_0.pth"))
+
+    
+    model.load_state_dict(checkpoint["model_state_dict"])
+    epoch = checkpoint["epoch"]
+
+    optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+    scheduler.load_state_dict(checkpoint["scheduler_state_dict"])
+
+    print("Sucessfully recover from the last state")
+    return model, epoch, optimizer, scheduler
