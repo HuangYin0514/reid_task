@@ -133,6 +133,28 @@
 2024-03-09 19:58:01 INFO Epoch 120/120	Training Loss: 5.8732	Time remaining is 0h:1m
 2024-03-09 19:58:39 INFO Testing: dataset_name: market1501 top1:0.9347 top5:0.9757 top10:0.9828 mAP:0.8430
 2024-03-09 19:58:39 INFO The running time of training: 9.20616e+03 s
+2024-03-09 19:58:39 DEBUG Config values:
+batch_size: 60
+current_directory: /home/hy/project/reid/ex_main
+dataset_name: market1501
+dataset_path: /home/hy/project/reid/data/Market-1501-v15.09.15
+device: cuda
+dtype: torch.float32
+epoch_start_test: 90
+epochs: 120
+img_height: 256
+img_width: 128
+lr: 0.1
+np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>
+os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>
+outputs_dir: ./outputs/
+outputs_path: /home/hy/project/reid/ex_main/./outputs/
+print_every: 1
+seed: 1
+taskname: PCB
+test_batch_size: 256
+test_every: 10
+torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
 2024-03-09 20:08:24 INFO ##################################################
 2024-03-09 20:08:24 INFO Task: PCB
 2024-03-09 20:08:24 INFO Using device: cuda
