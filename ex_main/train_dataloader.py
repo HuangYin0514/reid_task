@@ -36,7 +36,7 @@ def getData(config):
     train_set = data_function.ImageDataset(dataset.train, train_transforms)
     train_loader = torch.utils.data.DataLoader(
         train_set,
-        sampler=data_function.samplers.RandomIdentitySampler(dataset.train, config.batch_size, num_instances=4),
+        sampler=data_function.samplers.RandomIdentitySampler(dataset.train, config.batch_size, num_instances=8),
         batch_size=config.batch_size,
         collate_fn=data_function.train_collate_fn,
     )

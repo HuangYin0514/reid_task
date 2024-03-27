@@ -23,7 +23,7 @@ temps_outputs_path = os.path.join(outputs_path, "temps")
 
 ########################################################################
 # For data settings
-batch_size = 60
+batch_size = 64
 test_batch_size = 256
 img_height = 256
 img_width = 128
@@ -35,8 +35,8 @@ dataset_path = "/home/hy/project/data/Market-1501-v15.09.15"
 # For training settings
 epochs = 120
 print_every = 1
-test_every = 1
-epoch_start_test = 100
+test_every = 5
+epoch_start_test = 90
 
 # ########################################################################
 # # Test
