@@ -33,8 +33,10 @@ def brain(config, logger):
     # Dataset
     train_loader, query_loader, gallery_loader, num_classes = getData(config=config)
 
+    val_loader = [query_loader, gallery_loader]
+
     # Model
-    model = ReidNet(num_classes=num_classes, config=config, logger=logger).to(config.device)
+    model = ReidNet(num_classes=num_classes).to(config.device)
 
     # Loss function
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
@@ -47,6 +49,7 @@ def brain(config, logger):
         lr=0.00035,
         weight_decay=0.0005,
     )
+    optimizer_centerloss = torch.optim.SGD(center_loss.parameters(), lr=0.5)
 
     # Scheduler
     scheduler = optim.WarmupMultiStepLR(
@@ -78,21 +81,37 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            gloab_score, gloab_feat = model(inputs)
+            part_score_list, part_feat, gloab_score, gloab_feat, fusion_feat = model(inputs)
 
             ### Loss
+            ### Part loss
+            part_ce_loss = 0.0
+            for score in part_score_list:
+                ce_loss = ce_labelsmooth_loss(score, labels)
+                part_ce_loss += ce_loss
+
+            part_tri_loss = triplet_loss(part_feat, labels)
+            part_loss = part_ce_loss + part_tri_loss
+
             #### Gloab loss
             gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
-            gloab_cent_loss = center_loss(gloab_feat, labels)
-            gloab_loss = gloab_ce_loss + gloab_tri_loss + 0.0005 * gloab_cent_loss
+            gloab_cen_loss = center_loss(gloab_feat, labels)
+            gloab_loss = gloab_ce_loss + gloab_tri_loss + 0.0005 * gloab_cen_loss
+
+            ### Fusion loss
+            fusion_tri_loss = triplet_loss(fusion_feat, labels)
+            fusion_loss = fusion_tri_loss
 
             #### All loss
-            loss = gloab_loss
+            loss_alph = 0.01
+            loss_beta = 0.01
+            loss = gloab_loss + loss_alph * part_loss + loss_beta * fusion_loss
 
             ### Update the parameters
             loss.backward()
             optimizer.step()
+            optimizer_centerloss.step()
 
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
@@ -126,7 +145,7 @@ def brain(config, logger):
             logger.info(message)
 
             ### Save model
-            model_path = os.path.join(config.models_outputs_path, "model_{}.tar".format(epoch + 1))
+            model_path = os.path.join(config.outputs_path, "model_{}.tar".format(epoch + 1))
             torch.save(model.state_dict(), model_path)
 
             ### Record test information
@@ -144,13 +163,17 @@ if __name__ == "__main__":
     #
     ######################################################################
     # Config
-    parser = argparse.ArgumentParser(description=None)  ## Parse command-line arguments
+    ## Parse command-line arguments
+    parser = argparse.ArgumentParser(description=None)
     parser.add_argument("--config_file", type=str, help="Path to the config.py file")
     parser.add_argument("--some_float", type=float, default=0.0, help="")
     parser.add_argument("--some_int", type=int, default=0, help="")
     args = parser.parse_args()
-    config = utils.common.read_config_file(args.config_file)  ## Read the configuration from the provided file
-    # config.some_float = args.some_float ## Set command-line to config
+    ## Read the configuration from the provided file
+    config_file_path = args.config_file
+    config = utils.common.read_config_file(config_file_path)
+    ## Set command-line to config
+    ## config.some_float = args.some_float
 
     # Directory
     ## Set up the dataset directory
@@ -161,21 +184,17 @@ if __name__ == "__main__":
     outputs_path = config.outputs_path
     if os.path.exists(outputs_path):
         shutil.rmtree(outputs_path)
-    utils.common.mkdir_if_missing(config.models_outputs_path)
-    utils.common.mkdir_if_missing(config.logs_outputs_path)
-    utils.common.mkdir_if_missing(config.temps_outputs_path)
+    os.makedirs(outputs_path)
 
     # Initialize a logger tool
-    logger = utils.logger.Logger(config.logs_outputs_path)
+    logger = utils.logger.Logger(outputs_path)
     logger.info("#" * 50)
-    logger.info("Config values: {}".format(utils.common.pares_config(config, logger)))
     logger.info(f"Task: {config.taskname}")
     logger.info(f"Using device: {config.device}")
     logger.info(f"Using data type: {config.dtype}")
 
     # Set environment
     random.seed(config.seed)
-    os.environ["PYTHONASHSEED"] = str(config.seed)
     np.random.seed(config.seed)
     torch.manual_seed(config.seed)
     torch.cuda.manual_seed(config.seed)
@@ -191,7 +210,8 @@ if __name__ == "__main__":
         logger.info(f"CUDA version: {torch.version.cuda}")
         logger.info(f"Current device id: {torch.cuda.current_device()}")
     else:
-        raise RuntimeError("Unsupported device for cpu!")
+        # raise Exception("Unsupported device for cpu!")
+        logger.info("warining using CPU!" * 100)
 
     # Training
     try:
@@ -200,6 +220,10 @@ if __name__ == "__main__":
         end_time = time.time()
         execution_time = end_time - start_time
         logger.info("The running time of training: {:.5e} s".format(execution_time))
+
     except Exception as e:
+        logger.error(traceback.format_exc())
         logger.info("An error occurred: {}".format(e))
-        raise RuntimeError(traceback.format_exc())
+
+    # Logs all the attributes and their values present in the given config object.
+    utils.common.save_config(config, logger)

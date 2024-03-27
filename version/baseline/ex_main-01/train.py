@@ -34,7 +34,7 @@ def brain(config, logger):
     train_loader, query_loader, gallery_loader, num_classes = getData(config=config)
 
     # Model
-    model = ReidNet(num_classes=num_classes, config=config, logger=logger).to(config.device)
+    model = ReidNet(num_classes=num_classes).to(config.device)
 
     # Loss function
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)

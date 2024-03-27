@@ -26,37 +26,29 @@ import optim
 import utils
 
 
-@utils.common.timing
+@utils.timing
 def brain(config, logger):
     logger.info("#" * 50)
 
     # Dataset
     train_loader, query_loader, gallery_loader, num_classes = getData(config=config)
 
+    val_loader = [query_loader, gallery_loader]
+
     # Model
-    model = ReidNet(num_classes=num_classes, config=config, logger=logger).to(config.device)
+    model = PCB(num_classes=num_classes, height=config.img_height, width=config.img_width).to(config.device)
 
     # Loss function
     ce_labelsmooth_loss = loss_funciton.CrossEntropyLabelSmoothLoss(num_classes=num_classes, config=config, logger=logger)
-    triplet_loss = loss_funciton.TripletLoss(margin=0.3)
-    center_loss = loss_funciton.CenterLoss(num_classes=num_classes, feature_dim=2048, config=config, logger=logger)
 
     # Optimizer
-    optimizer = torch.optim.Adam(
-        model.parameters(),
-        lr=0.00035,
-        weight_decay=0.0005,
-    )
+    base_param_ids = set(map(id, model.backbone.parameters()))
+    new_params = [p for p in model.parameters() if id(p) not in base_param_ids]
+    param_groups = [{"params": model.backbone.parameters(), "lr": config.lr / 10}, {"params": new_params, "lr": config.lr}]
+    optimizer = torch.optim.SGD(param_groups, momentum=0.9, weight_decay=5e-4, nesterov=True)
 
     # Scheduler
-    scheduler = optim.WarmupMultiStepLR(
-        optimizer,
-        milestones=[40, 70],
-        gamma=0.1,
-        warmup_factor=0.01,
-        warmup_iters=10,
-        warmup_method="linear",
-    )
+    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=20, gamma=0.1)
 
     # Information record
     recorder = Recorder(config, logger)
@@ -78,17 +70,15 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            gloab_score, gloab_feat = model(inputs)
+            parts_scores = model(inputs)
 
             ### Loss
-            #### Gloab loss
-            gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
-            gloab_tri_loss = triplet_loss(gloab_feat, labels)
-            gloab_cent_loss = center_loss(gloab_feat, labels)
-            gloab_loss = gloab_ce_loss + gloab_tri_loss + 0.0005 * gloab_cent_loss
-
-            #### All loss
-            loss = gloab_loss
+            #### Part loss
+            part_loss = 0
+            for logits in parts_scores:
+                stripe_loss = ce_labelsmooth_loss(logits, labels)
+                part_loss += stripe_loss
+            loss = part_loss
 
             ### Update the parameters
             loss.backward()
@@ -114,9 +104,7 @@ def brain(config, logger):
             recorder.train_loss_list.append(epoch_loss)
 
         ## Test
-        condition1 = epoch + 1 == config.epochs
-        condition2 = (epoch + 1) >= config.epoch_start_test and (epoch + 1) % config.test_every == 0
-        if condition1 or condition2:
+        if (epoch + 1) % config.test_every == 0 or epoch + 1 == config.epochs:
             ### Test datset
             torch.cuda.empty_cache()
             CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)
@@ -126,7 +114,7 @@ def brain(config, logger):
             logger.info(message)
 
             ### Save model
-            model_path = os.path.join(config.models_outputs_path, "model_{}.tar".format(epoch + 1))
+            model_path = os.path.join(config.outputs_path, "model_{}.tar".format(epoch + 1))
             torch.save(model.state_dict(), model_path)
 
             ### Record test information
@@ -144,13 +132,17 @@ if __name__ == "__main__":
     #
     ######################################################################
     # Config
-    parser = argparse.ArgumentParser(description=None)  ## Parse command-line arguments
+    ## Parse command-line arguments
+    parser = argparse.ArgumentParser(description=None)
     parser.add_argument("--config_file", type=str, help="Path to the config.py file")
     parser.add_argument("--some_float", type=float, default=0.0, help="")
     parser.add_argument("--some_int", type=int, default=0, help="")
     args = parser.parse_args()
-    config = utils.common.read_config_file(args.config_file)  ## Read the configuration from the provided file
-    # config.some_float = args.some_float ## Set command-line to config
+    ## Read the configuration from the provided file
+    config_file_path = args.config_file
+    config = utils.read_config_file(config_file_path)
+    ## Set command-line to config
+    ## config.some_float = args.some_float
 
     # Directory
     ## Set up the dataset directory
@@ -161,21 +153,17 @@ if __name__ == "__main__":
     outputs_path = config.outputs_path
     if os.path.exists(outputs_path):
         shutil.rmtree(outputs_path)
-    utils.common.mkdir_if_missing(config.models_outputs_path)
-    utils.common.mkdir_if_missing(config.logs_outputs_path)
-    utils.common.mkdir_if_missing(config.temps_outputs_path)
+    os.makedirs(outputs_path)
 
     # Initialize a logger tool
-    logger = utils.logger.Logger(config.logs_outputs_path)
+    logger = utils.Logger(outputs_path)
     logger.info("#" * 50)
-    logger.info("Config values: {}".format(utils.common.pares_config(config, logger)))
     logger.info(f"Task: {config.taskname}")
     logger.info(f"Using device: {config.device}")
     logger.info(f"Using data type: {config.dtype}")
 
     # Set environment
     random.seed(config.seed)
-    os.environ["PYTHONASHSEED"] = str(config.seed)
     np.random.seed(config.seed)
     torch.manual_seed(config.seed)
     torch.cuda.manual_seed(config.seed)
@@ -191,7 +179,8 @@ if __name__ == "__main__":
         logger.info(f"CUDA version: {torch.version.cuda}")
         logger.info(f"Current device id: {torch.cuda.current_device()}")
     else:
-        raise RuntimeError("Unsupported device for cpu!")
+        # raise Exception("Unsupported device for cpu!")
+        logger.info("warining using CPU!" * 100)
 
     # Training
     try:
@@ -200,6 +189,10 @@ if __name__ == "__main__":
         end_time = time.time()
         execution_time = end_time - start_time
         logger.info("The running time of training: {:.5e} s".format(execution_time))
+
     except Exception as e:
+        logger.error(traceback.format_exc())
         logger.info("An error occurred: {}".format(e))
-        raise RuntimeError(traceback.format_exc())
+
+    # Logs all the attributes and their values present in the given config object.
+    utils.save_config(config, logger)

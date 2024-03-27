@@ -1,0 +1,4 @@
+2024-03-19 14:20:23 INFO ##################################################
+2024-03-19 14:20:23 INFO Task: ReID_Task
+2024-03-19 14:20:23 INFO Using device: cuda
+2024-03-19 14:20:23 INFO Using data type: torch.float32

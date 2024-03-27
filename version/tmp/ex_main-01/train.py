@@ -78,7 +78,7 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            gloab_score, gloab_feat = model(inputs)
+            gloab_score, gloab_feat, ode_score, ode_feat, e_score = model(inputs)
 
             ### Loss
             #### Gloab loss
@@ -87,8 +87,17 @@ def brain(config, logger):
             gloab_cent_loss = center_loss(gloab_feat, labels)
             gloab_loss = gloab_ce_loss + gloab_tri_loss + 0.0005 * gloab_cent_loss
 
+            #### ODEnet loss
+            ode_ce_loss = ce_labelsmooth_loss(ode_score, labels)
+            ode_tri_loss = triplet_loss(ode_feat, labels)
+            ode_loss = ode_ce_loss + ode_tri_loss
+
+            #### Transforming loss
+            e_ce_loss = ce_labelsmooth_loss(e_score, labels)
+            Transforming_loss = e_ce_loss
+
             #### All loss
-            loss = gloab_loss
+            loss = gloab_loss + 0.1 * ode_loss + 0.05 * Transforming_loss
 
             ### Update the parameters
             loss.backward()
