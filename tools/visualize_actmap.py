@@ -56,7 +56,15 @@ def visactmap(model, test_loader, save_dir, width, height, use_gpu, img_mean=Non
                 )
 
             # compute activation maps
-            outputs = (outputs**2).sum(1)
+            # outputs = (outputs**2).sum(1)
+
+            # outputs = torch.abs(outputs)
+            # outputs = outputs.sum(1)
+
+            outputs = torch.abs(outputs)
+            outputs = torch.max(outputs, dim=1, keepdim=True)[0]
+            outputs = outputs.squeeze_(1)
+
             b, h, w = outputs.size()
             outputs = outputs.view(b, h * w)
             outputs = F.normalize(outputs, p=2, dim=1)
@@ -92,7 +100,7 @@ def visactmap(model, test_loader, save_dir, width, height, use_gpu, img_mean=Non
                 # return img_np, am, outputs
 
                 # overlapped
-                overlapped = img_np * 0.3 + am * 0.7
+                overlapped = img_np * 0.5 + am * 0.5
                 overlapped[overlapped > 255] = 255
                 overlapped = overlapped.astype(np.uint8)
 

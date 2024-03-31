@@ -29,10 +29,8 @@ img_height = 256
 img_width = 128
 
 # Path setting
-# dataset_name = "market1501"
-# dataset_path = "/home/hy/project/data/Market-1501-v15.09.15"
-dataset_name = "DukeMTMC-reID"
-dataset_path = "/home/hy/project/data/DukeMTMC-reID"
+dataset_name = "market1501"
+dataset_path = "/home/hy/project/data/Market-1501-v15.09.15"
 ########################################################################
 # For training settings
 epochs = 120

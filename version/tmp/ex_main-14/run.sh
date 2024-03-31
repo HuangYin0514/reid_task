@@ -4,12 +4,4 @@
 #
 ####################################################################################
 
-
-sh ex_main/run.sh
-sh ex_main1/run.sh
-sh ex_main2/run.sh
-sh ex_main3/run.sh
-sh ex_main4/run.sh
-sh ex_main5/run.sh
-sh ex_main6/run.sh
-
+python ex_main1/train.py --config ex_main1/config.py
