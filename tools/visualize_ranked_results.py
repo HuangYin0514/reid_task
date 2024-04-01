@@ -1,3 +1,5 @@
+from __future__ import absolute_import, print_function
+
 import os.path as osp
 import shutil
 
@@ -5,6 +7,8 @@ import cv2
 import numpy as np
 
 import utils
+
+__all__ = ["visualize_ranked_results"]
 
 GRID_SPACING = 10
 QUERY_EXTRA_SPACING = 90
@@ -14,6 +18,24 @@ RED = (0, 0, 255)
 
 
 def visualize_ranked_results(distmat, dataset, data_type, width=128, height=256, save_dir="", topk=10):
+    """Visualizes ranked results.
+
+    Supports both image-reid and video-reid.
+
+    For image-reid, ranks will be plotted in a single figure. For video-reid, ranks will be
+    saved in folders each containing a tracklet.
+
+    Args:
+        distmat (numpy.ndarray): distance matrix of shape (num_query, num_gallery).
+        dataset (tuple): a 2-tuple containing (query, gallery), each of which contains
+            tuples of (img_path(s), pid, camid, dsetid).
+        data_type (str): "image" or "video".
+        width (int, optional): resized image width. Default is 128.
+        height (int, optional): resized image height. Default is 256.
+        save_dir (str): directory to save output images.
+        topk (int, optional): denoting top-k images in the rank list to be visualized.
+            Default is 10.
+    """
     num_q, num_g = distmat.shape
     utils.common.mkdir_if_missing(save_dir)
 
@@ -24,7 +46,7 @@ def visualize_ranked_results(distmat, dataset, data_type, width=128, height=256,
     assert num_q == len(query)
     assert num_g == len(gallery)
 
-    indices = np.argsort(distmat)[:, ::-1]
+    indices = np.argsort(distmat, axis=1)
 
     def _cp_img_to(src, dst, rank, prefix, matched=False):
         """
@@ -59,14 +81,7 @@ def visualize_ranked_results(distmat, dataset, data_type, width=128, height=256,
             # resize twice to ensure that the border width is consistent across images
             qimg = cv2.resize(qimg, (width, height))
             num_cols = topk + 1
-            grid_img = 255 * np.ones(
-                (
-                    height,
-                    num_cols * width + topk * GRID_SPACING + QUERY_EXTRA_SPACING,
-                    3,
-                ),
-                dtype=np.uint8,
-            )
+            grid_img = 255 * np.ones((height, num_cols * width + topk * GRID_SPACING + QUERY_EXTRA_SPACING, 3), dtype=np.uint8)
             grid_img[:, :width, :] = qimg
         else:
             qdir = osp.join(save_dir, osp.basename(osp.splitext(qimg_path_name)[0]))
@@ -90,13 +105,7 @@ def visualize_ranked_results(distmat, dataset, data_type, width=128, height=256,
                     end = (rank_idx + 1) * width + rank_idx * GRID_SPACING + QUERY_EXTRA_SPACING
                     grid_img[:, start:end, :] = gimg
                 else:
-                    _cp_img_to(
-                        gimg_path,
-                        qdir,
-                        rank=rank_idx,
-                        prefix="gallery",
-                        matched=matched,
-                    )
+                    _cp_img_to(gimg_path, qdir, rank=rank_idx, prefix="gallery", matched=matched)
 
                 rank_idx += 1
                 if rank_idx > topk:

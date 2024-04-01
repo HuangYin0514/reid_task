@@ -33,7 +33,7 @@ def visactmap(model, test_loader, save_dir, width, height, use_gpu, img_mean=Non
     for target in list(["dataset"]):
         # data_loader = test_loader[target]["query"]  # only process query images
         # original images and activation maps are saved individually
-        actmap_dir = osp.join(save_dir, "actmap_" + target)
+        actmap_dir = save_dir
         utils.common.mkdir_if_missing(actmap_dir)
         print("Visualizing activation maps for {} ...".format(target))
 

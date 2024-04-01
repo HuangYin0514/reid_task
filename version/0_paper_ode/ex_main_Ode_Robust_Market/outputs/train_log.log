@@ -38,30 +38,3 @@
 2024-03-30 18:30:46 INFO Task: ReID_Task
 2024-03-30 18:30:46 INFO Using device: cuda
 2024-03-30 18:30:46 INFO Using data type: torch.float32
-2024-03-31 18:11:00 INFO ##################################################
-2024-03-31 18:11:00 INFO Task: ReID_Task
-2024-03-31 18:11:00 INFO Using device: cuda
-2024-03-31 18:11:00 INFO Using data type: torch.float32
-2024-03-31 18:12:26 INFO ##################################################
-2024-03-31 18:12:26 INFO Task: ReID_Task
-2024-03-31 18:12:26 INFO Using device: cuda
-2024-03-31 18:12:26 INFO Using data type: torch.float32
-2024-03-31 18:13:50 INFO Testing: dataset_name: market1501 top1:0.9510 top5:0.9857 top10:0.9923 mAP:0.8744
-2024-03-31 19:37:59 INFO ##################################################
-2024-03-31 19:37:59 INFO Task: ReID_Task
-2024-03-31 19:37:59 INFO Using device: cuda
-2024-03-31 19:37:59 INFO Using data type: torch.float32
-2024-03-31 19:42:07 INFO ##################################################
-2024-03-31 19:42:07 INFO Task: ReID_Task
-2024-03-31 19:42:07 INFO Using device: cuda
-2024-03-31 19:42:07 INFO Using data type: torch.float32
-2024-03-31 19:43:08 INFO ##################################################
-2024-03-31 19:43:08 INFO Task: ReID_Task
-2024-03-31 19:43:08 INFO Using device: cuda
-2024-03-31 19:43:08 INFO Using data type: torch.float32
-2024-03-31 19:44:05 INFO Testing: dataset_name: market1501 top1:0.9510 top5:0.9857 top10:0.9923 mAP:0.8744
-2024-03-31 19:49:25 INFO ##################################################
-2024-03-31 19:49:25 INFO Task: ReID_Task
-2024-03-31 19:49:25 INFO Using device: cuda
-2024-03-31 19:49:25 INFO Using data type: torch.float32
-2024-03-31 19:50:22 INFO Testing: dataset_name: market1501 top1:0.9507 top5:0.9869 top10:0.9923 mAP:0.8733

@@ -14,11 +14,11 @@ PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from . import distance, feature_extractor, rank
+from . import distance, feature_extractor, rank, rerank
 
 
 @torch.no_grad()
-def test_function(model, q_loader, g_loader, normalize_feature=True, save_features=True, config=None, logger=None):
+def test_function(model, q_loader, g_loader, normalize_feature=True, save_features=True, re_rank=False, config=None, logger=None):
     model.eval()
 
     device = config.device
@@ -44,11 +44,16 @@ def test_function(model, q_loader, g_loader, normalize_feature=True, save_featur
 
     # Computing distance matrix
     print("Computing distance matrix ...")
-    _, rank_results = distance.compute_distance_matrix(qf, gf)
+    distmat = distance.compute_distance_matrix(qf, gf).cpu().numpy()
+
+    if re_rank:
+        print("Applying person re-ranking ...")
+        distmat_qq = distance.compute_distance_matrix(qf, qf).cpu().numpy()
+        distmat_gg = distance.compute_distance_matrix(gf, gf).cpu().numpy()
+        distmat = rerank.re_ranking(distmat, distmat_qq, distmat_gg)
 
     # Computing CMC and mAP
-    CMC, MAP = rank.eval_rank(rank_results, q_camids, q_pids, g_camids, g_pids)
-
+    CMC, MAP = rank.eval_market1501(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50)
     return CMC, MAP
 
 
