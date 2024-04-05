@@ -18,7 +18,7 @@ from . import distance, feature_extractor, rank, rerank
 
 
 @torch.no_grad()
-def test_function(model, q_loader, g_loader, normalize_feature=True, save_features=True, re_rank=False, config=None, logger=None):
+def test_function(model, q_loader, g_loader, normalize_feature=True, save_features=True, re_rank=False, eval_method="market1501", config=None, logger=None):
     model.eval()
 
     device = config.device
@@ -53,7 +53,10 @@ def test_function(model, q_loader, g_loader, normalize_feature=True, save_featur
         distmat = rerank.re_ranking(distmat, distmat_qq, distmat_gg)
 
     # Computing CMC and mAP
-    CMC, MAP = rank.eval_market1501(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50)
+    if eval_method == "market1501":
+        CMC, MAP = rank.eval_market1501(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50)
+    elif eval_method == "cuhk03":
+        CMC, MAP = rank.eval_cuhk03(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50)
     return CMC, MAP
 
 

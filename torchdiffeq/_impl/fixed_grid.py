@@ -1,6 +1,8 @@
-from .solvers import FixedGridODESolver
-from .rk_common import rk4_alt_step_func, rk3_step_func
+import torch
+
 from .misc import Perturb
+from .rk_common import rk3_step_func, rk4_alt_step_func, rk4_alt_step_func_abs
+from .solvers import FixedGridODESolver
 
 
 class Euler(FixedGridODESolver):
@@ -37,9 +39,20 @@ class Heun3(FixedGridODESolver):
 
         butcher_tableu = [
             [0.0, 0.0, 0.0, 0.0],
-            [1/3, 1/3, 0.0, 0.0],
-            [2/3, 0.0, 2/3, 0.0],
-            [0.0, 1/4, 0.0, 3/4],
+            [1 / 3, 1 / 3, 0.0, 0.0],
+            [2 / 3, 0.0, 2 / 3, 0.0],
+            [0.0, 1 / 4, 0.0, 3 / 4],
         ]
 
         return rk3_step_func(func, t0, dt, t1, y0, butcher_tableu=butcher_tableu, f0=f0, perturb=self.perturb), f0
+
+
+########################################
+# mine
+########################################
+class RK4_abs(FixedGridODESolver):
+    order = 4
+
+    def _step_func(self, func, t0, dt, t1, y0):
+        f0 = func(t0, y0, perturb=Perturb.NEXT if self.perturb else Perturb.NONE)
+        return rk4_alt_step_func_abs(func, t0, dt, t1, y0, f0=f0, perturb=self.perturb), f0

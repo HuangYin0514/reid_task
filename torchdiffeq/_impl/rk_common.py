@@ -1,19 +1,22 @@
 import bisect
 import collections
+
 import torch
+
 from .event_handling import find_event
 from .interp import _interp_evaluate, _interp_fit
-from .misc import (_compute_error_ratio,
-                   _select_initial_step,
-                   _optimal_step_size)
-from .misc import Perturb
+from .misc import (
+    Perturb,
+    _compute_error_ratio,
+    _optimal_step_size,
+    _select_initial_step,
+)
 from .solvers import AdaptiveStepsizeEventODESolver
 
+_ButcherTableau = collections.namedtuple("_ButcherTableau", "alpha, beta, c_sol, c_error")
 
-_ButcherTableau = collections.namedtuple('_ButcherTableau', 'alpha, beta, c_sol, c_error')
 
-
-_RungeKuttaState = collections.namedtuple('_RungeKuttaState', 'y1, f1, t0, t1, dt, interp_coeff')
+_RungeKuttaState = collections.namedtuple("_RungeKuttaState", "y1, f1, t0, t1, dt, interp_coeff")
 # Saved state of the Runge Kutta solver.
 #
 # Attributes:
@@ -67,14 +70,14 @@ def _runge_kutta_step(func, y0, f0, t0, dt, t1, tableau):
     k = torch.empty(*f0.shape, len(tableau.alpha) + 1, dtype=y0.dtype, device=y0.device)
     k = _UncheckedAssign.apply(k, f0, (..., 0))
     for i, (alpha_i, beta_i) in enumerate(zip(tableau.alpha, tableau.beta)):
-        if alpha_i == 1.:
+        if alpha_i == 1.0:
             # Always step to perturbing just before the end time, in case of discontinuities.
             ti = t1
             perturb = Perturb.PREV
         else:
             ti = t0 + alpha_i * dt
             perturb = Perturb.NONE
-        yi = y0 + torch.sum(k[..., :i + 1] * (beta_i * dt), dim=-1).view_as(f0)
+        yi = y0 + torch.sum(k[..., : i + 1] * (beta_i * dt), dim=-1).view_as(f0)
         f = func(ti, yi, perturb=perturb)
         k = _UncheckedAssign.apply(k, f, (..., i + 1))
 
@@ -118,7 +121,7 @@ def rk4_alt_step_func(func, t0, dt, t1, y0, f0=None, perturb=False):
 
 def rk3_step_func(func, t0, dt, t1, y0, butcher_tableu=None, f0=None, perturb=False):
     """butcher_tableu should be of the form
-    
+
     [
         [0  , 0     , 0     ,   0],
         [c_2, a_{21}, 0     ,   0],
@@ -142,18 +145,7 @@ class RKAdaptiveStepsizeODESolver(AdaptiveStepsizeEventODESolver):
     tableau: _ButcherTableau
     mid: torch.Tensor
 
-    def __init__(self, func, y0, rtol, atol,
-                 min_step=0,
-                 max_step=float('inf'),
-                 first_step=None,
-                 step_t=None,
-                 jump_t=None,
-                 safety=0.9,
-                 ifactor=10.0,
-                 dfactor=0.2,
-                 max_num_steps=2 ** 31 - 1,
-                 dtype=torch.float64,
-                 **kwargs):
+    def __init__(self, func, y0, rtol, atol, min_step=0, max_step=float("inf"), first_step=None, step_t=None, jump_t=None, safety=0.9, ifactor=10.0, dfactor=0.2, max_num_steps=2**31 - 1, dtype=torch.float64, **kwargs):
         super(RKAdaptiveStepsizeODESolver, self).__init__(dtype=dtype, y0=y0, **kwargs)
 
         # We use mixed precision. y has its original dtype (probably float32), whilst all 'time'-like objects use
@@ -177,24 +169,23 @@ class RKAdaptiveStepsizeODESolver(AdaptiveStepsizeEventODESolver):
         self.jump_t = None if jump_t is None else torch.as_tensor(jump_t, dtype=dtype, device=device)
 
         # Copy from class to instance to set device
-        self.tableau = _ButcherTableau(alpha=self.tableau.alpha.to(device=device, dtype=y0.dtype),
-                                       beta=[b.to(device=device, dtype=y0.dtype) for b in self.tableau.beta],
-                                       c_sol=self.tableau.c_sol.to(device=device, dtype=y0.dtype),
-                                       c_error=self.tableau.c_error.to(device=device, dtype=y0.dtype))
+        self.tableau = _ButcherTableau(
+            alpha=self.tableau.alpha.to(device=device, dtype=y0.dtype),
+            beta=[b.to(device=device, dtype=y0.dtype) for b in self.tableau.beta],
+            c_sol=self.tableau.c_sol.to(device=device, dtype=y0.dtype),
+            c_error=self.tableau.c_error.to(device=device, dtype=y0.dtype),
+        )
         self.mid = self.mid.to(device=device, dtype=y0.dtype)
 
     @classmethod
     def valid_callbacks(cls):
-        return super(RKAdaptiveStepsizeODESolver, cls).valid_callbacks() | {'callback_step',
-                                                                            'callback_accept_step',
-                                                                            'callback_reject_step'}
+        return super(RKAdaptiveStepsizeODESolver, cls).valid_callbacks() | {"callback_step", "callback_accept_step", "callback_reject_step"}
 
     def _before_integrate(self, t):
         t0 = t[0]
         f0 = self.func(t[0], self.y0)
         if self.first_step is None:
-            first_step = _select_initial_step(self.func, t[0], self.y0, self.order - 1, self.rtol, self.atol,
-                                              self.norm, f0=f0)
+            first_step = _select_initial_step(self.func, t[0], self.y0, self.order - 1, self.rtol, self.atol, self.norm, f0=f0)
         else:
             first_step = self.first_step
         self.rk_state = _RungeKuttaState(self.y0, f0, t[0], t[0], first_step, [self.y0] * 5)
@@ -223,7 +214,7 @@ class RKAdaptiveStepsizeODESolver(AdaptiveStepsizeEventODESolver):
         """Interpolate through the next time point, integrating as necessary."""
         n_steps = 0
         while next_t > self.rk_state.t1:
-            assert n_steps < self.max_num_steps, 'max_num_steps exceeded ({}>={})'.format(n_steps, self.max_num_steps)
+            assert n_steps < self.max_num_steps, "max_num_steps exceeded ({}>={})".format(n_steps, self.max_num_steps)
             self.rk_state = self._adaptive_step(self.rk_state)
             n_steps += 1
         return _interp_evaluate(self.rk_state.interp_coeff, self.rk_state.t0, self.rk_state.t1, next_t)
@@ -236,7 +227,7 @@ class RKAdaptiveStepsizeODESolver(AdaptiveStepsizeEventODESolver):
         n_steps = 0
         sign0 = torch.sign(event_fn(self.rk_state.t1, self.rk_state.y1))
         while sign0 == torch.sign(event_fn(self.rk_state.t1, self.rk_state.y1)):
-            assert n_steps < self.max_num_steps, 'max_num_steps exceeded ({}>={})'.format(n_steps, self.max_num_steps)
+            assert n_steps < self.max_num_steps, "max_num_steps exceeded ({}>={})".format(n_steps, self.max_num_steps)
             self.rk_state = self._adaptive_step(self.rk_state)
             n_steps += 1
         interp_fn = lambda t: _interp_evaluate(self.rk_state.interp_coeff, self.rk_state.t0, self.rk_state.t1, t)
@@ -262,8 +253,8 @@ class RKAdaptiveStepsizeODESolver(AdaptiveStepsizeEventODESolver):
         ########################################################
         #                      Assertions                      #
         ########################################################
-        assert t0 + dt > t0, 'underflow in dt {}'.format(dt.item())
-        assert torch.isfinite(y0).all(), 'non-finite values in state `y`: {}'.format(y0)
+        assert t0 + dt > t0, "underflow in dt {}".format(dt.item())
+        assert torch.isfinite(y0).all(), "non-finite values in state `y`: {}".format(y0)
 
         ########################################################
         #     Make step, respecting prescribed grid points     #
@@ -352,3 +343,17 @@ def _sort_tvals(tvals, t0):
     # TODO: add warning if tvals come before t0?
     tvals = tvals[tvals >= t0]
     return torch.sort(tvals).values
+
+
+########################################
+# mine
+########################################
+def rk4_alt_step_func_abs(func, t0, dt, t1, y0, f0=None, perturb=False):
+    """Smaller error with slightly more compute."""
+    k1 = torch.abs(f0)
+    if k1 is None:
+        k1 = torch.abs(func(t0, y0, perturb=Perturb.NEXT if perturb else Perturb.NONE))
+    k2 = torch.abs(func(t0 + dt * _one_third, y0 + dt * k1 * _one_third))
+    k3 = torch.abs(func(t0 + dt * _two_thirds, y0 + dt * (k2 - k1 * _one_third)))
+    k4 = torch.abs(func(t1, y0 + dt * (k1 - k2 + k3), perturb=Perturb.PREV if perturb else Perturb.NONE))
+    return (k1 + 3 * (k2 + k3) + k4) * dt * 0.125

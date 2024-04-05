@@ -1,32 +1,34 @@
 import torch
 from torch.autograd.functional import vjp
-from .dopri5 import Dopri5Solver
-from .bosh3 import Bosh3Solver
+
 from .adaptive_heun import AdaptiveHeunSolver
-from .fehlberg2 import Fehlberg2
-from .fixed_grid import Euler, Midpoint, Heun3, RK4
-from .fixed_adams import AdamsBashforth, AdamsBashforthMoulton
+from .bosh3 import Bosh3Solver
+from .dopri5 import Dopri5Solver
 from .dopri8 import Dopri8Solver
-from .scipy_wrapper import ScipyWrapperODESolver
-from .misc import _check_inputs, _flat_to_shape
+from .fehlberg2 import Fehlberg2
+from .fixed_adams import AdamsBashforth, AdamsBashforthMoulton
+from .fixed_grid import RK4, Euler, Heun3, Midpoint, RK4_abs
 from .interp import _interp_evaluate
+from .misc import _check_inputs, _flat_to_shape
+from .scipy_wrapper import ScipyWrapperODESolver
 
 SOLVERS = {
-    'dopri8': Dopri8Solver,
-    'dopri5': Dopri5Solver,
-    'bosh3': Bosh3Solver,
-    'fehlberg2': Fehlberg2,
-    'adaptive_heun': AdaptiveHeunSolver,
-    'euler': Euler,
-    'midpoint': Midpoint,
-    'heun3': Heun3,
-    'rk4': RK4,
-    'explicit_adams': AdamsBashforth,
-    'implicit_adams': AdamsBashforthMoulton,
+    "dopri8": Dopri8Solver,
+    "dopri5": Dopri5Solver,
+    "bosh3": Bosh3Solver,
+    "fehlberg2": Fehlberg2,
+    "adaptive_heun": AdaptiveHeunSolver,
+    "euler": Euler,
+    "midpoint": Midpoint,
+    "heun3": Heun3,
+    "rk4": RK4,
+    "rk4_abs": RK4_abs,
+    "explicit_adams": AdamsBashforth,
+    "implicit_adams": AdamsBashforthMoulton,
     # Backward compatibility: use the same name as before
-    'fixed_adams': AdamsBashforthMoulton,
+    "fixed_adams": AdamsBashforthMoulton,
     # ~Backwards compatibility
-    'scipy_solver': ScipyWrapperODESolver,
+    "scipy_solver": ScipyWrapperODESolver,
 }
 
 
@@ -102,8 +104,8 @@ def odeint_dense(func, y0, t0, t1, *, rtol=1e-7, atol=1e-9, method=None, options
 
     assert method == "dopri5"
 
-    solver = Dopri5Solver(func=func, y0=y0, rtol=rtol, atol=atol, **options)    
-    
+    solver = Dopri5Solver(func=func, y0=y0, rtol=rtol, atol=atol, **options)
+
     # The integration loop
     solution = torch.empty(len(t), *solver.y0.shape, dtype=solver.y0.dtype, device=solver.y0.device)
     solution[0] = solver.y0
@@ -182,7 +184,7 @@ class ImplicitFnGradientRerouting(torch.autograd.Function):
 
     @staticmethod
     def forward(ctx, func, event_fn, event_t, state_t):
-        """ event_t is the solution to event_fn """
+        """event_t is the solution to event_fn"""
         ctx.func = func
         ctx.event_fn = event_fn
         ctx.save_for_backward(event_t, state_t)

@@ -146,3 +146,17 @@ def pares_config(config, logger):
     # Join the attribute-name and attribute-value pairs with newline separator
     full_output = "\t".join(keys_values_pairs)
     return full_output
+
+
+def read_json(fpath):
+    """Reads json file from a path."""
+    with open(fpath, "r") as f:
+        obj = json.load(f)
+    return obj
+
+
+def write_json(obj, fpath):
+    """Writes to a json file."""
+    mkdir_if_missing(osp.dirname(fpath))
+    with open(fpath, "w") as f:
+        json.dump(obj, f, indent=4, separators=(",", ": "))
