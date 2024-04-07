@@ -66,18 +66,17 @@ class Robust_Module(nn.Module):
 
     def __init__(self, config, logger):
         super(Robust_Module, self).__init__()
-        self.integration_time = torch.tensor([0, 0.01]).float()
-        self.step = 2
+        self.integration_time = torch.tensor([0, 0.01, 0.02]).float()
 
     def forward(self, x, odefunc):
         integration_time = self.integration_time.type_as(x)
 
         ori_x = torch.abs(x)
         x = ori_x
-        for i in range(self.step):
-            x = odeint(odefunc, x, integration_time, method="rk4", rtol=1e-3, atol=1e-3)
-            x = torch.abs(x[-1])
-        feat_steady_diff = torch.abs(x - ori_x)
+        x = odeint(odefunc, x, integration_time, method="rk4_abs", rtol=1e-3, atol=1e-3)
+        x = x[-1]
+        diff = x - ori_x
+        feat_steady_diff = 0.1 * torch.exp(integration_time[-1]) * torch.exp(diff)
         return feat_steady_diff
 
 

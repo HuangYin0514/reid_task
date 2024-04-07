@@ -18,10 +18,15 @@ from . import distance, feature_extractor, rank, rerank
 
 
 @torch.no_grad()
-def test_function(model, q_loader, g_loader, normalize_feature=True, save_features=True, re_rank=False, eval_method="market1501", config=None, logger=None):
+def test_function(model, q_loader, g_loader, normalize_feature=True, save_features=True, re_rank=False, eval_method="market1501", is_gpu=True, config=None, logger=None):
     model.eval()
 
-    device = config.device
+    if is_gpu:
+        device = config.device
+    else:
+        device = "cpu"
+        model = model.to(device)
+        logger.info("Using CPU ...")
 
     # Extracting features from query set(matrix size is qf.size(0), qf.size(1))
     print("Extracting features ...")
