@@ -11,10 +11,11 @@ def getData(config):
         [
             T.Resize((config.img_height, config.img_width), interpolation=3),
             T.RandomHorizontalFlip(),
+            T.Pad(10),
             T.RandomCrop((config.img_height, config.img_width)),
             T.ToTensor(),
-            data_function.transforms.RandomErasing(probability=0.5, mean=[0.485, 0.456, 0.406]),
             T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+            data_function.transforms.RandomErasing(probability=0.5, mean=[0.485, 0.456, 0.406]),
         ]
     )
 
@@ -27,7 +28,7 @@ def getData(config):
     )
 
     # Dataset
-    dataset = data_function.datasets.Market1501(root=config.dataset_path)
+    dataset = data_function.datasets.CUHK03(root=config.dataset_path)
     num_classes = dataset.num_train_pids
 
     # Dataloder
