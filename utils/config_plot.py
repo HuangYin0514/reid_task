@@ -24,7 +24,7 @@ default_style = plt.rcParams.copy()
 plt.rcParams.update(ieee_style)
 
 DPI = 50
-Latex_DPI = 100
+Latex_DPI = 300
 
 ##############################
 # result setting
