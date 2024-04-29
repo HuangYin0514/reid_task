@@ -100,7 +100,7 @@ def visactmap(model, test_loader, save_dir, width, height, use_gpu, img_mean=Non
                 # return img_np, am, outputs
 
                 # overlapped
-                overlapped = img_np * 0.5 + am * 0.5
+                overlapped = img_np * 0.4 + am * 0.6
                 overlapped[overlapped > 255] = 255
                 overlapped = overlapped.astype(np.uint8)
 

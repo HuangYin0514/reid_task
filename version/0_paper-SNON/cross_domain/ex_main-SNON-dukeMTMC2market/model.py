@@ -40,17 +40,9 @@ class ODEfunc(nn.Module):
         self.conv3 = conv1x1(dim, dim)
         self.norm3 = norm(dim)
 
-        self.conv2_1 = conv1x1(dim, dim)
-        self.norm2_1 = norm(dim)
-
-        self.conv2_2 = conv1x1(dim, dim)
-        self.norm2_2 = norm(dim)
-
     def forward(self, t, x):
         out = self.relu(self.norm1(x))
         out = self.relu(self.norm2(self.conv2(out)))
-        out = self.relu(self.norm2_1(self.conv2_1(out)))
-        out = self.relu(self.norm2_2(self.conv2_2(out)))
         out = self.norm3(self.conv3(out))
         return out
 
@@ -84,7 +76,7 @@ class Robust_Module(nn.Module):
         x = odeint(odefunc, x, integration_time, method="rk4_abs", rtol=1e-3, atol=1e-3)
         x = x[-1]
         diff = x - ori_x
-        feat_steady_diff = 0.1 * torch.exp(integration_time[-1]) * torch.exp(diff)
+        feat_steady_diff = 0.15 * torch.exp(integration_time[-1]) * torch.exp(diff)
         return feat_steady_diff
 
 
@@ -146,8 +138,7 @@ class ReidNet(nn.Module):
         self.robust_module = Robust_Module(config, logger)
 
         self.ode_net.apply(network.utils.weights_init_kaiming)
-        self.robust_module.apply(network.utils.weights_init_kaiming)
-        
+
     def heatmap(self, x):
         return self.backbone(x)
 
