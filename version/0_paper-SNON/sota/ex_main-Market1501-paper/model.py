@@ -76,7 +76,7 @@ class Robust_Module(nn.Module):
         x = odeint(odefunc, x, integration_time, method="rk4_abs", rtol=1e-3, atol=1e-3)
         x = x[-1]
         diff = x - ori_x
-        feat_steady_diff = 0.1 * torch.exp(integration_time[-1]) * torch.exp(diff)
+        feat_steady_diff = 0.15 * torch.exp(integration_time[-1]) * torch.exp(diff)
         return feat_steady_diff
 
 

@@ -62,24 +62,6 @@ class ODEBlock(nn.Module):
         return out[-1]
 
 
-class Robust_Module(nn.Module):
-
-    def __init__(self, config, logger):
-        super(Robust_Module, self).__init__()
-        self.integration_time = torch.tensor([0, 0.01, 0.02]).float()
-
-    def forward(self, x, odefunc):
-        integration_time = self.integration_time.type_as(x)
-
-        ori_x = torch.abs(x)
-        x = ori_x
-        x = odeint(odefunc, x, integration_time, method="rk4_abs", rtol=1e-3, atol=1e-3)
-        x = x[-1]
-        diff = x - ori_x
-        feat_steady_diff = 0.1 * torch.exp(integration_time[-1]) * torch.exp(diff)
-        return feat_steady_diff
-
-
 class Resnet50_Baseline(nn.Module):
     def __init__(self):
         super(Resnet50_Baseline, self).__init__()
@@ -135,7 +117,7 @@ class ReidNet(nn.Module):
 
         # ODEnet module
         self.ode_net = ODEBlock(config, logger)
-        self.robust_module = Robust_Module(config, logger)
+        self.ode_net.apply(network.utils.weights_init_kaiming)
 
     def heatmap(self, x):
         return self.backbone(x)
@@ -156,8 +138,7 @@ class ReidNet(nn.Module):
             # Gloab module to classifier([N, num_classes]）
             gloab_score = self.gloab_classifier(norm_gloab_feat)
 
-            feat_steady_diff = self.robust_module(gloab_feat.view(bs, -1, 1, 1), self.ode_net.odefunc)
-            return gloab_score, gloab_feat, feat_steady_diff
+            return gloab_score, gloab_feat
 
         else:
             return norm_gloab_feat

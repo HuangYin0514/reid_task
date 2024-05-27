@@ -28,7 +28,7 @@ def getData(config):
     )
 
     # Dataset
-    dataset = data_function.datasets.CUHK03(root=config.dataset_path)
+    dataset = data_function.datasets.Market1501(root=config.dataset_path)
     num_classes = dataset.num_train_pids
 
     # Dataloder
