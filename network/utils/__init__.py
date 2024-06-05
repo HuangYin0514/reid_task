@@ -1,1 +1,1 @@
-from .init_param import *
+from .init_param import weights_init_classifier, weights_init_kaiming

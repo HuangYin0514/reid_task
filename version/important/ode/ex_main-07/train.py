@@ -85,7 +85,7 @@ def brain(config, logger):
             gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
             gloab_tri_loss = triplet_loss(gloab_feat, labels)
 
-            gloab_loss = gloab_ce_loss + gloab_tri_loss
+            gloab_loss = gloab_ce_loss + gloab_tri_loss 
 
             #### All loss
             loss = gloab_loss
@@ -202,5 +202,4 @@ if __name__ == "__main__":
         logger.info("The running time of training: {:.5e} s".format(execution_time))
     except Exception as e:
         logger.info("An error occurred: {}".format(e))
-        logger.info(traceback.format_exc())
         raise RuntimeError(traceback.format_exc())
