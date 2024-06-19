@@ -1,0 +1,48 @@
+2024-06-07 09:44:35 INFO ##################################################
+2024-06-07 09:44:35 INFO Task: ReID_Task
+2024-06-07 09:44:35 INFO Using device: cuda
+2024-06-07 09:44:35 INFO Using data type: torch.float32
+2024-06-07 09:46:22 INFO ##################################################
+2024-06-07 09:46:22 INFO Task: ReID_Task
+2024-06-07 09:46:22 INFO Using device: cuda
+2024-06-07 09:46:22 INFO Using data type: torch.float32
+2024-06-07 10:34:13 INFO ##################################################
+2024-06-07 10:34:13 INFO Task: ReID_Task
+2024-06-07 10:34:13 INFO Using device: cuda
+2024-06-07 10:34:13 INFO Using data type: torch.float32
+2024-06-07 17:20:51 INFO ##################################################
+2024-06-07 17:20:51 INFO Task: ReID_Task
+2024-06-07 17:20:51 INFO Using device: cuda
+2024-06-07 17:20:51 INFO Using data type: torch.float32
+2024-06-07 17:20:59 INFO ##################################################
+2024-06-07 17:20:59 INFO Task: ReID_Task
+2024-06-07 17:20:59 INFO Using device: cuda
+2024-06-07 17:20:59 INFO Using data type: torch.float32
+2024-06-07 21:05:57 INFO ##################################################
+2024-06-07 21:05:57 INFO Task: ReID_Task
+2024-06-07 21:05:57 INFO Using device: cuda
+2024-06-07 21:05:57 INFO Using data type: torch.float32
+2024-06-07 21:32:40 INFO ##################################################
+2024-06-07 21:32:40 INFO Task: ReID_Task
+2024-06-07 21:32:40 INFO Using device: cuda
+2024-06-07 21:32:40 INFO Using data type: torch.float32
+2024-06-07 21:42:54 INFO ##################################################
+2024-06-07 21:42:54 INFO Task: ReID_Task
+2024-06-07 21:42:54 INFO Using device: cuda
+2024-06-07 21:42:54 INFO Using data type: torch.float32
+2024-06-07 21:57:09 INFO ##################################################
+2024-06-07 21:57:09 INFO Task: ReID_Task
+2024-06-07 21:57:09 INFO Using device: cuda
+2024-06-07 21:57:09 INFO Using data type: torch.float32
+2024-06-07 22:06:39 INFO ##################################################
+2024-06-07 22:06:39 INFO Task: ReID_Task
+2024-06-07 22:06:39 INFO Using device: cuda
+2024-06-07 22:06:39 INFO Using data type: torch.float32
+2024-06-07 22:13:40 INFO ##################################################
+2024-06-07 22:13:40 INFO Task: ReID_Task
+2024-06-07 22:13:40 INFO Using device: cuda
+2024-06-07 22:13:40 INFO Using data type: torch.float32
+2024-06-07 22:19:47 INFO ##################################################
+2024-06-07 22:19:47 INFO Task: ReID_Task
+2024-06-07 22:19:47 INFO Using device: cuda
+2024-06-07 22:19:47 INFO Using data type: torch.float32

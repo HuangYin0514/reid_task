@@ -1,23 +1,94 @@
-2024-06-05 21:45:31 INFO ##################################################
-2024-06-05 21:45:31 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_main1	dataset_name: market1501	dataset_path: /home/hy/project/data/Market-1501-v15.09.15	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 16000	img_height: 384	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_main1/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_main1/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_main1/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_main1/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
-2024-06-05 21:45:31 INFO Task: ReID_Task
-2024-06-05 21:45:31 INFO Using device: cuda
-2024-06-05 21:45:31 INFO Using data type: torch.float32
-2024-06-05 21:45:31 INFO Number of GPUs: 1
-2024-06-05 21:45:31 INFO GPU is_available: True
-2024-06-05 21:45:31 INFO GPU name: NVIDIA GeForce RTX 3060
-2024-06-05 21:45:31 INFO CUDA version: 12.1
-2024-06-05 21:45:31 INFO Current device id: 0
-2024-06-05 21:45:31 INFO ##################################################
-2024-06-05 21:47:39 INFO Epoch 1/16000	Training Loss: 9.5965	Time remaining is 562h:39m
-2024-06-05 21:49:45 INFO Epoch 2/16000	Training Loss: 7.3566	Time remaining is 560h:55m
-2024-06-05 21:51:52 INFO Epoch 3/16000	Training Loss: 5.8019	Time remaining is 561h:40m
-2024-06-05 21:53:57 INFO Epoch 4/16000	Training Loss: 4.2474	Time remaining is 560h:33m
-2024-06-05 21:56:03 INFO Epoch 5/16000	Training Loss: 3.0345	Time remaining is 560h:23m
-2024-06-05 21:58:09 INFO Epoch 6/16000	Training Loss: 2.2174	Time remaining is 560h:12m
-2024-06-05 22:00:15 INFO Epoch 7/16000	Training Loss: 1.7824	Time remaining is 560h:13m
-2024-06-05 22:02:21 INFO Epoch 8/16000	Training Loss: 1.5340	Time remaining is 560h:6m
-2024-06-05 22:04:27 INFO Epoch 9/16000	Training Loss: 1.4240	Time remaining is 560h:3m
-2024-06-05 22:06:34 INFO Epoch 10/16000	Training Loss: 1.3691	Time remaining is 560h:4m
-2024-06-05 22:08:39 INFO Epoch 11/16000	Training Loss: 1.3183	Time remaining is 559h:50m
-2024-06-05 22:10:45 INFO Epoch 12/16000	Training Loss: 1.2856	Time remaining is 559h:50m
+2024-06-19 18:30:44 INFO ##################################################
+2024-06-19 18:30:44 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_main1	dataset_name: market1501	dataset_path: /home/hy/project/data/Market-1501-v15.09.15	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 16000	img_height: 384	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_main1/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_main1/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_main1/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_main1/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
+2024-06-19 18:30:44 INFO Task: ReID_Task
+2024-06-19 18:30:44 INFO Using device: cuda
+2024-06-19 18:30:44 INFO Using data type: torch.float32
+2024-06-19 18:30:44 INFO Number of GPUs: 1
+2024-06-19 18:30:44 INFO GPU is_available: True
+2024-06-19 18:30:44 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-06-19 18:30:44 INFO CUDA version: 12.1
+2024-06-19 18:30:44 INFO Current device id: 0
+2024-06-19 18:30:44 INFO ##################################################
+2024-06-19 18:32:23 INFO Epoch 1/16000	Training Loss: 17.7749	Time remaining is 435h:13m
+2024-06-19 18:33:59 INFO Epoch 2/16000	Training Loss: 15.3671	Time remaining is 432h:27m
+2024-06-19 18:35:37 INFO Epoch 3/16000	Training Loss: 13.3217	Time remaining is 432h:47m
+2024-06-19 18:37:14 INFO Epoch 4/16000	Training Loss: 11.1294	Time remaining is 431h:57m
+2024-06-19 18:38:51 INFO Epoch 5/16000	Training Loss: 9.1197	Time remaining is 432h:4m
+2024-06-19 18:40:28 INFO Epoch 6/16000	Training Loss: 7.4854	Time remaining is 431h:52m
+2024-06-19 18:42:05 INFO Epoch 7/16000	Training Loss: 6.3223	Time remaining is 431h:41m
+2024-06-19 18:43:41 INFO Epoch 8/16000	Training Loss: 5.4966	Time remaining is 431h:18m
+2024-06-19 18:45:18 INFO Epoch 9/16000	Training Loss: 5.0093	Time remaining is 431h:14m
+2024-06-19 18:46:55 INFO Epoch 10/16000	Training Loss: 4.6474	Time remaining is 431h:10m
+2024-06-19 18:48:32 INFO Epoch 11/16000	Training Loss: 4.3561	Time remaining is 430h:57m
+2024-06-19 18:50:09 INFO Epoch 12/16000	Training Loss: 4.1278	Time remaining is 430h:54m
+2024-06-19 18:51:46 INFO Epoch 13/16000	Training Loss: 3.9166	Time remaining is 430h:43m
+2024-06-19 18:53:23 INFO Epoch 14/16000	Training Loss: 3.7331	Time remaining is 430h:42m
+2024-06-19 18:54:59 INFO Epoch 15/16000	Training Loss: 3.6200	Time remaining is 430h:38m
+2024-06-19 18:56:37 INFO Epoch 16/16000	Training Loss: 3.5304	Time remaining is 430h:44m
+2024-06-19 18:58:14 INFO Epoch 17/16000	Training Loss: 3.4045	Time remaining is 430h:45m
+2024-06-19 18:59:51 INFO Epoch 18/16000	Training Loss: 3.3457	Time remaining is 430h:46m
+2024-06-19 19:01:28 INFO Epoch 19/16000	Training Loss: 3.2492	Time remaining is 430h:40m
+2024-06-19 19:03:05 INFO Epoch 20/16000	Training Loss: 3.2003	Time remaining is 430h:41m
+2024-06-19 19:04:43 INFO Epoch 21/16000	Training Loss: 3.1565	Time remaining is 430h:45m
+2024-06-19 19:06:20 INFO Epoch 22/16000	Training Loss: 3.0969	Time remaining is 430h:49m
+2024-06-19 19:07:57 INFO Epoch 23/16000	Training Loss: 3.0436	Time remaining is 430h:46m
+2024-06-19 19:09:34 INFO Epoch 24/16000	Training Loss: 3.0022	Time remaining is 430h:43m
+2024-06-19 19:11:11 INFO Epoch 25/16000	Training Loss: 2.9960	Time remaining is 430h:45m
+2024-06-19 19:12:49 INFO Epoch 26/16000	Training Loss: 2.9906	Time remaining is 430h:46m
+2024-06-19 19:14:26 INFO Epoch 27/16000	Training Loss: 2.9399	Time remaining is 430h:48m
+2024-06-19 19:16:04 INFO Epoch 28/16000	Training Loss: 2.9250	Time remaining is 430h:51m
+2024-06-19 19:17:41 INFO Epoch 29/16000	Training Loss: 2.8908	Time remaining is 430h:51m
+2024-06-19 19:19:18 INFO Epoch 30/16000	Training Loss: 2.8633	Time remaining is 430h:46m
+2024-06-19 19:20:55 INFO Epoch 31/16000	Training Loss: 2.8754	Time remaining is 430h:48m
+2024-06-19 19:22:33 INFO Epoch 32/16000	Training Loss: 2.8455	Time remaining is 430h:50m
+2024-06-19 19:24:10 INFO Epoch 33/16000	Training Loss: 2.8390	Time remaining is 430h:53m
+2024-06-19 19:25:48 INFO Epoch 34/16000	Training Loss: 2.7958	Time remaining is 430h:53m
+2024-06-19 19:27:25 INFO Epoch 35/16000	Training Loss: 2.7827	Time remaining is 430h:52m
+2024-06-19 19:29:02 INFO Epoch 36/16000	Training Loss: 2.7943	Time remaining is 430h:50m
+2024-06-19 19:30:40 INFO Epoch 37/16000	Training Loss: 2.7738	Time remaining is 430h:51m
+2024-06-19 19:32:17 INFO Epoch 38/16000	Training Loss: 2.7677	Time remaining is 430h:50m
+2024-06-19 19:33:54 INFO Epoch 39/16000	Training Loss: 2.7424	Time remaining is 430h:49m
+2024-06-19 19:35:32 INFO Epoch 40/16000	Training Loss: 2.7399	Time remaining is 430h:50m
+2024-06-19 19:37:09 INFO Epoch 41/16000	Training Loss: 2.6456	Time remaining is 430h:49m
+2024-06-19 19:38:47 INFO Epoch 42/16000	Training Loss: 2.5738	Time remaining is 430h:52m
+2024-06-19 19:40:24 INFO Epoch 43/16000	Training Loss: 2.5373	Time remaining is 430h:52m
+2024-06-19 19:42:01 INFO Epoch 44/16000	Training Loss: 2.4959	Time remaining is 430h:46m
+2024-06-19 19:43:38 INFO Epoch 45/16000	Training Loss: 2.4972	Time remaining is 430h:42m
+2024-06-19 19:45:15 INFO Epoch 46/16000	Training Loss: 2.5031	Time remaining is 430h:43m
+2024-06-19 19:46:53 INFO Epoch 47/16000	Training Loss: 2.5064	Time remaining is 430h:45m
+2024-06-19 19:48:30 INFO Epoch 48/16000	Training Loss: 2.4713	Time remaining is 430h:41m
+2024-06-19 19:50:07 INFO Epoch 49/16000	Training Loss: 2.4722	Time remaining is 430h:38m
+2024-06-19 19:51:44 INFO Epoch 50/16000	Training Loss: 2.4653	Time remaining is 430h:34m
+2024-06-19 19:53:21 INFO Epoch 51/16000	Training Loss: 2.4738	Time remaining is 430h:33m
+2024-06-19 19:54:58 INFO Epoch 52/16000	Training Loss: 2.4589	Time remaining is 430h:30m
+2024-06-19 19:56:35 INFO Epoch 53/16000	Training Loss: 2.4490	Time remaining is 430h:28m
+2024-06-19 19:58:12 INFO Epoch 54/16000	Training Loss: 2.4631	Time remaining is 430h:27m
+2024-06-19 19:59:49 INFO Epoch 55/16000	Training Loss: 2.4531	Time remaining is 430h:26m
+2024-06-19 20:01:27 INFO Epoch 56/16000	Training Loss: 2.4574	Time remaining is 430h:25m
+2024-06-19 20:03:04 INFO Epoch 57/16000	Training Loss: 2.4386	Time remaining is 430h:23m
+2024-06-19 20:04:42 INFO Epoch 58/16000	Training Loss: 2.4472	Time remaining is 430h:24m
+2024-06-19 20:06:19 INFO Epoch 59/16000	Training Loss: 2.4427	Time remaining is 430h:23m
+2024-06-19 20:07:56 INFO Epoch 60/16000	Training Loss: 2.4423	Time remaining is 430h:22m
+2024-06-19 20:09:33 INFO Epoch 61/16000	Training Loss: 2.4266	Time remaining is 430h:19m
+2024-06-19 20:11:11 INFO Epoch 62/16000	Training Loss: 2.4359	Time remaining is 430h:19m
+2024-06-19 20:12:49 INFO Epoch 63/16000	Training Loss: 2.4458	Time remaining is 430h:21m
+2024-06-19 20:14:26 INFO Epoch 64/16000	Training Loss: 2.4302	Time remaining is 430h:20m
+2024-06-19 20:16:03 INFO Epoch 65/16000	Training Loss: 2.4115	Time remaining is 430h:17m
+2024-06-19 20:17:40 INFO Epoch 66/16000	Training Loss: 2.4247	Time remaining is 430h:17m
+2024-06-19 20:19:18 INFO Epoch 67/16000	Training Loss: 2.4231	Time remaining is 430h:16m
+2024-06-19 20:20:55 INFO Epoch 68/16000	Training Loss: 2.4090	Time remaining is 430h:13m
+2024-06-19 20:22:32 INFO Epoch 69/16000	Training Loss: 2.4203	Time remaining is 430h:12m
+2024-06-19 20:24:09 INFO Epoch 70/16000	Training Loss: 2.4133	Time remaining is 430h:11m
+2024-06-19 20:25:47 INFO Epoch 71/16000	Training Loss: 2.4041	Time remaining is 430h:9m
+2024-06-19 20:27:24 INFO Epoch 72/16000	Training Loss: 2.4000	Time remaining is 430h:7m
+2024-06-19 20:29:01 INFO Epoch 73/16000	Training Loss: 2.3944	Time remaining is 430h:6m
+2024-06-19 20:30:38 INFO Epoch 74/16000	Training Loss: 2.3936	Time remaining is 430h:4m
+2024-06-19 20:32:16 INFO Epoch 75/16000	Training Loss: 2.3948	Time remaining is 430h:5m
+2024-06-19 20:33:53 INFO Epoch 76/16000	Training Loss: 2.3792	Time remaining is 430h:3m
+2024-06-19 20:35:30 INFO Epoch 77/16000	Training Loss: 2.3809	Time remaining is 429h:60m
+2024-06-19 20:37:07 INFO Epoch 78/16000	Training Loss: 2.3757	Time remaining is 429h:57m
+2024-06-19 20:38:44 INFO Epoch 79/16000	Training Loss: 2.3885	Time remaining is 429h:56m
+2024-06-19 20:40:22 INFO Epoch 80/16000	Training Loss: 2.3741	Time remaining is 429h:55m
+2024-06-19 20:41:59 INFO Epoch 81/16000	Training Loss: 2.3890	Time remaining is 429h:54m
+2024-06-19 20:43:37 INFO Epoch 82/16000	Training Loss: 2.3848	Time remaining is 429h:54m
+2024-06-19 20:45:14 INFO Epoch 83/16000	Training Loss: 2.3859	Time remaining is 429h:52m

@@ -8,7 +8,7 @@ import traceback
 
 import numpy as np
 import torch
-import torch.nn.functional as F
+from torch import nn
 from tqdm import tqdm
 
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,7 +16,8 @@ PARENT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(".")
 sys.path.append(PARENT_DIR)
 
-from model import *
+import design_module
+from model import Classifier, Classifier2, ReidNet
 from record import Recorder
 from train_dataloader import getData
 
@@ -34,7 +35,9 @@ def brain(config, logger):
     train_loader, query_loader, gallery_loader, num_classes = getData(config=config)
 
     # Model
-    model = ReidNet(num_classes=num_classes, config=config, logger=logger).to(config.device)
+    model = ReidNet(config=config, logger=logger).to(config.device)
+    classifier = Classifier(feat_dim=2048, pid_num=num_classes, config=config, logger=logger).to(config.device)
+    classifier2 = Classifier2(feat_dim=2048, pid_num=num_classes, config=config, logger=logger).to(config.device)
 
     # Loss function
     mse_loss = nn.MSELoss()
@@ -42,15 +45,33 @@ def brain(config, logger):
     triplet_loss = loss_funciton.TripletLoss(margin=0.3)
 
     # Optimizer
-    optimizer = torch.optim.Adam(
-        model.parameters(),
-        lr=0.00035,
-        weight_decay=0.0005,
+    ## Model
+    model_params_group = [{"params": model.parameters(), "lr": 0.00035, "weight_decay": 0.0005}]
+    model_optimizer = torch.optim.Adam(model_params_group)
+    model_scheduler = optim.WarmupMultiStepLR(
+        model_optimizer,
+        milestones=[40, 70],
+        gamma=0.1,
+        warmup_factor=0.01,
+        warmup_iters=10,
+        warmup_method="linear",
     )
-
-    # Scheduler
-    scheduler = optim.WarmupMultiStepLR(
-        optimizer,
+    ## Classifier
+    classifier_params_group = [{"params": classifier.parameters(), "lr": 0.00035, "weight_decay": 0.0005}]
+    classifier_optimizer = torch.optim.Adam(classifier_params_group)
+    classifier_scheduler = optim.WarmupMultiStepLR(
+        classifier_optimizer,
+        milestones=[40, 70],
+        gamma=0.1,
+        warmup_factor=0.01,
+        warmup_iters=10,
+        warmup_method="linear",
+    )
+    ## Classifier2
+    classifier2_params_group = [{"params": classifier2.parameters(), "lr": 0.00035, "weight_decay": 0.0005}]
+    classifier2_optimizer = torch.optim.Adam(classifier2_params_group)
+    classifier2_scheduler = optim.WarmupMultiStepLR(
+        classifier2_optimizer,
         milestones=[40, 70],
         gamma=0.1,
         warmup_factor=0.01,
@@ -71,33 +92,51 @@ def brain(config, logger):
         ## Train
         running_loss = 0.0
         for ind, data in enumerate(tqdm(train_loader)):
-            ### data
+            ### Data
             inputs, labels = data
             inputs = inputs.to(config.device)
             labels = labels.to(config.device)
 
-            ### prediction
-            optimizer.zero_grad()
-            gloab_score, gloab_feat = model(inputs)
+            ### Clean grad
+            model_optimizer.zero_grad()
+            classifier_optimizer.zero_grad()
+            classifier2_optimizer.zero_grad()
+
+            ### Prediction
+            resnet_feat, pool_feat, bn_feat = model(inputs)
 
             ### Loss
             #### Gloab loss
-            gloab_ce_loss = ce_labelsmooth_loss(gloab_score, labels)
-            gloab_tri_loss = triplet_loss(gloab_feat, labels)
+            cls_score = classifier(bn_feat)
+            G_ID_loss = ce_labelsmooth_loss(cls_score, labels)
+            G_tri_loss = triplet_loss(pool_feat, labels)
 
-            gloab_loss = gloab_ce_loss + gloab_tri_loss
+            #### Localized moudule
+            localized_feat_map = design_module.FeatureMapLocalizedIntegratingNoRelu(config).__call__(resnet_feat, labels, classifier)
+            localized_pool_feat = model.GAP(localized_feat_map).squeeze()
+            localized_bn_feat = model.BN(localized_pool_feat)
+            localized_cls_score = classifier(localized_bn_feat)
+            quantified_localized_feat_map, quantified_localized_integrating_feat_map, integrating_pids = design_module.FeatureMapQuantifiedIntegratingProbLogSoftmaxWeights(config).__call__(localized_feat_map, localized_cls_score, labels)
+            quantified_bn_feat, quantified_cls_score = classifier2(quantified_localized_integrating_feat_map)
+            quantified_ID_loss = ce_labelsmooth_loss(quantified_cls_score, integrating_pids)
+
+            quantified_localized_integrating_reasoning_loss = design_module.ReasoningLoss().__call__(bn_feat, quantified_bn_feat)
 
             #### All loss
-            loss = gloab_loss
+            loss = G_ID_loss + G_tri_loss + quantified_ID_loss + 0.007 * quantified_localized_integrating_reasoning_loss
 
             ### Update the parameters
             loss.backward()
-            optimizer.step()
+            model_optimizer.step()
+            classifier_optimizer.step()
+            classifier2_optimizer.step()
 
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
 
-        scheduler.step()
+        model_scheduler.step()
+        classifier_scheduler.step()
+        classifier2_scheduler.step()
 
         ## Logger
         if epoch % config.print_every == 0:
@@ -194,13 +233,8 @@ if __name__ == "__main__":
         raise RuntimeError("Unsupported device for cpu!")
 
     # Training
-    try:
-        start_time = time.time()
-        brain(config, logger)
-        end_time = time.time()
-        execution_time = end_time - start_time
-        logger.info("The running time of training: {:.5e} s".format(execution_time))
-    except Exception as e:
-        logger.info("An error occurred: {}".format(e))
-        logger.info(traceback.format_exc())
-        raise RuntimeError(traceback.format_exc())
+    start_time = time.time()
+    brain(config, logger)
+    end_time = time.time()
+    execution_time = end_time - start_time
+    logger.info("The running time of training: {:.5e} s".format(execution_time))
