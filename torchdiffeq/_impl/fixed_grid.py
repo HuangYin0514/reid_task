@@ -56,3 +56,21 @@ class RK4_abs(FixedGridODESolver):
     def _step_func(self, func, t0, dt, t1, y0):
         f0 = func(t0, y0, perturb=Perturb.NEXT if self.perturb else Perturb.NONE)
         return rk4_alt_step_func_abs(func, t0, dt, t1, y0, f0=f0, perturb=self.perturb), f0
+
+
+class Euler_abs(FixedGridODESolver):
+    order = 1
+
+    def _step_func(self, func, t0, dt, t1, y0):
+        f0 = func(t0, y0, perturb=Perturb.NEXT if self.perturb else Perturb.NONE)
+        return torch.abs(dt * f0), f0
+
+
+class Midpoint_abs(FixedGridODESolver):
+    order = 2
+
+    def _step_func(self, func, t0, dt, t1, y0):
+        half_dt = 0.5 * dt
+        f0 = torch.abs(func(t0, y0, perturb=Perturb.NEXT if self.perturb else Perturb.NONE))
+        y_mid = y0 + f0 * half_dt
+        return dt * func(t0 + half_dt, y_mid), f0

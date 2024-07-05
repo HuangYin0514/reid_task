@@ -4,8 +4,11 @@
 #
 ####################################################################################
 
-cp -rf ex_main1 ex_main1_cp 
-rm -rf ex_main1/outputs/models/*
-cp -rf ex_main1  version/tmp/ex16
-cp ex_main1_cp/outputs/models/model_335.tar version/tmp/ex16/outputs/models/
-rm -rf ex_main1_cp
+# cp -rf ex_main1 ex_main1_cp 
+# rm -rf ex_main1/outputs/models/*
+# cp -rf ex_main1  version/tmp/ex21
+# cp ex_main1_cp/outputs/models/model_230.tar version/tmp/ex21/outputs/models/
+# rm -rf ex_main1_cp
+
+rm -rf ex_main4/outputs/models/*
+cp -rf ex_main4  version/tmp/ex23

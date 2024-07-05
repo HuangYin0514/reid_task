@@ -33,7 +33,7 @@ jupyter lab --allow-root
 screen -ls
 screen -S training
 screen -S training -X quit
-screen -S 21700 -X quit
+screen -S 8290.training -X quit
 ```
 
 ```
