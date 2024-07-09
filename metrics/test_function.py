@@ -18,7 +18,18 @@ from . import distance, feature_extractor, rank, rerank
 
 
 @torch.no_grad()
-def test_function(model, q_loader, g_loader, normalize_feature=True, save_features=True, re_rank=False, eval_method="market1501", is_gpu=True, config=None, logger=None):
+def test_function(
+    model,
+    q_loader,
+    g_loader,
+    normalize_feature=True,
+    save_features=True,
+    re_rank=False,
+    eval_method="market1501",
+    is_gpu=True,
+    config=None,
+    logger=None,
+):
     model.eval()
 
     if is_gpu:
@@ -60,8 +71,7 @@ def test_function(model, q_loader, g_loader, normalize_feature=True, save_featur
     # Computing CMC and mAP
     if eval_method == "market1501":
         CMC, MAP = rank.eval_market1501(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50)
-    elif eval_method == "cuhk03":
-        CMC, MAP = rank.eval_cuhk03(distmat, q_pids, g_pids, q_camids, g_camids, max_rank=50)
+
     return CMC, MAP
 
 
@@ -71,10 +81,9 @@ def test_function_with_mask(model, q_loader, g_loader, normalize_feature=True, s
 
     device = config.device
 
-    # Extracting features from query set(matrix size is qf.size(0), qf.size(1))
     print("Extracting features ...")
+    # Extracting features from query set(matrix size is qf.size(0), qf.size(1))
     qf, q_pids, q_camids = feature_extractor.feature_extract_with_mask(q_loader, model, device)
-
     # Extracting features from gallery set(matrix size is gf.size(0), gf.size(1))
     gf, g_pids, g_camids = feature_extractor.feature_extract_with_mask(g_loader, model, device)
 

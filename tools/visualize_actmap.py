@@ -52,7 +52,10 @@ def visactmap(model, test_loader, save_dir, width, height, use_gpu, img_mean=Non
 
             if outputs.dim() != 4:
                 raise ValueError(
-                    "The model output is supposed to have " "shape of (b, c, h, w), i.e. 4 dimensions, but got {} dimensions. " "Please make sure you set the model output at eval mode " "to be the last convolutional feature maps".format(outputs.dim())
+                    "The model output is supposed to have "
+                    "shape of (b, c, h, w), i.e. 4 dimensions, but got {} dimensions. "
+                    "Please make sure you set the model output at eval mode "
+                    "to be the last convolutional feature maps".format(outputs.dim())
                 )
 
             # compute activation maps
@@ -147,7 +150,10 @@ def visactmap_CAM(model, test_loader, save_dir, width, height, use_gpu, img_mean
 
             if outputs.dim() != 4:
                 raise ValueError(
-                    "The model output is supposed to have " "shape of (b, c, h, w), i.e. 4 dimensions, but got {} dimensions. " "Please make sure you set the model output at eval mode " "to be the last convolutional feature maps".format(outputs.dim())
+                    "The model output is supposed to have "
+                    "shape of (b, c, h, w), i.e. 4 dimensions, but got {} dimensions. "
+                    "Please make sure you set the model output at eval mode "
+                    "to be the last convolutional feature maps".format(outputs.dim())
                 )
 
             # compute activation maps

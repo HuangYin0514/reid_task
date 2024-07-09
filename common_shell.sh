@@ -10,5 +10,8 @@
 # cp ex_main1_cp/outputs/models/model_230.tar version/tmp/ex21/outputs/models/
 # rm -rf ex_main1_cp
 
-rm -rf ex_main4/outputs/models/*
-cp -rf ex_main4  version/tmp/ex23
+# rm -rf ex_main1/outputs/models/*
+# cp -rf ex_main1  version/tmp/ex28
+
+rm -rf ex_main1/outputs/models/*
+cp -rf ex_main1  version/tmp/ex29

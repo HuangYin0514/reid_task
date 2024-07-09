@@ -1,0 +1,355 @@
+2024-07-08 18:24:48 INFO ##################################################
+2024-07-08 18:24:48 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_main-n1	dataset_name: market1501	dataset_path: /home/hy/project/data/Market-1501-v15.09.15	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 300	img_height: 256	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_main-n1/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_main-n1/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_main-n1/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_main-n1/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
+2024-07-08 18:24:48 INFO Task: ReID_Task
+2024-07-08 18:24:48 INFO Using device: cuda
+2024-07-08 18:24:48 INFO Using data type: torch.float32
+2024-07-08 18:24:48 INFO Number of GPUs: 1
+2024-07-08 18:24:48 INFO GPU is_available: True
+2024-07-08 18:24:48 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-07-08 18:24:48 INFO CUDA version: 12.1
+2024-07-08 18:24:48 INFO Current device id: 0
+2024-07-08 18:24:48 INFO ##################################################
+2024-07-08 18:25:50 INFO Epoch 1/300	Training Loss: 8.6971	Time remaining is 5h:12m
+2024-07-08 18:26:53 INFO Epoch 2/300	Training Loss: 7.3847	Time remaining is 5h:11m
+2024-07-08 18:27:55 INFO Epoch 3/300	Training Loss: 5.6436	Time remaining is 5h:9m
+2024-07-08 18:28:58 INFO Epoch 4/300	Training Loss: 4.2684	Time remaining is 5h:9m
+2024-07-08 18:30:00 INFO Epoch 5/300	Training Loss: 3.2057	Time remaining is 5h:8m
+2024-07-08 18:31:02 INFO Epoch 6/300	Training Loss: 2.4888	Time remaining is 5h:6m
+2024-07-08 18:32:04 INFO Epoch 7/300	Training Loss: 2.0900	Time remaining is 5h:5m
+2024-07-08 18:33:06 INFO Epoch 8/300	Training Loss: 1.8788	Time remaining is 5h:4m
+2024-07-08 18:34:08 INFO Epoch 9/300	Training Loss: 1.7583	Time remaining is 5h:3m
+2024-07-08 18:35:10 INFO Epoch 10/300	Training Loss: 1.6684	Time remaining is 5h:2m
+2024-07-08 18:36:12 INFO Epoch 11/300	Training Loss: 1.6043	Time remaining is 5h:1m
+2024-07-08 18:37:14 INFO Epoch 12/300	Training Loss: 1.5323	Time remaining is 4h:60m
+2024-07-08 18:38:17 INFO Epoch 13/300	Training Loss: 1.4523	Time remaining is 4h:59m
+2024-07-08 18:39:19 INFO Epoch 14/300	Training Loss: 1.4089	Time remaining is 4h:58m
+2024-07-08 18:40:22 INFO Epoch 15/300	Training Loss: 1.3762	Time remaining is 4h:57m
+2024-07-08 18:41:24 INFO Epoch 16/300	Training Loss: 1.3643	Time remaining is 4h:56m
+2024-07-08 18:42:26 INFO Epoch 17/300	Training Loss: 1.3454	Time remaining is 4h:55m
+2024-07-08 18:43:28 INFO Epoch 18/300	Training Loss: 1.3246	Time remaining is 4h:53m
+2024-07-08 18:44:30 INFO Epoch 19/300	Training Loss: 1.3219	Time remaining is 4h:52m
+2024-07-08 18:45:33 INFO Epoch 20/300	Training Loss: 1.3195	Time remaining is 4h:51m
+2024-07-08 18:46:35 INFO Epoch 21/300	Training Loss: 1.3035	Time remaining is 4h:50m
+2024-07-08 18:47:37 INFO Epoch 22/300	Training Loss: 1.2974	Time remaining is 4h:49m
+2024-07-08 18:48:39 INFO Epoch 23/300	Training Loss: 1.2847	Time remaining is 4h:48m
+2024-07-08 18:49:41 INFO Epoch 24/300	Training Loss: 1.3006	Time remaining is 4h:47m
+2024-07-08 18:50:43 INFO Epoch 25/300	Training Loss: 1.2912	Time remaining is 4h:46m
+2024-07-08 18:51:46 INFO Epoch 26/300	Training Loss: 1.3006	Time remaining is 4h:45m
+2024-07-08 18:52:48 INFO Epoch 27/300	Training Loss: 1.2946	Time remaining is 4h:44m
+2024-07-08 18:53:51 INFO Epoch 28/300	Training Loss: 1.2937	Time remaining is 4h:43m
+2024-07-08 18:54:53 INFO Epoch 29/300	Training Loss: 1.2891	Time remaining is 4h:42m
+2024-07-08 18:55:55 INFO Epoch 30/300	Training Loss: 1.2725	Time remaining is 4h:41m
+2024-07-08 18:56:57 INFO Epoch 31/300	Training Loss: 1.2793	Time remaining is 4h:40m
+2024-07-08 18:57:59 INFO Epoch 32/300	Training Loss: 1.2778	Time remaining is 4h:39m
+2024-07-08 18:59:01 INFO Epoch 33/300	Training Loss: 1.2820	Time remaining is 4h:38m
+2024-07-08 19:00:04 INFO Epoch 34/300	Training Loss: 1.2844	Time remaining is 4h:37m
+2024-07-08 19:01:06 INFO Epoch 35/300	Training Loss: 1.2732	Time remaining is 4h:36m
+2024-07-08 19:02:08 INFO Epoch 36/300	Training Loss: 1.2741	Time remaining is 4h:35m
+2024-07-08 19:03:10 INFO Epoch 37/300	Training Loss: 1.2668	Time remaining is 4h:34m
+2024-07-08 19:04:13 INFO Epoch 38/300	Training Loss: 1.2792	Time remaining is 4h:33m
+2024-07-08 19:05:15 INFO Epoch 39/300	Training Loss: 1.2697	Time remaining is 4h:32m
+2024-07-08 19:06:17 INFO Epoch 40/300	Training Loss: 1.2618	Time remaining is 4h:31m
+2024-07-08 19:07:19 INFO Epoch 41/300	Training Loss: 1.1917	Time remaining is 4h:30m
+2024-07-08 19:08:21 INFO Epoch 42/300	Training Loss: 1.1194	Time remaining is 4h:29m
+2024-07-08 19:09:24 INFO Epoch 43/300	Training Loss: 1.1089	Time remaining is 4h:28m
+2024-07-08 19:10:26 INFO Epoch 44/300	Training Loss: 1.0991	Time remaining is 4h:27m
+2024-07-08 19:11:28 INFO Epoch 45/300	Training Loss: 1.0918	Time remaining is 4h:25m
+2024-07-08 19:12:30 INFO Epoch 46/300	Training Loss: 1.0875	Time remaining is 4h:24m
+2024-07-08 19:13:33 INFO Epoch 47/300	Training Loss: 1.0787	Time remaining is 4h:23m
+2024-07-08 19:14:35 INFO Epoch 48/300	Training Loss: 1.0806	Time remaining is 4h:22m
+2024-07-08 19:15:37 INFO Epoch 49/300	Training Loss: 1.0690	Time remaining is 4h:21m
+2024-07-08 19:16:39 INFO Epoch 50/300	Training Loss: 1.0732	Time remaining is 4h:20m
+2024-07-08 19:17:41 INFO Epoch 51/300	Training Loss: 1.0657	Time remaining is 4h:19m
+2024-07-08 19:18:44 INFO Epoch 52/300	Training Loss: 1.0663	Time remaining is 4h:18m
+2024-07-08 19:19:46 INFO Epoch 53/300	Training Loss: 1.0665	Time remaining is 4h:17m
+2024-07-08 19:20:48 INFO Epoch 54/300	Training Loss: 1.0647	Time remaining is 4h:16m
+2024-07-08 19:21:51 INFO Epoch 55/300	Training Loss: 1.0664	Time remaining is 4h:15m
+2024-07-08 19:22:53 INFO Epoch 56/300	Training Loss: 1.0618	Time remaining is 4h:14m
+2024-07-08 19:23:55 INFO Epoch 57/300	Training Loss: 1.0524	Time remaining is 4h:13m
+2024-07-08 19:24:57 INFO Epoch 58/300	Training Loss: 1.0614	Time remaining is 4h:12m
+2024-07-08 19:26:00 INFO Epoch 59/300	Training Loss: 1.0593	Time remaining is 4h:11m
+2024-07-08 19:27:02 INFO Epoch 60/300	Training Loss: 1.0570	Time remaining is 4h:10m
+2024-07-08 19:28:05 INFO Epoch 61/300	Training Loss: 1.0580	Time remaining is 4h:9m
+2024-07-08 19:29:07 INFO Epoch 62/300	Training Loss: 1.0563	Time remaining is 4h:8m
+2024-07-08 19:30:10 INFO Epoch 63/300	Training Loss: 1.0532	Time remaining is 4h:7m
+2024-07-08 19:31:13 INFO Epoch 64/300	Training Loss: 1.0529	Time remaining is 4h:6m
+2024-07-08 19:32:15 INFO Epoch 65/300	Training Loss: 1.0501	Time remaining is 4h:5m
+2024-07-08 19:33:17 INFO Epoch 66/300	Training Loss: 1.0481	Time remaining is 4h:4m
+2024-07-08 19:34:20 INFO Epoch 67/300	Training Loss: 1.0566	Time remaining is 4h:3m
+2024-07-08 19:35:22 INFO Epoch 68/300	Training Loss: 1.0487	Time remaining is 4h:2m
+2024-07-08 19:36:24 INFO Epoch 69/300	Training Loss: 1.0447	Time remaining is 4h:1m
+2024-07-08 19:37:26 INFO Epoch 70/300	Training Loss: 1.0487	Time remaining is 3h:60m
+2024-07-08 19:38:28 INFO Epoch 71/300	Training Loss: 1.0442	Time remaining is 3h:59m
+2024-07-08 19:39:31 INFO Epoch 72/300	Training Loss: 1.0407	Time remaining is 3h:58m
+2024-07-08 19:40:33 INFO Epoch 73/300	Training Loss: 1.0379	Time remaining is 3h:57m
+2024-07-08 19:41:35 INFO Epoch 74/300	Training Loss: 1.0331	Time remaining is 3h:56m
+2024-07-08 19:42:37 INFO Epoch 75/300	Training Loss: 1.0298	Time remaining is 3h:54m
+2024-07-08 19:43:39 INFO Epoch 76/300	Training Loss: 1.0283	Time remaining is 3h:53m
+2024-07-08 19:44:42 INFO Epoch 77/300	Training Loss: 1.0359	Time remaining is 3h:52m
+2024-07-08 19:45:44 INFO Epoch 78/300	Training Loss: 1.0303	Time remaining is 3h:51m
+2024-07-08 19:46:46 INFO Epoch 79/300	Training Loss: 1.0329	Time remaining is 3h:50m
+2024-07-08 19:47:49 INFO Epoch 80/300	Training Loss: 1.0329	Time remaining is 3h:49m
+2024-07-08 19:48:51 INFO Epoch 81/300	Training Loss: 1.0306	Time remaining is 3h:48m
+2024-07-08 19:49:53 INFO Epoch 82/300	Training Loss: 1.0332	Time remaining is 3h:47m
+2024-07-08 19:50:56 INFO Epoch 83/300	Training Loss: 1.0321	Time remaining is 3h:46m
+2024-07-08 19:51:58 INFO Epoch 84/300	Training Loss: 1.0297	Time remaining is 3h:45m
+2024-07-08 19:53:01 INFO Epoch 85/300	Training Loss: 1.0334	Time remaining is 3h:44m
+2024-07-08 19:54:03 INFO Epoch 86/300	Training Loss: 1.0326	Time remaining is 3h:43m
+2024-07-08 19:55:05 INFO Epoch 87/300	Training Loss: 1.0298	Time remaining is 3h:42m
+2024-07-08 19:56:07 INFO Epoch 88/300	Training Loss: 1.0240	Time remaining is 3h:41m
+2024-07-08 19:57:09 INFO Epoch 89/300	Training Loss: 1.0290	Time remaining is 3h:40m
+2024-07-08 19:58:11 INFO Epoch 90/300	Training Loss: 1.0301	Time remaining is 3h:39m
+2024-07-08 19:59:23 INFO Testing: dataset_name: market1501 top1: 93.973 top5: 98.456 top10: 99.139 mAP: 85.142
+2024-07-08 20:00:26 INFO Epoch 91/300	Training Loss: 1.0310	Time remaining is 3h:41m
+2024-07-08 20:01:28 INFO Epoch 92/300	Training Loss: 1.0238	Time remaining is 3h:40m
+2024-07-08 20:02:31 INFO Epoch 93/300	Training Loss: 1.0297	Time remaining is 3h:39m
+2024-07-08 20:03:33 INFO Epoch 94/300	Training Loss: 1.0305	Time remaining is 3h:37m
+2024-07-08 20:04:36 INFO Epoch 95/300	Training Loss: 1.0224	Time remaining is 3h:36m
+2024-07-08 20:05:48 INFO Testing: dataset_name: market1501 top1: 93.765 top5: 98.248 top10: 99.139 mAP: 85.155
+2024-07-08 20:06:51 INFO Epoch 96/300	Training Loss: 1.0286	Time remaining is 3h:38m
+2024-07-08 20:07:53 INFO Epoch 97/300	Training Loss: 1.0218	Time remaining is 3h:37m
+2024-07-08 20:08:56 INFO Epoch 98/300	Training Loss: 1.0294	Time remaining is 3h:36m
+2024-07-08 20:09:58 INFO Epoch 99/300	Training Loss: 1.0291	Time remaining is 3h:35m
+2024-07-08 20:11:01 INFO Epoch 100/300	Training Loss: 1.0251	Time remaining is 3h:33m
+2024-07-08 20:12:13 INFO Testing: dataset_name: market1501 top1: 93.795 top5: 98.426 top10: 99.109 mAP: 85.208
+2024-07-08 20:13:15 INFO Epoch 101/300	Training Loss: 1.0273	Time remaining is 3h:35m
+2024-07-08 20:14:18 INFO Epoch 102/300	Training Loss: 1.0273	Time remaining is 3h:34m
+2024-07-08 20:15:20 INFO Epoch 103/300	Training Loss: 1.0263	Time remaining is 3h:32m
+2024-07-08 20:16:23 INFO Epoch 104/300	Training Loss: 1.0251	Time remaining is 3h:31m
+2024-07-08 20:17:26 INFO Epoch 105/300	Training Loss: 1.0313	Time remaining is 3h:30m
+2024-07-08 20:18:38 INFO Testing: dataset_name: market1501 top1: 94.181 top5: 98.456 top10: 99.228 mAP: 85.349
+2024-07-08 20:19:41 INFO Epoch 106/300	Training Loss: 1.0268	Time remaining is 3h:31m
+2024-07-08 20:20:43 INFO Epoch 107/300	Training Loss: 1.0201	Time remaining is 3h:30m
+2024-07-08 20:21:45 INFO Epoch 108/300	Training Loss: 1.0273	Time remaining is 3h:29m
+2024-07-08 20:22:48 INFO Epoch 109/300	Training Loss: 1.0261	Time remaining is 3h:28m
+2024-07-08 20:23:51 INFO Epoch 110/300	Training Loss: 1.0256	Time remaining is 3h:27m
+2024-07-08 20:25:03 INFO Testing: dataset_name: market1501 top1: 94.032 top5: 98.515 top10: 99.139 mAP: 85.486
+2024-07-08 20:26:05 INFO Epoch 111/300	Training Loss: 1.0210	Time remaining is 3h:28m
+2024-07-08 20:27:08 INFO Epoch 112/300	Training Loss: 1.0240	Time remaining is 3h:26m
+2024-07-08 20:28:10 INFO Epoch 113/300	Training Loss: 1.0239	Time remaining is 3h:25m
+2024-07-08 20:29:12 INFO Epoch 114/300	Training Loss: 1.0210	Time remaining is 3h:24m
+2024-07-08 20:30:15 INFO Epoch 115/300	Training Loss: 1.0303	Time remaining is 3h:23m
+2024-07-08 20:31:28 INFO Testing: dataset_name: market1501 top1: 93.973 top5: 98.486 top10: 99.228 mAP: 85.553
+2024-07-08 20:32:30 INFO Epoch 116/300	Training Loss: 1.0238	Time remaining is 3h:24m
+2024-07-08 20:33:33 INFO Epoch 117/300	Training Loss: 1.0267	Time remaining is 3h:22m
+2024-07-08 20:34:35 INFO Epoch 118/300	Training Loss: 1.0256	Time remaining is 3h:21m
+2024-07-08 20:35:38 INFO Epoch 119/300	Training Loss: 1.0303	Time remaining is 3h:20m
+2024-07-08 20:36:41 INFO Epoch 120/300	Training Loss: 1.0189	Time remaining is 3h:19m
+2024-07-08 20:37:53 INFO Testing: dataset_name: market1501 top1: 94.151 top5: 98.426 top10: 99.228 mAP: 85.737
+2024-07-08 20:38:56 INFO Epoch 121/300	Training Loss: 1.0239	Time remaining is 3h:20m
+2024-07-08 20:39:58 INFO Epoch 122/300	Training Loss: 1.0222	Time remaining is 3h:18m
+2024-07-08 20:41:01 INFO Epoch 123/300	Training Loss: 1.0235	Time remaining is 3h:17m
+2024-07-08 20:42:03 INFO Epoch 124/300	Training Loss: 1.0194	Time remaining is 3h:16m
+2024-07-08 20:43:06 INFO Epoch 125/300	Training Loss: 1.0233	Time remaining is 3h:15m
+2024-07-08 20:44:18 INFO Testing: dataset_name: market1501 top1: 94.210 top5: 98.456 top10: 99.228 mAP: 85.719
+2024-07-08 20:45:21 INFO Epoch 126/300	Training Loss: 1.0230	Time remaining is 3h:15m
+2024-07-08 20:46:24 INFO Epoch 127/300	Training Loss: 1.0229	Time remaining is 3h:14m
+2024-07-08 20:47:26 INFO Epoch 128/300	Training Loss: 1.0225	Time remaining is 3h:13m
+2024-07-08 20:48:29 INFO Epoch 129/300	Training Loss: 1.0230	Time remaining is 3h:12m
+2024-07-08 20:49:32 INFO Epoch 130/300	Training Loss: 1.0242	Time remaining is 3h:10m
+2024-07-08 20:50:44 INFO Testing: dataset_name: market1501 top1: 94.151 top5: 98.486 top10: 99.228 mAP: 85.803
+2024-07-08 20:51:46 INFO Epoch 131/300	Training Loss: 1.0185	Time remaining is 3h:11m
+2024-07-08 20:52:49 INFO Epoch 132/300	Training Loss: 1.0219	Time remaining is 3h:10m
+2024-07-08 20:53:51 INFO Epoch 133/300	Training Loss: 1.0164	Time remaining is 3h:8m
+2024-07-08 20:54:54 INFO Epoch 134/300	Training Loss: 1.0224	Time remaining is 3h:7m
+2024-07-08 20:55:56 INFO Epoch 135/300	Training Loss: 1.0183	Time remaining is 3h:6m
+2024-07-08 20:57:09 INFO Testing: dataset_name: market1501 top1: 94.270 top5: 98.486 top10: 99.228 mAP: 86.028
+2024-07-08 20:58:11 INFO Epoch 136/300	Training Loss: 1.0169	Time remaining is 3h:6m
+2024-07-08 20:59:14 INFO Epoch 137/300	Training Loss: 1.0224	Time remaining is 3h:5m
+2024-07-08 21:00:16 INFO Epoch 138/300	Training Loss: 1.0232	Time remaining is 3h:4m
+2024-07-08 21:01:19 INFO Epoch 139/300	Training Loss: 1.0167	Time remaining is 3h:2m
+2024-07-08 21:02:21 INFO Epoch 140/300	Training Loss: 1.0224	Time remaining is 3h:1m
+2024-07-08 21:03:34 INFO Testing: dataset_name: market1501 top1: 94.299 top5: 98.486 top10: 99.228 mAP: 85.930
+2024-07-08 21:04:36 INFO Epoch 141/300	Training Loss: 1.0205	Time remaining is 3h:1m
+2024-07-08 21:05:39 INFO Epoch 142/300	Training Loss: 1.0215	Time remaining is 3h:0m
+2024-07-08 21:06:41 INFO Epoch 143/300	Training Loss: 1.0220	Time remaining is 2h:59m
+2024-07-08 21:07:44 INFO Epoch 144/300	Training Loss: 1.0196	Time remaining is 2h:58m
+2024-07-08 21:08:47 INFO Epoch 145/300	Training Loss: 1.0221	Time remaining is 2h:56m
+2024-07-08 21:09:59 INFO Testing: dataset_name: market1501 top1: 94.359 top5: 98.575 top10: 99.287 mAP: 86.051
+2024-07-08 21:11:02 INFO Epoch 146/300	Training Loss: 1.0195	Time remaining is 2h:56m
+2024-07-08 21:12:05 INFO Epoch 147/300	Training Loss: 1.0202	Time remaining is 2h:55m
+2024-07-08 21:13:07 INFO Epoch 148/300	Training Loss: 1.0192	Time remaining is 2h:54m
+2024-07-08 21:14:10 INFO Epoch 149/300	Training Loss: 1.0266	Time remaining is 2h:53m
+2024-07-08 21:15:13 INFO Epoch 150/300	Training Loss: 1.0145	Time remaining is 2h:52m
+2024-07-08 21:16:25 INFO Testing: dataset_name: market1501 top1: 94.418 top5: 98.515 top10: 99.258 mAP: 86.086
+2024-07-08 21:17:28 INFO Epoch 151/300	Training Loss: 1.0211	Time remaining is 2h:52m
+2024-07-08 21:18:30 INFO Epoch 152/300	Training Loss: 1.0190	Time remaining is 2h:50m
+2024-07-08 21:19:33 INFO Epoch 153/300	Training Loss: 1.0178	Time remaining is 2h:49m
+2024-07-08 21:20:36 INFO Epoch 154/300	Training Loss: 1.0221	Time remaining is 2h:48m
+2024-07-08 21:21:39 INFO Epoch 155/300	Training Loss: 1.0202	Time remaining is 2h:47m
+2024-07-08 21:22:51 INFO Testing: dataset_name: market1501 top1: 94.656 top5: 98.397 top10: 99.287 mAP: 86.200
+2024-07-08 21:23:54 INFO Epoch 156/300	Training Loss: 1.0146	Time remaining is 2h:46m
+2024-07-08 21:24:57 INFO Epoch 157/300	Training Loss: 1.0195	Time remaining is 2h:45m
+2024-07-08 21:25:59 INFO Epoch 158/300	Training Loss: 1.0156	Time remaining is 2h:44m
+2024-07-08 21:27:02 INFO Epoch 159/300	Training Loss: 1.0188	Time remaining is 2h:43m
+2024-07-08 21:28:04 INFO Epoch 160/300	Training Loss: 1.0130	Time remaining is 2h:42m
+2024-07-08 21:29:16 INFO Testing: dataset_name: market1501 top1: 94.567 top5: 98.515 top10: 99.198 mAP: 86.162
+2024-07-08 21:30:19 INFO Epoch 161/300	Training Loss: 1.0174	Time remaining is 2h:41m
+2024-07-08 21:31:22 INFO Epoch 162/300	Training Loss: 1.0185	Time remaining is 2h:40m
+2024-07-08 21:32:24 INFO Epoch 163/300	Training Loss: 1.0129	Time remaining is 2h:39m
+2024-07-08 21:33:27 INFO Epoch 164/300	Training Loss: 1.0185	Time remaining is 2h:38m
+2024-07-08 21:34:29 INFO Epoch 165/300	Training Loss: 1.0134	Time remaining is 2h:36m
+2024-07-08 21:35:41 INFO Testing: dataset_name: market1501 top1: 94.596 top5: 98.456 top10: 99.228 mAP: 86.406
+2024-07-08 21:36:44 INFO Epoch 166/300	Training Loss: 1.0129	Time remaining is 2h:36m
+2024-07-08 21:37:47 INFO Epoch 167/300	Training Loss: 1.0170	Time remaining is 2h:35m
+2024-07-08 21:38:49 INFO Epoch 168/300	Training Loss: 1.0128	Time remaining is 2h:34m
+2024-07-08 21:39:52 INFO Epoch 169/300	Training Loss: 1.0228	Time remaining is 2h:32m
+2024-07-08 21:40:55 INFO Epoch 170/300	Training Loss: 1.0158	Time remaining is 2h:31m
+2024-07-08 21:42:08 INFO Testing: dataset_name: market1501 top1: 94.448 top5: 98.605 top10: 99.228 mAP: 86.270
+2024-07-08 21:43:10 INFO Epoch 171/300	Training Loss: 1.0165	Time remaining is 2h:31m
+2024-07-08 21:44:13 INFO Epoch 172/300	Training Loss: 1.0184	Time remaining is 2h:30m
+2024-07-08 21:45:16 INFO Epoch 173/300	Training Loss: 1.0160	Time remaining is 2h:28m
+2024-07-08 21:46:18 INFO Epoch 174/300	Training Loss: 1.0138	Time remaining is 2h:27m
+2024-07-08 21:47:21 INFO Epoch 175/300	Training Loss: 1.0168	Time remaining is 2h:26m
+2024-07-08 21:48:33 INFO Testing: dataset_name: market1501 top1: 94.537 top5: 98.634 top10: 99.198 mAP: 86.387
+2024-07-08 21:49:36 INFO Epoch 176/300	Training Loss: 1.0175	Time remaining is 2h:25m
+2024-07-08 21:50:38 INFO Epoch 177/300	Training Loss: 1.0110	Time remaining is 2h:24m
+2024-07-08 21:51:41 INFO Epoch 178/300	Training Loss: 1.0151	Time remaining is 2h:23m
+2024-07-08 21:52:44 INFO Epoch 179/300	Training Loss: 1.0148	Time remaining is 2h:22m
+2024-07-08 21:53:46 INFO Epoch 180/300	Training Loss: 1.0115	Time remaining is 2h:20m
+2024-07-08 21:54:59 INFO Testing: dataset_name: market1501 top1: 94.507 top5: 98.634 top10: 99.287 mAP: 86.570
+2024-07-08 21:56:01 INFO Epoch 181/300	Training Loss: 1.0169	Time remaining is 2h:20m
+2024-07-08 21:57:04 INFO Epoch 182/300	Training Loss: 1.0159	Time remaining is 2h:19m
+2024-07-08 21:58:06 INFO Epoch 183/300	Training Loss: 1.0107	Time remaining is 2h:18m
+2024-07-08 21:59:08 INFO Epoch 184/300	Training Loss: 1.0103	Time remaining is 2h:16m
+2024-07-08 22:00:11 INFO Epoch 185/300	Training Loss: 1.0166	Time remaining is 2h:15m
+2024-07-08 22:01:23 INFO Testing: dataset_name: market1501 top1: 94.359 top5: 98.753 top10: 99.228 mAP: 86.410
+2024-07-08 22:02:25 INFO Epoch 186/300	Training Loss: 1.0106	Time remaining is 2h:15m
+2024-07-08 22:03:28 INFO Epoch 187/300	Training Loss: 1.0159	Time remaining is 2h:13m
+2024-07-08 22:04:31 INFO Epoch 188/300	Training Loss: 1.0149	Time remaining is 2h:12m
+2024-07-08 22:05:33 INFO Epoch 189/300	Training Loss: 1.0176	Time remaining is 2h:11m
+2024-07-08 22:06:36 INFO Epoch 190/300	Training Loss: 1.0149	Time remaining is 2h:10m
+2024-07-08 22:07:48 INFO Testing: dataset_name: market1501 top1: 94.626 top5: 98.605 top10: 99.287 mAP: 86.473
+2024-07-08 22:08:51 INFO Epoch 191/300	Training Loss: 1.0146	Time remaining is 2h:9m
+2024-07-08 22:09:54 INFO Epoch 192/300	Training Loss: 1.0167	Time remaining is 2h:8m
+2024-07-08 22:10:56 INFO Epoch 193/300	Training Loss: 1.0091	Time remaining is 2h:7m
+2024-07-08 22:11:59 INFO Epoch 194/300	Training Loss: 1.0145	Time remaining is 2h:5m
+2024-07-08 22:13:01 INFO Epoch 195/300	Training Loss: 1.0091	Time remaining is 2h:4m
+2024-07-08 22:14:13 INFO Testing: dataset_name: market1501 top1: 94.537 top5: 98.634 top10: 99.228 mAP: 86.553
+2024-07-08 22:15:16 INFO Epoch 196/300	Training Loss: 1.0140	Time remaining is 2h:3m
+2024-07-08 22:16:18 INFO Epoch 197/300	Training Loss: 1.0099	Time remaining is 2h:2m
+2024-07-08 22:17:20 INFO Epoch 198/300	Training Loss: 1.0085	Time remaining is 2h:1m
+2024-07-08 22:18:23 INFO Epoch 199/300	Training Loss: 1.0143	Time remaining is 1h:60m
+2024-07-08 22:19:26 INFO Epoch 200/300	Training Loss: 1.0138	Time remaining is 1h:58m
+2024-07-08 22:20:38 INFO Testing: dataset_name: market1501 top1: 94.477 top5: 98.605 top10: 99.258 mAP: 86.496
+2024-07-08 22:21:41 INFO Epoch 201/300	Training Loss: 1.0064	Time remaining is 1h:58m
+2024-07-08 22:22:43 INFO Epoch 202/300	Training Loss: 1.0155	Time remaining is 1h:57m
+2024-07-08 22:23:46 INFO Epoch 203/300	Training Loss: 1.0185	Time remaining is 1h:55m
+2024-07-08 22:24:48 INFO Epoch 204/300	Training Loss: 1.0083	Time remaining is 1h:54m
+2024-07-08 22:25:51 INFO Epoch 205/300	Training Loss: 1.0128	Time remaining is 1h:53m
+2024-07-08 22:27:04 INFO Testing: dataset_name: market1501 top1: 94.745 top5: 98.634 top10: 99.317 mAP: 86.612
+2024-07-08 22:28:06 INFO Epoch 206/300	Training Loss: 1.0150	Time remaining is 1h:52m
+2024-07-08 22:29:09 INFO Epoch 207/300	Training Loss: 1.0182	Time remaining is 1h:51m
+2024-07-08 22:30:12 INFO Epoch 208/300	Training Loss: 1.0134	Time remaining is 1h:50m
+2024-07-08 22:31:15 INFO Epoch 209/300	Training Loss: 1.0129	Time remaining is 1h:48m
+2024-07-08 22:32:17 INFO Epoch 210/300	Training Loss: 1.0077	Time remaining is 1h:47m
+2024-07-08 22:33:30 INFO Testing: dataset_name: market1501 top1: 94.448 top5: 98.426 top10: 99.287 mAP: 86.621
+2024-07-08 22:34:32 INFO Epoch 211/300	Training Loss: 1.0118	Time remaining is 1h:47m
+2024-07-08 22:35:35 INFO Epoch 212/300	Training Loss: 1.0115	Time remaining is 1h:45m
+2024-07-08 22:36:37 INFO Epoch 213/300	Training Loss: 1.0060	Time remaining is 1h:44m
+2024-07-08 22:37:40 INFO Epoch 214/300	Training Loss: 1.0121	Time remaining is 1h:43m
+2024-07-08 22:38:42 INFO Epoch 215/300	Training Loss: 1.0065	Time remaining is 1h:42m
+2024-07-08 22:39:54 INFO Testing: dataset_name: market1501 top1: 94.715 top5: 98.486 top10: 99.287 mAP: 86.673
+2024-07-08 22:40:57 INFO Epoch 216/300	Training Loss: 1.0069	Time remaining is 1h:41m
+2024-07-08 22:41:59 INFO Epoch 217/300	Training Loss: 1.0123	Time remaining is 1h:40m
+2024-07-08 22:43:02 INFO Epoch 218/300	Training Loss: 1.0185	Time remaining is 1h:38m
+2024-07-08 22:44:05 INFO Epoch 219/300	Training Loss: 1.0111	Time remaining is 1h:37m
+2024-07-08 22:45:08 INFO Epoch 220/300	Training Loss: 1.0119	Time remaining is 1h:36m
+2024-07-08 22:46:20 INFO Testing: dataset_name: market1501 top1: 94.715 top5: 98.575 top10: 99.347 mAP: 86.678
+2024-07-08 22:47:23 INFO Epoch 221/300	Training Loss: 1.0095	Time remaining is 1h:35m
+2024-07-08 22:48:25 INFO Epoch 222/300	Training Loss: 1.0104	Time remaining is 1h:34m
+2024-07-08 22:49:28 INFO Epoch 223/300	Training Loss: 1.0113	Time remaining is 1h:33m
+2024-07-08 22:50:30 INFO Epoch 224/300	Training Loss: 1.0042	Time remaining is 1h:31m
+2024-07-08 22:51:33 INFO Epoch 225/300	Training Loss: 1.0161	Time remaining is 1h:30m
+2024-07-08 22:52:46 INFO Testing: dataset_name: market1501 top1: 94.715 top5: 98.575 top10: 99.258 mAP: 86.662
+2024-07-08 22:53:49 INFO Epoch 226/300	Training Loss: 1.0114	Time remaining is 1h:29m
+2024-07-08 22:54:51 INFO Epoch 227/300	Training Loss: 1.0105	Time remaining is 1h:28m
+2024-07-08 22:55:54 INFO Epoch 228/300	Training Loss: 1.0099	Time remaining is 1h:27m
+2024-07-08 22:56:57 INFO Epoch 229/300	Training Loss: 1.0166	Time remaining is 1h:26m
+2024-07-08 22:58:00 INFO Epoch 230/300	Training Loss: 1.0104	Time remaining is 1h:24m
+2024-07-08 22:59:12 INFO Testing: dataset_name: market1501 top1: 94.685 top5: 98.545 top10: 99.258 mAP: 86.731
+2024-07-08 23:00:15 INFO Epoch 231/300	Training Loss: 1.0060	Time remaining is 1h:23m
+2024-07-08 23:01:17 INFO Epoch 232/300	Training Loss: 1.0026	Time remaining is 1h:22m
+2024-07-08 23:02:20 INFO Epoch 233/300	Training Loss: 1.0084	Time remaining is 1h:21m
+2024-07-08 23:03:22 INFO Epoch 234/300	Training Loss: 1.0051	Time remaining is 1h:20m
+2024-07-08 23:04:25 INFO Epoch 235/300	Training Loss: 1.0061	Time remaining is 1h:19m
+2024-07-08 23:05:37 INFO Testing: dataset_name: market1501 top1: 94.774 top5: 98.605 top10: 99.228 mAP: 86.802
+2024-07-08 23:06:40 INFO Epoch 236/300	Training Loss: 1.0152	Time remaining is 1h:18m
+2024-07-08 23:07:43 INFO Epoch 237/300	Training Loss: 1.0094	Time remaining is 1h:16m
+2024-07-08 23:08:46 INFO Epoch 238/300	Training Loss: 1.0053	Time remaining is 1h:15m
+2024-07-08 23:09:48 INFO Epoch 239/300	Training Loss: 1.0037	Time remaining is 1h:14m
+2024-07-08 23:10:50 INFO Epoch 240/300	Training Loss: 1.0085	Time remaining is 1h:13m
+2024-07-08 23:12:03 INFO Testing: dataset_name: market1501 top1: 94.982 top5: 98.515 top10: 99.258 mAP: 86.792
+2024-07-08 23:13:05 INFO Epoch 241/300	Training Loss: 1.0102	Time remaining is 1h:12m
+2024-07-08 23:14:08 INFO Epoch 242/300	Training Loss: 1.0098	Time remaining is 1h:11m
+2024-07-08 23:15:10 INFO Epoch 243/300	Training Loss: 1.0042	Time remaining is 1h:9m
+2024-07-08 23:16:13 INFO Epoch 244/300	Training Loss: 1.0045	Time remaining is 1h:8m
+2024-07-08 23:17:15 INFO Epoch 245/300	Training Loss: 1.0089	Time remaining is 1h:7m
+2024-07-08 23:18:28 INFO Testing: dataset_name: market1501 top1: 94.774 top5: 98.486 top10: 99.228 mAP: 86.732
+2024-07-08 23:19:30 INFO Epoch 246/300	Training Loss: 1.0070	Time remaining is 1h:6m
+2024-07-08 23:20:33 INFO Epoch 247/300	Training Loss: 1.0100	Time remaining is 1h:5m
+2024-07-08 23:21:36 INFO Epoch 248/300	Training Loss: 1.0075	Time remaining is 1h:3m
+2024-07-08 23:22:38 INFO Epoch 249/300	Training Loss: 1.0046	Time remaining is 1h:2m
+2024-07-08 23:23:40 INFO Epoch 250/300	Training Loss: 1.0014	Time remaining is 1h:1m
+2024-07-08 23:24:53 INFO Testing: dataset_name: market1501 top1: 94.745 top5: 98.456 top10: 99.228 mAP: 86.796
+2024-07-08 23:25:55 INFO Epoch 251/300	Training Loss: 1.0003	Time remaining is 0h:60m
+2024-07-08 23:26:58 INFO Epoch 252/300	Training Loss: 1.0070	Time remaining is 0h:59m
+2024-07-08 23:28:01 INFO Epoch 253/300	Training Loss: 1.0069	Time remaining is 0h:58m
+2024-07-08 23:29:04 INFO Epoch 254/300	Training Loss: 1.0060	Time remaining is 0h:56m
+2024-07-08 23:30:06 INFO Epoch 255/300	Training Loss: 1.0027	Time remaining is 0h:55m
+2024-07-08 23:31:19 INFO Testing: dataset_name: market1501 top1: 94.923 top5: 98.456 top10: 99.139 mAP: 86.801
+2024-07-08 23:32:21 INFO Epoch 256/300	Training Loss: 1.0077	Time remaining is 0h:54m
+2024-07-08 23:33:24 INFO Epoch 257/300	Training Loss: 1.0043	Time remaining is 0h:53m
+2024-07-08 23:34:27 INFO Epoch 258/300	Training Loss: 1.0076	Time remaining is 0h:52m
+2024-07-08 23:35:29 INFO Epoch 259/300	Training Loss: 1.0084	Time remaining is 0h:50m
+2024-07-08 23:36:32 INFO Epoch 260/300	Training Loss: 1.0077	Time remaining is 0h:49m
+2024-07-08 23:37:44 INFO Testing: dataset_name: market1501 top1: 94.834 top5: 98.426 top10: 99.258 mAP: 86.896
+2024-07-08 23:38:47 INFO Epoch 261/300	Training Loss: 1.0071	Time remaining is 0h:48m
+2024-07-08 23:39:50 INFO Epoch 262/300	Training Loss: 1.0137	Time remaining is 0h:47m
+2024-07-08 23:40:53 INFO Epoch 263/300	Training Loss: 1.0066	Time remaining is 0h:46m
+2024-07-08 23:41:55 INFO Epoch 264/300	Training Loss: 1.0058	Time remaining is 0h:44m
+2024-07-08 23:42:58 INFO Epoch 265/300	Training Loss: 1.0057	Time remaining is 0h:43m
+2024-07-08 23:44:10 INFO Testing: dataset_name: market1501 top1: 94.685 top5: 98.367 top10: 99.169 mAP: 86.878
+2024-07-08 23:45:13 INFO Epoch 266/300	Training Loss: 1.0077	Time remaining is 0h:42m
+2024-07-08 23:46:16 INFO Epoch 267/300	Training Loss: 1.0074	Time remaining is 0h:41m
+2024-07-08 23:47:18 INFO Epoch 268/300	Training Loss: 1.0022	Time remaining is 0h:40m
+2024-07-08 23:48:21 INFO Epoch 269/300	Training Loss: 1.0074	Time remaining is 0h:38m
+2024-07-08 23:49:24 INFO Epoch 270/300	Training Loss: 1.0098	Time remaining is 0h:37m
+2024-07-08 23:50:36 INFO Testing: dataset_name: market1501 top1: 94.893 top5: 98.486 top10: 99.139 mAP: 86.723
+2024-07-08 23:51:39 INFO Epoch 271/300	Training Loss: 1.0060	Time remaining is 0h:36m
+2024-07-08 23:52:42 INFO Epoch 272/300	Training Loss: 1.0058	Time remaining is 0h:35m
+2024-07-08 23:53:45 INFO Epoch 273/300	Training Loss: 1.0090	Time remaining is 0h:34m
+2024-07-08 23:54:48 INFO Epoch 274/300	Training Loss: 1.0051	Time remaining is 0h:33m
+2024-07-08 23:55:50 INFO Epoch 275/300	Training Loss: 1.0053	Time remaining is 0h:31m
+2024-07-08 23:57:03 INFO Testing: dataset_name: market1501 top1: 94.804 top5: 98.426 top10: 99.169 mAP: 86.780
+2024-07-08 23:58:05 INFO Epoch 276/300	Training Loss: 1.0006	Time remaining is 0h:30m
+2024-07-08 23:59:08 INFO Epoch 277/300	Training Loss: 1.0058	Time remaining is 0h:29m
+2024-07-09 00:00:11 INFO Epoch 278/300	Training Loss: 1.0053	Time remaining is 0h:28m
+2024-07-09 00:01:13 INFO Epoch 279/300	Training Loss: 1.0054	Time remaining is 0h:27m
+2024-07-09 00:02:16 INFO Epoch 280/300	Training Loss: 1.0066	Time remaining is 0h:25m
+2024-07-09 00:03:28 INFO Testing: dataset_name: market1501 top1: 94.804 top5: 98.278 top10: 99.080 mAP: 86.781
+2024-07-09 00:04:31 INFO Epoch 281/300	Training Loss: 1.0051	Time remaining is 0h:24m
+2024-07-09 00:05:33 INFO Epoch 282/300	Training Loss: 1.0002	Time remaining is 0h:23m
+2024-07-09 00:06:36 INFO Epoch 283/300	Training Loss: 1.0069	Time remaining is 0h:22m
+2024-07-09 00:07:38 INFO Epoch 284/300	Training Loss: 0.9994	Time remaining is 0h:21m
+2024-07-09 00:08:41 INFO Epoch 285/300	Training Loss: 1.0013	Time remaining is 0h:19m
+2024-07-09 00:09:53 INFO Testing: dataset_name: market1501 top1: 94.685 top5: 98.308 top10: 99.228 mAP: 86.726
+2024-07-09 00:10:56 INFO Epoch 286/300	Training Loss: 1.0041	Time remaining is 0h:18m
+2024-07-09 00:11:59 INFO Epoch 287/300	Training Loss: 1.0049	Time remaining is 0h:17m
+2024-07-09 00:13:02 INFO Epoch 288/300	Training Loss: 0.9994	Time remaining is 0h:16m
+2024-07-09 00:14:04 INFO Epoch 289/300	Training Loss: 1.0045	Time remaining is 0h:15m
+2024-07-09 00:15:07 INFO Epoch 290/300	Training Loss: 1.0042	Time remaining is 0h:13m
+2024-07-09 00:16:19 INFO Testing: dataset_name: market1501 top1: 94.893 top5: 98.367 top10: 99.080 mAP: 86.892
+2024-07-09 00:17:21 INFO Epoch 291/300	Training Loss: 1.0008	Time remaining is 0h:12m
+2024-07-09 00:18:24 INFO Epoch 292/300	Training Loss: 1.0043	Time remaining is 0h:11m
+2024-07-09 00:19:27 INFO Epoch 293/300	Training Loss: 1.0035	Time remaining is 0h:10m
+2024-07-09 00:20:29 INFO Epoch 294/300	Training Loss: 0.9999	Time remaining is 0h:8m
+2024-07-09 00:21:32 INFO Epoch 295/300	Training Loss: 1.0039	Time remaining is 0h:7m
+2024-07-09 00:22:44 INFO Testing: dataset_name: market1501 top1: 94.893 top5: 98.456 top10: 99.198 mAP: 86.852
+2024-07-09 00:23:47 INFO Epoch 296/300	Training Loss: 0.9984	Time remaining is 0h:6m
+2024-07-09 00:24:50 INFO Epoch 297/300	Training Loss: 1.0039	Time remaining is 0h:5m
+2024-07-09 00:25:52 INFO Epoch 298/300	Training Loss: 0.9994	Time remaining is 0h:4m
+2024-07-09 00:26:55 INFO Epoch 299/300	Training Loss: 0.9975	Time remaining is 0h:2m
+2024-07-09 00:27:57 INFO Epoch 300/300	Training Loss: 1.0027	Time remaining is 0h:1m
+2024-07-09 00:29:10 INFO Testing: dataset_name: market1501 top1: 94.893 top5: 98.456 top10: 99.169 mAP: 87.079
+2024-07-09 00:29:10 INFO The running time of training: 2.18625e+04 s

@@ -6,9 +6,6 @@
   - [2.2. Jupyter](#22-jupyter)
   - [2.3. Screen](#23-screen)
   - [2.4. File operation](#24-file-operation)
-- [3. Experiments](#3-experiments)
-  - [3.1. PCB](#31-pcb)
-  - [3.2. APNet](#32-apnet)
 
 # 2. Environment command
 
@@ -49,8 +46,3 @@ rm -rf ex_main
 cp -r version/pcb/ex_main/ ./
 ```
 
-# 3. Experiments
-
-## 3.1. [PCB](version/pcb) 
-
-## 3.2. [APNet](version/apnet) 
