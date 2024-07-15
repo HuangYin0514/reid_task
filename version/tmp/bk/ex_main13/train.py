@@ -89,10 +89,10 @@ def brain(config, logger):
             #### Integrate loss
             integrate_feats, integrate_pids = model.integrateFeatsModule(resnet_feats, pids, num_same_id=4)
             integrate_pool_feats, integrate_bn_feats, integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
-            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
+            integrate_ce_loss = ce_labelsmooth_loss(integrate_cls_score, integrate_pids)
 
             #### Suggest loss
-            suggest_loss = torch.norm(suggest_feats - integrate_feats.repeat_interleave(4, dim=0), p=2)
+            suggest_loss = torch.norm(suggest_resnet_feats - integrate_feats.repeat_interleave(4, dim=0), p=2)
 
             auxiliary_loss = integrate_ce_loss + 0.1 * suggest_loss
 

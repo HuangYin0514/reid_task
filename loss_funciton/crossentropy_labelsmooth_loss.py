@@ -28,8 +28,9 @@ class CrossEntropyLabelSmoothLoss(nn.Module):
                 targets: ground truth labels with shape (num_classes)
         """
         log_probs = self.logsoftmax(inputs)
-        targets = torch.zeros(log_probs.size()).scatter_(1, targets.unsqueeze(1).cpu(), 1)
-        targets = targets.to(self.config.device)
+        # targets = torch.zeros(log_probs.size()).scatter_(1, targets.unsqueeze(1).cpu(), 1)
+        # targets = targets.to(self.config.device)
+        targets = torch.zeros(log_probs.size(), device=self.config.device).scatter_(1, targets.unsqueeze(1), 1)
         targets = (1 - self.epsilon) * targets + self.epsilon / self.num_classes
         loss = (-targets * log_probs).mean(0).sum()
         return loss
