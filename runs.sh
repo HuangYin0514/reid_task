@@ -5,7 +5,7 @@
 ####################################################################################
 
 
-python ex_001_15/train.py --config ex_001_15/config.py
+python ex_000_1/train.py --config ex_000_1/config.py
 
 
 sh other_runs.sh
