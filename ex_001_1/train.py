@@ -86,8 +86,13 @@ def brain(config, logger):
             G_tri_loss = triplet_loss(G_pool_feats, pids)
             G_loss = G_ce_loss + G_tri_loss
 
+            #### Integrate loss
+            integrate_feats, integrate_pids = model.integrate_feats_module(resnet_feats, pids, num_same_id=4)
+            integrate_pool_feats, integrate_bn_feats, integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
+            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
+
             #### All loss
-            loss = G_loss
+            loss = backbone_loss + integrate_ce_loss
 
             ### Update the parameters
             loss.backward()
@@ -105,9 +110,7 @@ def brain(config, logger):
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
             time_remaining_H = time_remaining // 3600
             time_remaining_M = time_remaining / 60 % 60
-            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(
-                epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M
-            )
+            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M)
             logger.info(message)
 
             ### Record train information
@@ -123,7 +126,7 @@ def brain(config, logger):
             CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)
 
             ### Log test information
-            message = ("Testing: dataset_name: {} top1: {:.3f} top5: {:.3f} top10: {:.3f} mAP: {:.3f}").format(config.dataset_name, CMC[0] * 100, CMC[4] * 100, CMC[9] * 100, mAP * 100)
+            message = ("Epoch {}/{}\t" "Testing: dataset_name: {} top1: {:.3f} top5: {:.3f} top10: {:.3f} mAP: {:.3f}").format(epoch + 1, config.epochs, config.dataset_name, CMC[0] * 100, CMC[4] * 100, CMC[9] * 100, mAP * 100)
             logger.info(message)
 
             ### Save model
