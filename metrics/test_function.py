@@ -23,7 +23,7 @@ def test_function(
     q_loader,
     g_loader,
     normalize_feature=True,
-    save_features=True,
+    save_features=False,
     re_rank=False,
     eval_method="market1501",
     is_gpu=True,

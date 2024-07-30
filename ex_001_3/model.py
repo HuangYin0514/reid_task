@@ -77,8 +77,8 @@ class Integrate_feats_module(nn.Module):
         # CAM_feats_reshaped = F.relu(CAM_feats_reshaped)  # (chunk_size, 4, h, w)
 
         # CBAM
-        # CBAM_feats = self.ca(CAM_feats_reshaped) * CAM_feats_reshaped  # (bs, 4, h, w)
-        CBAM_feats = 0.25 * CAM_feats_reshaped  # (bs, 4, h, w)
+        CBAM_feats = self.ca(CAM_feats_reshaped) * CAM_feats_reshaped  # (bs, 4, h, w)
+        # CBAM_feats = 0.25 * CAM_feats_reshaped  # (bs, 4, h, w)
 
         # Integrate
         integrate_feats = torch.sum(CBAM_feats, dim=1, keepdim=True)  # (chunk_size, 1, h, w)
