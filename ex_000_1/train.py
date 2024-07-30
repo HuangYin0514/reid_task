@@ -78,21 +78,16 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats = model(inputs)
+            G_cls_score, G_pool_feats, G_bn_feats, resnet_feats = model(inputs)
 
             ### Loss
             #### Gloab loss
-            backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
-            backbone_tri_loss = triplet_loss(backbone_pool_feats, pids)
-            backbone_loss = backbone_ce_loss + backbone_tri_loss
-
-            #### Integrate loss
-            integrate_feats, integrate_pids = model.integrate_feats_module(resnet_feats, pids, num_same_id=4)
-            integrate_pool_feats, integrate_bn_feats, integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
-            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
+            G_ce_loss = ce_labelsmooth_loss(G_cls_score, pids)
+            G_tri_loss = triplet_loss(G_pool_feats, pids)
+            G_loss = G_ce_loss + G_tri_loss
 
             #### All loss
-            loss = backbone_loss + 0.1 * integrate_ce_loss
+            loss = G_loss
 
             ### Update the parameters
             loss.backward()
@@ -100,8 +95,6 @@ def brain(config, logger):
 
             ### record Loss
             running_loss += loss.item() * inputs.size(0)
-
-            # print(backbone_ce_loss.item(), backbone_tri_loss.item(), integrate_ce_loss.item())
 
         scheduler.step()
 
@@ -130,15 +123,12 @@ def brain(config, logger):
             CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)
 
             ### Log test information
-            ### Log test information
-            message = ("Epoch {}/{}\t" "Testing: dataset_name: {} top1: {:.3f} top5: {:.3f} top10: {:.3f} mAP: {:.3f}").format(
-                epoch + 1, config.epochs, config.dataset_name, CMC[0] * 100, CMC[4] * 100, CMC[9] * 100, mAP * 100
-            )
+            message = ("Testing: dataset_name: {} top1: {:.3f} top5: {:.3f} top10: {:.3f} mAP: {:.3f}").format(config.dataset_name, CMC[0] * 100, CMC[4] * 100, CMC[9] * 100, mAP * 100)
             logger.info(message)
 
             ### Save model
             model_path = os.path.join(config.models_outputs_path, "model_{}.tar".format(epoch + 1))
-            # torch.save(model.state_dict(), model_path)
+            torch.save(model.state_dict(), model_path)
 
             ### Record test information
             recorder.val_epochs_list.append(epoch + 1)
