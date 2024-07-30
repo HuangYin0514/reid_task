@@ -126,7 +126,7 @@ def brain(config, logger):
 
             ### Save model
             model_path = os.path.join(config.models_outputs_path, "model_{}.tar".format(epoch + 1))
-            torch.save(model.state_dict(), model_path)
+            # torch.save(model.state_dict(), model_path)
 
             ### Record test information
             recorder.val_epochs_list.append(epoch + 1)
