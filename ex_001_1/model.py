@@ -212,6 +212,12 @@ class ReidNet(nn.Module):
         # Classifier head
         self.classifier_head = Classifier_head(2048, num_classes, config, logger)
 
+        # Auxiliary classifier
+        self.auxiliary_classifier_head = Auxiliary_classifier_head(128, num_classes, config, logger)
+
+        # Integrat Feats Module
+        self.integrate_feats_module = Integrate_feats_module(self.classifier_head, config, logger)
+
     def forward(self, x):
         bs = x.size(0)
 
