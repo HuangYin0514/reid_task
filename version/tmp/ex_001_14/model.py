@@ -80,7 +80,7 @@ class Integrate_feats_module(nn.Module):
         # CBAM_feats = self.ca(CAM_feats_reshaped) * CAM_feats_reshaped  # (bs, 4, h, w)
 
         # Integrate
-        integrate_feats = torch.mean(CBAM_feats, dim=1, keepdim=True)  # (chunk_size, 1, h, w)
+        integrate_feats = torch.mean(CAM_feats_reshaped, dim=1, keepdim=True)  # (chunk_size, 1, h, w)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
         return integrate_feats, integrate_pids
