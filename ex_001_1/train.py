@@ -78,13 +78,13 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            G_cls_score, G_pool_feats, G_bn_feats, resnet_feats = model(inputs)
+            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats = model(inputs)
 
             ### Loss
             #### Gloab loss
-            G_ce_loss = ce_labelsmooth_loss(G_cls_score, pids)
-            G_tri_loss = triplet_loss(G_pool_feats, pids)
-            G_loss = G_ce_loss + G_tri_loss
+            backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
+            backbone_tri_loss = triplet_loss(backbone_pool_feats, pids)
+            backbone_loss = backbone_ce_loss + backbone_tri_loss
 
             #### Integrate loss
             integrate_feats, integrate_pids = model.integrate_feats_module(resnet_feats, pids, num_same_id=4)

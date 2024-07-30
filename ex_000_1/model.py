@@ -95,9 +95,9 @@ class ReidNet(nn.Module):
         resnet_feats = self.backbone(x)  # (bs, 2048, 16, 8)
 
         # Classifier head
-        G_pool_feats, G_bn_feats, G_cls_score = self.classifier_head(resnet_feats)
+        backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(resnet_feats)
 
         if self.training:
-            return G_cls_score, G_pool_feats, G_bn_feats, resnet_feats
+            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats
         else:
-            return G_bn_feats
+            return backbone_bn_feats

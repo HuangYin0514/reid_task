@@ -78,16 +78,16 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            G_cls_score, G_pool_feats, G_bn_feats, resnet_feats = model(inputs)
+            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats = model(inputs)
 
             ### Loss
             #### Gloab loss
-            G_ce_loss = ce_labelsmooth_loss(G_cls_score, pids)
-            G_tri_loss = triplet_loss(G_pool_feats, pids)
-            G_loss = G_ce_loss + G_tri_loss
+            backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
+            backbone_tri_loss = triplet_loss(backbone_pool_feats, pids)
+            backbone_loss = backbone_ce_loss + backbone_tri_loss
 
             #### All loss
-            loss = G_loss
+            loss = backbone_loss
 
             ### Update the parameters
             loss.backward()
@@ -105,9 +105,7 @@ def brain(config, logger):
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
             time_remaining_H = time_remaining // 3600
             time_remaining_M = time_remaining / 60 % 60
-            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(
-                epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M
-            )
+            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M)
             logger.info(message)
 
             ### Record train information
