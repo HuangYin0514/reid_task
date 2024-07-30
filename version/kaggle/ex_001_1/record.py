@@ -86,7 +86,7 @@ class Recorder:
         tmp_R1 = val_CMC_list[tmp_index, 0]
         tmp_mAP = val_mAP_list[tmp_index]
         subfig.text(
-            tmp_epoch * 0.55,
+            tmp_epoch * 0.75,
             tmp_R1 * 0.98,
             "R@1 in {}, {:.2f}%/{:.2f}%".format(
                 tmp_epoch,
@@ -100,7 +100,7 @@ class Recorder:
         tmp_R1 = val_CMC_list[tmp_index, 0]
         tmp_mAP = val_mAP_list[tmp_index]
         subfig.text(
-            tmp_epoch * 0.55,
+            tmp_epoch * 0.75,
             tmp_mAP * 1.02,
             "mAP in {}, {:.2f}%/{:.2f}%".format(
                 tmp_epoch,
