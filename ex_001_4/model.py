@@ -84,7 +84,7 @@ class Integrate_feats_module(nn.Module):
         integrate_feats = torch.sum(CBAM_feats, dim=1, keepdim=True)  # (chunk_size, 1, h, w)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
-        return integrate_feats, integrate_pids111
+        return integrate_feats, integrate_pids
 
     def _cam(self, feats, pids):
         # Classifier parameters
