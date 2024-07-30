@@ -84,17 +84,6 @@ class Integrate_feats_module(nn.Module):
         integrate_feats = torch.sum(CBAM_feats, dim=1, keepdim=True)  # (chunk_size, 1, h, w)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
-        for i in range(1, bs):
-            label1 = pids[4 * i]
-            label2 = pids[4 * i + 1]
-            label3 = pids[4 * i + 2]
-            label4 = pids[4 * i + 3]
-            if not label1 == label2 == label3 == label4:
-                print("Error: label1, label2, label3, label4 are not the same")
-                print(label1, label2, label3, label4)
-                exit(0)
-                return
-
         return integrate_feats, integrate_pids
 
     def _cam(self, feats, pids):
