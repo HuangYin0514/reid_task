@@ -169,7 +169,7 @@ class Integrate_feats_module(nn.Module):
         self.ca.apply(network.utils.weights_init_kaiming)
         self.sa.apply(network.utils.weights_init_kaiming)
 
-        self.multi_head_attention = Multi_head_attention(d_model=128, num_heads=4)
+        self.multi_head_attention = Multi_head_attention(d_model=2048, num_heads=8)
 
         # Integrate_layer
         conv11 = nn.Conv2d(4, 1, kernel_size=3, stride=1, padding=1, bias=False)
@@ -202,7 +202,7 @@ class Integrate_feats_module(nn.Module):
         attention_feats = attention_feats.view(chunk_size, num_same_id, c)  # (bs, 4, c)
 
         # Integrate
-        integrate_feats = torch.sum(CAM_feats_reshaped, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c)
+        integrate_feats = torch.sum(attention_feats, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c)
         integrate_feats = integrate_feats.view(chunk_size, c, 1, 1)  # (chunk_size, c, 1, 1)
 
         # print("integrate_feats.shape: ", integrate_feats.shape)
