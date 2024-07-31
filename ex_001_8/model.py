@@ -184,22 +184,16 @@ class Integrate_feats_module(nn.Module):
         chunk_size = int(bs / num_same_id)  # 15
 
         # CAM
-        CAM_feats = self._cam(feats, pids)  #  (bs, 1, h, w)
-        CAM_feats_reshaped = CAM_feats.view(chunk_size, num_same_id, h, w)  # (chunk_size, 4, h, w)
-        # CAM_feats_reshaped = F.relu(CAM_feats_reshaped)  # (chunk_size, 4, h, w)
+        CAM_attention = self._cam(feats, pids)  #  (bs, 1, h, w)
+        CAM_feats = feats * CAM_attention.expand_as(feats)  # (bs, c, h, w)
+        print("CAM_feats.shape: ", CAM_feats.shape)
 
-        # Attention
-        # CBAM_feats = self.ca(CAM_feats_reshaped) * CAM_feats_reshaped  # (bs, 4, h, w)
-        # CBAM_feats = 0.25 * CAM_feats_reshaped  # (bs, 4, h, w)
-        Multi_head_attention_input = CAM_feats_reshaped.view(chunk_size, num_same_id, h * w)  # (bs, 4, h*w)
-        attention_feats, attention_matrix = self.multi_head_attention(Multi_head_attention_input, Multi_head_attention_input, Multi_head_attention_input)  # (bs, 4, h*w)
-        attention_feats = attention_feats.view(chunk_size, num_same_id, h, w)  # (bs, 4, h, w)
-
-        # print("multi_head_attention_input.shape: ", Multi_head_attention_input.shape)
-        # print("attention_feats.shape: ", attention_feats.shape)
+        CAM_feats_reshaped = CAM_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
+        print("CAM_feats_reshaped.shape: ", CAM_feats_reshaped.shape)
 
         # Integrate
-        integrate_feats = torch.mean(attention_feats, dim=1, keepdim=True)  # (chunk_size, 1, h, w)
+        integrate_feats = torch.mean(CAM_feats_reshaped, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c, h, w)
+        print("integrate_feats.shape: ", integrate_feats.shape)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
         return integrate_feats, integrate_pids
@@ -240,8 +234,8 @@ class Auxiliary_classifier_head(nn.Module):
     def forward(self, feat):  # (batch_size, dim)
         bs = feat.size(0)
         # pool
-        pool_feat = None  # torch.Size([batch_size, 1, 16, 8])
-        pool_feat = feat.view(bs, -1)  # (batch_size, 128)
+        pool_feat = self.pool_layer(feat)  # (batch_size, 2048, 1, 1)
+        pool_feat = pool_feat.view(bs, -1)  # (batch_size, 2048)
         # BN
         bn_feat = self.BN(pool_feat)  # (batch_size, 2048)
         # Classifier
