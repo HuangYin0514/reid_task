@@ -1,6 +1,8 @@
+from typing import Optional, Tuple
+
 import torch
 import torch.nn.functional as F
-from torch import nn
+from torch import Tensor, nn
 from torch.nn import functional as F
 from torchvision import models
 
