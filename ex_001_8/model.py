@@ -186,14 +186,11 @@ class Integrate_feats_module(nn.Module):
         # CAM
         CAM_attention = self._cam(feats, pids)  #  (bs, 1, h, w)
         CAM_feats = feats * CAM_attention.expand_as(feats)  # (bs, c, h, w)
-        print("CAM_feats.shape: ", CAM_feats.shape)
-
         CAM_feats_reshaped = CAM_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
-        print("CAM_feats_reshaped.shape: ", CAM_feats_reshaped.shape)
 
         # Integrate
         integrate_feats = torch.mean(CAM_feats_reshaped, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c, h, w)
-        print("integrate_feats.shape: ", integrate_feats.shape)
+        # print("integrate_feats.shape: ", integrate_feats.shape)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
         return integrate_feats, integrate_pids
@@ -325,7 +322,7 @@ class ReidNet(nn.Module):
         self.classifier_head = Classifier_head(2048, num_classes, config, logger)
 
         # Auxiliary classifier
-        self.auxiliary_classifier_head = Auxiliary_classifier_head(128, num_classes, config, logger)
+        self.auxiliary_classifier_head = Auxiliary_classifier_head(2048, num_classes, config, logger)
 
         # Integrat Feats Module
         self.integrate_feats_module = Integrate_feats_module(self.classifier_head, config, logger)
