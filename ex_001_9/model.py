@@ -192,7 +192,7 @@ class Integrate_feats_module(nn.Module):
         CAM_feats_reshaped = CAM_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
         # Integrate
-        integrate_feats = torch.mean(CAM_feats_reshaped, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c, h, w)
+        integrate_feats = torch.sum(CAM_feats_reshaped, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c, h, w)
         # print("integrate_feats.shape: ", integrate_feats.shape)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
