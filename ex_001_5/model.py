@@ -193,9 +193,9 @@ class Integrate_feats_module(nn.Module):
         # Attention
         # CBAM_feats = self.ca(CAM_feats_reshaped) * CAM_feats_reshaped  # (bs, 4, h, w)
         # CBAM_feats = 0.25 * CAM_feats_reshaped  # (bs, 4, h, w)
-        Multi_head_attention_input = CAM_feats_reshaped.view(bs, c, h * w)  # (bs, 4, h*w)
+        Multi_head_attention_input = CAM_feats_reshaped.view(chunk_size, num_same_id, h * w)  # (bs, 4, h*w)
         attention_feats, attention_matrix = self.multi_head_attention(Multi_head_attention_input, Multi_head_attention_input, Multi_head_attention_input)  # (bs, 4, h*w)
-        attention_feats = attention_feats.view(bs, c, h, w)  # (bs, 4, h, w)
+        attention_feats = attention_feats.view(chunk_size, num_same_id, h, w)  # (bs, 4, h, w)
 
         print("multi_head_attention_input.shape: ", Multi_head_attention_input.shape)
         print("attention_feats.shape: ", attention_feats.shape)
