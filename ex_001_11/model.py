@@ -202,10 +202,11 @@ class Integrate_feats_module(nn.Module):
         attention_feats = self.pool_layer(CAM_feats_reshaped).squeeze()  # (chunk_size, 4, c)
         weights_attention_feats = self.weights_layer(attention_feats).squeeze()  # (chunk_size, 4)
         weights_attention_feats = F.softmax(weights_attention_feats, dim=1).squeeze()  # (chunk_size, 4)
-        weighted_feats = weights_attention_feats.expand_as(CAM_feats_reshaped) * CAM_feats_reshaped  # (chunk_size, 4, c, h, w)
+        # weighted_feats = weights_attention_feats.expand_as(CAM_feats_reshaped) * CAM_feats_reshaped  # (chunk_size, 4, c, h, w)
 
         # Integrate
-        integrate_feats = torch.sum(weighted_feats, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c, h, w)
+        # integrate_feats = torch.sum(weighted_feats, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c, h, w)
+        integrate_feats = torch.einsum("bx,bxchw->bchw", weights_attention_feats, CAM_feats_reshaped).squeeze()  # (chunk_size, c, h, w)
 
         # print("integrate_feats.shape: ", integrate_feats.shape)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
