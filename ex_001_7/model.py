@@ -169,7 +169,7 @@ class Integrate_feats_module(nn.Module):
         self.ca.apply(network.utils.weights_init_kaiming)
         self.sa.apply(network.utils.weights_init_kaiming)
 
-        self.multi_head_attention = Multi_head_attention(d_model=128, num_heads=8)
+        self.multi_head_attention = Multi_head_attention(d_model=128, num_heads=4)
 
         # Integrate_layer
         conv11 = nn.Conv2d(4, 1, kernel_size=3, stride=1, padding=1, bias=False)
