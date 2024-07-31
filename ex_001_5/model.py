@@ -194,6 +194,9 @@ class Integrate_feats_module(nn.Module):
         attention_feats, attention_matrix = self.multi_head_attention(Multi_head_attention_input, Multi_head_attention_input, Multi_head_attention_input)  # (bs, 4, h*w)
         attention_feats = attention_feats.view(bs, c, h, w)  # (bs, 4, h, w)
 
+        print("multi_head_attention_input.shape: ", Multi_head_attention_input.shape)
+        print("attention_feats.shape: ", attention_feats.shape)
+
         # Integrate
         integrate_feats = torch.sum(attention_feats, dim=1, keepdim=True)  # (chunk_size, 1, h, w)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
