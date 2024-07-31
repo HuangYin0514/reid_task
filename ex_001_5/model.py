@@ -4,7 +4,6 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from torch import Tensor, nn
-from torch.nn import functional as F
 from torchvision import models
 
 import network
