@@ -181,6 +181,10 @@ class Integrate_feats_module(nn.Module):
         # Pooling
         self.pool_layer = nn.AdaptiveAvgPool2d(1)
 
+        # weights_layer
+        self.weights_layer = nn.Linear(2048, 1, bias=False)
+        self.weights_layer.apply(network.utils.weights_init_classifier)
+
     def forward(self, feats, pids, num_same_id=4):
         bs = feats.size(0)
         c, h, w = feats.size(1), feats.size(2), feats.size(3)
@@ -195,15 +199,13 @@ class Integrate_feats_module(nn.Module):
         CAM_feats_reshaped = CAM_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
         # Attention
-        attention_feats = self.pool_layer(CAM_feats_reshaped).squeeze()  # (bs, 4, c)
-        # att_feats = self.ca(att_feats) * att_feats
-        Multi_head_attention_input = attention_feats.view(chunk_size, num_same_id, c)  # (bs, 4, c)
-        attention_feats, attention_matrix = self.multi_head_attention(Multi_head_attention_input, Multi_head_attention_input, Multi_head_attention_input)  # (bs, 4, c)
-        attention_feats = attention_feats.view(chunk_size, num_same_id, c)  # (bs, 4, c)
+        attention_feats = self.pool_layer(CAM_feats_reshaped).squeeze()  # (chunk_size, 4, c)
+        weights_attention_feats = self.weights_layer(attention_feats).squeeze()  # (chunk_size, 4)
+        weights_attention_feats = F.softmax(weights_attention_feats, dim=1).squeeze()  # (chunk_size, 4)
+        weighted_feats = weights_attention_feats.expand_as(CAM_feats_reshaped) * CAM_feats_reshaped  # (chunk_size, 4, c, h, w)
 
         # Integrate
-        integrate_feats = torch.sum(attention_feats, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c)
-        integrate_feats = integrate_feats.view(chunk_size, c, 1, 1)  # (chunk_size, c, 1, 1)
+        integrate_feats = torch.sum(weighted_feats, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c, h, w)
 
         # print("integrate_feats.shape: ", integrate_feats.shape)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
