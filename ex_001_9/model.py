@@ -185,6 +185,9 @@ class Integrate_feats_module(nn.Module):
 
         # CAM
         CAM_attention = self._cam(feats, pids)  #  (bs, 1, h, w)
+        CAM_attention = CAM_attention.view(bs, h * w)
+        CAM_attention = F.normalize(CAM_attention, p=2, dim=1)
+        CAM_attention = CAM_attention.view(bs, 1, h, w)  # (bs, 1, h, w)
         CAM_feats = feats * CAM_attention.expand_as(feats)  # (bs, c, h, w)
         CAM_feats_reshaped = CAM_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
