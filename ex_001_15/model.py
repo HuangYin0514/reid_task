@@ -23,7 +23,7 @@ class Integrate_feats_module(nn.Module):
         ids_feats = feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
         # Weights
-        weights = torch.ones(15, 4).to(device=self.config.device)  # (chunk_size, 4)
+        weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
         weights_norm = torch.softmax(weights, dim=1)
 
         # Integrate
