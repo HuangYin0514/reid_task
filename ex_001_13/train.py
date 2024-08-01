@@ -88,11 +88,15 @@ def brain(config, logger):
 
             #### Integrate loss
             integrate_feats, integrate_pids = model.integrate_feats_module(resnet_feats, pids, num_same_id=4)
-            integrate_pool_feats, integrate_bn_feats, integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
-            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
+            integrate_cls_score_list = model.auxiliary_classifier_head(integrate_feats)
+            integrate_ce_loss = 0.0
+            for score in integrate_cls_score_list:
+                local_loss = ce_loss(score, pids)
+                integrate_ce_loss += local_loss
 
             #### All loss
-            loss = backbone_loss + 0.1 * integrate_ce_loss
+            loss = backbone_loss + 0.01 * integrate_ce_loss
+            print(backbone_loss.item(), integrate_ce_loss.item())
 
             ### Update the parameters
             loss.backward()

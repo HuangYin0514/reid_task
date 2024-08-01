@@ -58,17 +58,13 @@ class Auxiliary_classifier_head(nn.Module):
         bs = feats.size(0)
 
         pool_feats = self.pool_layer(feats)  # (chunk_size, 2048, 6, 1)
-        print("pool_feats: ", pool_feats.shape)
-        print("pool_feats: ", pool_feats[:, :, 0, :].shape)
 
         conv_feats = []  # Part module (6 x [N, 256, 1])
         for i in range(self.parts):
-            local_feats = self.local_conv_list[i](pool_feats[:, :, i, :])
+            local_feats = self.local_conv_list[i](pool_feats[:, :, i, :])  # (chunk_size, 256, 1)
             conv_feats.append(local_feats)
-        print("conv_feats: ", conv_feats[i].shape)
 
         cls_score_list = [self.classifier_list[i](conv_feats[i].view(bs, -1)) for i in range(self.parts)]  # (6 x [N, num_classes]）
-        print("cls_score_list: ", cls_score_list[i].shape)
 
         return cls_score_list
 
