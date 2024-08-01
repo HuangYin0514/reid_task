@@ -14,7 +14,7 @@ class Integrate_feats_module(nn.Module):
         self.config = config
         self.logger = logger
 
-    def forward(self, feats, pids, num_same_id=4):
+    def forward(self, feats, pids, backbone_cls_score, num_same_id=4):
         bs = feats.size(0)
         c, h, w = feats.size(1), feats.size(2), feats.size(3)
         chunk_size = int(bs / num_same_id)  # 15
@@ -23,7 +23,8 @@ class Integrate_feats_module(nn.Module):
         ids_feats = feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
         # Weights
-        weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
+        # weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
+        weights = backbone_cls_score.view(chunk_size, 4)  # (chunk_size, 4)
         weights_norm = torch.softmax(weights, dim=1)
 
         # Integrate

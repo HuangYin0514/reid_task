@@ -87,7 +87,7 @@ def brain(config, logger):
             backbone_loss = backbone_ce_loss + backbone_tri_loss
 
             #### Integrate loss
-            integrate_feats, integrate_pids = model.integrate_feats_module(resnet_feats, pids, num_same_id=4)
+            integrate_feats, integrate_pids = model.integrate_feats_module(resnet_feats, pids, backbone_cls_score, num_same_id=4)
             integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
             integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
 
