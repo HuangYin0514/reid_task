@@ -38,28 +38,38 @@ class Auxiliary_classifier_head(nn.Module):
         self.config = config
         self.logger = logger
 
-        # Pooling
-        self.pool_layer = nn.AdaptiveAvgPool2d(1)
+        self.parts = 6
 
-        # BatchNorm
-        self.BN = nn.BatchNorm1d(feat_dim)
-        self.BN.bias.requires_grad_(False)
-        self.BN.apply(network.utils.weights_init_kaiming)
+        self.pool_layer = nn.AdaptiveAvgPool2d((self.parts, 1))
 
-        # Classifier
-        self.classifier = nn.Linear(feat_dim, num_classes, bias=False)
-        self.classifier.apply(network.utils.weights_init_classifier)
+        self.local_conv_list = nn.ModuleList()
+        for _ in range(self.parts):
+            local_conv = nn.Sequential(nn.Conv1d(2048, 256, kernel_size=1), nn.BatchNorm1d(256), nn.ReLU(inplace=True))
+            self.local_conv_list.append(local_conv)
 
-    def forward(self, feat):  # (batch_size, dim)
-        bs = feat.size(0)
-        # pool
-        pool_feat = self.pool_layer(feat)  # (batch_size, 2048, 1, 1)
-        pool_feat = pool_feat.view(bs, -1)  # (batch_size, 2048)
-        # BN
-        bn_feat = self.BN(pool_feat)  # (batch_size, 2048)
-        # Classifier
-        cls_score = self.classifier(bn_feat)  # ([N, num_classes]）
-        return pool_feat, bn_feat, cls_score
+        self.classifier_list = nn.ModuleList()
+        for _ in range(self.parts):
+            fc = nn.Linear(256, num_classes)
+            nn.init.normal_(fc.weight, std=0.001)
+            nn.init.constant_(fc.bias, 0)
+            self.classifier_list.append(fc)
+
+    def forward(self, feats):  # (chunk_size, c, h, w)
+        bs = feats.size(0)
+
+        pool_feats = self.pool_layer(feats)  # (chunk_size, 2048, 6, 1)
+        print("pool_feats: ", pool_feats.shape)
+
+        conv_feats = []  # Part module (6 x [N, 256, 1])
+        for i in range(self.parts):
+            local_feats = self.local_conv_list[i](pool_feats[:, :, i, :])
+            conv_feats.append(local_feats)
+        print("conv_feats: ", conv_feats[i].shape)
+
+        cls_score_list = [self.classifier_list[i](conv_feats[i].view(bs, -1)) for i in range(self.parts)]  # (6 x [N, num_classes]）
+        print("cls_score_list: ", cls_score_list[i].shape)
+
+        return cls_score_list
 
 
 class Classifier_head(nn.Module):
