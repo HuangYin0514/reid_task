@@ -92,7 +92,7 @@ def brain(config, logger):
             integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
 
             #### All loss
-            loss = backbone_loss + 0.01 * integrate_ce_loss
+            loss = backbone_loss + 0.1 * integrate_ce_loss
             # print(backbone_loss.item(), 0.01 * integrate_ce_loss.item())
 
             ### Update the parameters
