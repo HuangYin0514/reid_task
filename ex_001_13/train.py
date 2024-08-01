@@ -96,7 +96,7 @@ def brain(config, logger):
 
             #### All loss
             loss = backbone_loss + 0.01 * integrate_ce_loss
-            print(backbone_loss.item(), 0.01 * integrate_ce_loss.item())
+            # print(backbone_loss.item(), 0.01 * integrate_ce_loss.item())
 
             ### Update the parameters
             loss.backward()
