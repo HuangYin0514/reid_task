@@ -59,7 +59,7 @@ class Auxiliary_classifier_head(nn.Module):
         bn_feat = self.BN(pool_feat)  # (batch_size, 2048)
         # Classifier
         cls_score = self.classifier(bn_feat)  # ([N, num_classes]）
-        return pool_feat, bn_feat, cls_score
+        return cls_score
 
 
 class Classifier_head(nn.Module):
