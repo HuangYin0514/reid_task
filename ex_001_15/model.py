@@ -22,8 +22,12 @@ class Integrate_feats_module(nn.Module):
         # Ids cluster
         ids_feats = feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
+        # Weights
+        weights = torch.ones(15, 4)
+        weights_norm = torch.softmax(weights, dim=1)
+
         # Integrate
-        integrate_feats = 0.25 * torch.sum(ids_feats, dim=1, keepdim=True).squeeze(1)  # (chunk_size, c, h, w)
+        integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, ids_feats)  # (chunk_size, c, h, w)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
         return integrate_feats, integrate_pids
