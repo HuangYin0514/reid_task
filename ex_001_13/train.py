@@ -91,7 +91,7 @@ def brain(config, logger):
             integrate_cls_score_list = model.auxiliary_classifier_head(integrate_feats)
             integrate_ce_loss = 0.0
             for score in integrate_cls_score_list:
-                local_loss = ce_loss(score, pids)
+                local_loss = ce_loss(score, integrate_pids)
                 integrate_ce_loss += local_loss
 
             #### All loss
