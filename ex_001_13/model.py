@@ -59,6 +59,7 @@ class Auxiliary_classifier_head(nn.Module):
 
         pool_feats = self.pool_layer(feats)  # (chunk_size, 2048, 6, 1)
         print("pool_feats: ", pool_feats.shape)
+        print("pool_feats: ", conv_feats[i].shape)
 
         conv_feats = []  # Part module (6 x [N, 256, 1])
         for i in range(self.parts):
