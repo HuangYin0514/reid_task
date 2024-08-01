@@ -24,6 +24,7 @@ class Integrate_feats_module(nn.Module):
 
         # Weights
         # weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
+        print("backbone_cls_score", backbone_cls_score.shape)
         weights = backbone_cls_score.view(chunk_size, 4)  # (chunk_size, 4)
         weights_norm = torch.softmax(weights, dim=1)
 
