@@ -27,7 +27,7 @@ class Integrate_feats_module(nn.Module):
         # print("backbone_cls_score", backbone_cls_score[torch.arange(bs), pids].shape)
         weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4)  # (chunk_size, 4)
         print("weights", weights)
-        weights_norm = torch.log_softmax(weights, dim=1)
+        weights_norm = torch.softmax(weights, dim=1)
         print("weights_norm", weights_norm)
 
         # Integrate
