@@ -25,10 +25,10 @@ class Integrate_feats_module(nn.Module):
         # Weights
         # weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
         # print("backbone_cls_score", backbone_cls_score[torch.arange(bs), pids].shape)
-        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4) * 20  # (chunk_size, 4)
-        print("weights", weights)
+        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4) * 10  # (chunk_size, 4)
+        # print("weights", weights)
         weights_norm = torch.softmax(weights, dim=1)
-        print("weights_norm", weights_norm)
+        # print("weights_norm", weights_norm)
 
         # Integrate
         integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, ids_feats)  # (chunk_size, c, h, w)
