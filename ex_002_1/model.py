@@ -8,6 +8,45 @@ from torch import Tensor, nn
 import network
 
 
+class Feats_Fusion_Module(nn.Module):
+    def __init__(self, config, logger):
+        super(Feats_Fusion_Module, self).__init__()
+        self.config = config
+        self.logger = logger
+
+    def forward(self, feats1, feats2):
+        bs = feats1.size(0)
+        alpha = 0.1
+        fusion_feats = (1 - alpha) * feats1 + alpha * feats2
+        return fusion_feats
+
+
+class Reminder_feats_module(nn.Module):
+    def __init__(self, config, logger):
+        super(Reminder_feats_module, self).__init__()
+        self.config = config
+        self.logger = logger
+
+        conv11 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
+        bn = nn.BatchNorm2d(2048)
+        act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+
+        conv11_1 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
+        bn_1 = nn.BatchNorm2d(2048)
+        act_1 = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+
+        self.suggest_layer = nn.Sequential(conv11, bn, act, conv11_1, bn_1, act_1)
+
+    def forward(self, feats):
+        bs = feats.size(0)
+        c, h, w = feats.size(1), feats.size(2), feats.size(3)
+        feats = feats.view(bs, c, h, w)
+        # Suggest layer
+        suggest_feats = self.suggest_layer(feats)
+        suggest_feats = suggest_feats.view(bs, c, h, w)
+        return suggest_feats
+
+
 class Integrate_feats_module(nn.Module):
     def __init__(self, classifier_head, config, logger):
         super(Integrate_feats_module, self).__init__()
@@ -157,16 +196,24 @@ class ReidNet(nn.Module):
         # Integrat Feats Module
         self.integrate_feats_module = Integrate_feats_module(self.classifier_head, config, logger)
 
+        # Reminder Feats Module
+        self.reminder_feats_module = Reminder_feats_module(config, logger)
+
+        # Feats Fusion Module
+        self.feats_Fusion_Module = Feats_Fusion_Module(config, logger)
+
     def forward(self, x):
         bs = x.size(0)
 
         # Backbone
         resnet_feats = self.backbone(x)  # (bs, 2048, 16, 8)
+        reminder_feats = self.reminder_feats_module(resnet_feats)  # (bs, 2048, 16, 8)
+        fusion_feats = self.feats_Fusion_Module(resnet_feats, reminder_feats)  # (bs, 2048, 16, 8)
 
         # Classifier head
-        backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(resnet_feats)
+        backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(fusion_feats)
 
         if self.training:
-            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats
+            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, fusion_feats
         else:
             return backbone_bn_feats
