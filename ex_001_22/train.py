@@ -151,6 +151,7 @@ if __name__ == "__main__":
     # Config
     parser = argparse.ArgumentParser(description=None)  ## Parse command-line arguments
     parser.add_argument("--config_file", type=str, help="Path to the config.py file")
+    parser.add_argument("--dataset_path", type=str, help="Path to the Dataset")
     parser.add_argument("--some_float", type=float, default=0.0, help="")
     parser.add_argument("--some_int", type=int, default=0, help="")
     args = parser.parse_args()
