@@ -92,11 +92,11 @@ def brain(config, logger):
             integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
 
             #### Contrast loss
-            contrast_ce_loss = ce_loss(fusion_feats, integrate_feats.repeat_interleave(4, dim=0))
+            contrast_mse_loss = mse_loss(fusion_feats, integrate_feats.repeat_interleave(4, dim=0))
 
             #### All loss
-            loss = backbone_loss + 0.1 * integrate_ce_loss + 0.1 * contrast_ce_loss
-            print(backbone_loss.item(), 0.1 * integrate_ce_loss.item(), 0.1 * contrast_ce_loss)
+            loss = backbone_loss + 0.1 * integrate_ce_loss + 0.1 * contrast_mse_loss
+            print(backbone_loss.item(), 0.1 * integrate_ce_loss.item(), 0.1 * contrast_mse_loss.item())
 
             ### Update the parameters
             loss.backward()
