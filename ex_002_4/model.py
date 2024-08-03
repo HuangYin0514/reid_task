@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from torch import Tensor, nn
 
 import network
+from torchdiffeq import odeint_adjoint as odeint
 
 
 class Feats_Fusion_Module(nn.Module):
@@ -21,30 +22,66 @@ class Feats_Fusion_Module(nn.Module):
         return fusion_feats
 
 
+class ODEfunc(nn.Module):
+    def __init__(self, dim=2048):
+        super(ODEfunc, self).__init__()
+
+        self.relu = nn.ReLU(inplace=True)
+
+        self.norm1 = nn.GroupNorm(min(32, dim), dim)
+
+        self.conv2 = nn.Conv2d(dim, dim, kernel_size=1, stride=1, padding=0, bias=False)
+        self.norm2 = nn.GroupNorm(min(32, dim), dim)
+
+        self.conv3 = nn.Conv2d(dim, dim, kernel_size=1, stride=1, padding=0, bias=False)
+        self.norm3 = nn.GroupNorm(min(32, dim), dim)
+
+    def forward(self, t, x):
+        out = self.relu(self.norm1(x))
+        out = self.relu(self.norm2(self.conv2(out)))
+        out = self.norm3(self.conv3(out))
+        return out
+
+
+class ODEBlock(nn.Module):
+
+    def __init__(self, config, logger):
+        super(ODEBlock, self).__init__()
+        self.config = config
+        self.logger = logger
+
+        self.odefunc = ODEfunc()
+        # self.integration_time = torch.tensor([0, 0.01, 0.02, 0.03]).float()
+        # self.integration_time = torch.tensor([0, 0.01]).float()
+        self.integration_time = torch.tensor([0, 0.02, 0.04]).float()
+
+    def forward(self, x):
+        integration_time = self.integration_time.type_as(x)
+        out = odeint(self.odefunc, x, integration_time, method="euler", rtol=1e-3, atol=1e-3)
+        return out[-1]
+
+
 class Reminder_feats_module(nn.Module):
     def __init__(self, config, logger):
         super(Reminder_feats_module, self).__init__()
         self.config = config
         self.logger = logger
 
-        conv11 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
-        bn = nn.BatchNorm2d(2048)
-        act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+        # conv11 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
+        # bn = nn.BatchNorm2d(2048)
+        # act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
 
-        conv11_1 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
-        bn_1 = nn.BatchNorm2d(2048)
-        act_1 = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+        # conv11_1 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
+        # bn_1 = nn.BatchNorm2d(2048)
+        # act_1 = nn.LeakyReLU(negative_slope=0.1, inplace=True)
 
-        self.suggest_layer = nn.Sequential(conv11, bn, act, conv11_1, bn_1, act_1)
+        # self.suggest_layer = nn.Sequential(conv11, bn, act, conv11_1, bn_1, act_1)
+        self.ode_net = ODEBlock(config, logger)
 
     def forward(self, feats):
         bs = feats.size(0)
-        c, h, w = feats.size(1), feats.size(2), feats.size(3)
-        feats = feats.view(bs, c, h, w)
-        # Suggest layer
-        suggest_feats = self.suggest_layer(feats)
-        suggest_feats = suggest_feats.view(bs, c, h, w)
-        return suggest_feats
+        reminder_feats = self.ode_net(feats)
+        return reminder_feats
 
 
 class Integrate_feats_module(nn.Module):
