@@ -158,6 +158,8 @@ if __name__ == "__main__":
     config = utils.common.read_config_file(args.config_file)  ## Read the configuration from the provided file
     # config.some_float = args.some_float ## Set command-line to config
 
+    config.dataset_path = args.dataset_path  ## Set command-line to config
+
     # Directory
     ## Set up the dataset directory
     dataset_path = config.dataset_path
