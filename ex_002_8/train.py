@@ -92,11 +92,13 @@ def brain(config, logger):
             integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
 
             #### Contrast loss
-            contrast_mse_loss = mse_loss(reminder_feats, integrate_feats.repeat_interleave(4, dim=0))
+            reminder_mse_loss = mse_loss(reminder_feats, integrate_feats.repeat_interleave(4, dim=0))
+            reminder_cls_score = model.auxiliary_classifier_head(reminder_feats)
+            reminder_ce_loss = ce_loss(reminder_cls_score, pids)
 
             #### All loss
-            loss = backbone_loss + 0.1 * integrate_ce_loss + 0.1 * contrast_mse_loss
-            # print(backbone_loss.item(), 0.1 * integrate_ce_loss.item(), 0.1 * contrast_mse_loss.item())
+            loss = backbone_loss + 0.1 * integrate_ce_loss + 0.1 * reminder_mse_loss + 0.1 * reminder_ce_loss
+            print(backbone_loss.item(), integrate_ce_loss.item(), reminder_mse_loss.item(), reminder_ce_loss.item())
 
             ### Update the parameters
             loss.backward()
