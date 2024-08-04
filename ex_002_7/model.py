@@ -80,12 +80,8 @@ class Reminder_feats_module(nn.Module):
 
     def forward(self, feats):
         bs = feats.size(0)
-        c, h, w = feats.size(1), feats.size(2), feats.size(3)
         reminder_feats = self.ode_net(feats)
-        # reminder_feats = reminder_feats.view(bs, -1)
-        # reminder_feats = F.normalize(reminder_feats, p=2, dim=1)
-        # reminder_feats = reminder_feats.view(bs, c, h, w)
-        return reminder_feats  # (bs, c, h, w)
+        return reminder_feats
 
 
 class Integrate_feats_module(nn.Module):
@@ -251,13 +247,10 @@ class ReidNet(nn.Module):
         reminder_feats = self.reminder_feats_module(resnet_feats)  # (bs, 2048, 16, 8)
         fusion_feats = self.feats_Fusion_Module(resnet_feats, reminder_feats)  # (bs, 2048, 16, 8)
 
-        print(torch.sum(reminder_feats))
-        print(torch.sum(resnet_feats))
-
         # Classifier head
         backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(fusion_feats)
 
         if self.training:
-            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, reminder_feats, fusion_feats
+            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, fusion_feats
         else:
             return backbone_bn_feats
