@@ -78,7 +78,7 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, fusion_feats = model(inputs)
+            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, reminder_feats, fusion_feats = model(inputs)
 
             ### Loss
             #### Gloab loss
@@ -92,11 +92,12 @@ def brain(config, logger):
             integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
 
             #### Contrast loss
-            contrast_mse_loss = mse_loss(fusion_feats, integrate_feats.repeat_interleave(4, dim=0))
+
+            contrast_mse_loss = mse_loss(reminder_feats, integrate_feats.repeat_interleave(4, dim=0))
 
             #### All loss
             loss = backbone_loss + 0.1 * integrate_ce_loss + 0.1 * contrast_mse_loss
-            # print(backbone_loss.item(), 0.1 * integrate_ce_loss.item(), 0.1 * contrast_mse_loss.item())
+            print(backbone_loss.item(), 0.1 * integrate_ce_loss.item(), 0.1 * contrast_mse_loss.item())
 
             ### Update the parameters
             loss.backward()
