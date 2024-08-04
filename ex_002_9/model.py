@@ -17,7 +17,7 @@ class Feats_Fusion_Module(nn.Module):
 
     def forward(self, feats1, feats2):
         bs = feats1.size(0)
-        alpha = 0.01
+        alpha = 0.1
         fusion_feats = (1 - alpha) * feats1 + alpha * feats2
         return fusion_feats
 
