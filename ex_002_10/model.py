@@ -45,7 +45,7 @@ class ODEfunc(nn.Module):
     def forward(self, t, x):
         q, qt = x.chunk(2, dim=1)
         qtt = self._func(t, q)
-        return qt, qtt
+        return torch.cat([qt, qtt], dim=1)
 
 
 class ODEBlock(nn.Module):
