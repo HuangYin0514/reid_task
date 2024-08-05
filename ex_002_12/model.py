@@ -70,6 +70,7 @@ class ODEBlock(nn.Module):
         integration_time = self.integration_time.type_as(x)
         q = x
         qt = self.v0_layer(x)
+        print(qt)
         coords = torch.cat([q, qt], dim=1)  # (bs, 2 * c, h, w)
         # print("coords: ", coords.shape)
         trajs = odeint(self.odefunc, coords, integration_time, method="euler", rtol=1e-3, atol=1e-3)  # (n_trajs, bs, 2*c, h, w)
