@@ -65,12 +65,12 @@ class ODEBlock(nn.Module):
         q = x
         qt = torch.zeros_like(x)
         coords = torch.cat([q, qt], dim=1)  # (bs, 2 * c, h, w)
-        print("coords: ", coords.shape)
+        # print("coords: ", coords.shape)
         trajs = odeint(self.odefunc, coords, integration_time, method="euler", rtol=1e-3, atol=1e-3)  # (n_trajs, bs, 2*c, h, w)
-        print("trajs: ", trajs.shape)
+        # print("trajs: ", trajs.shape)
         out = trajs[-1]
         q, qt = out.chunk(2, dim=1)
-        print("q: ", q.shape)
+        # print("q: ", q.shape)
         return q
 
 
