@@ -36,11 +36,16 @@ class ODEfunc(nn.Module):
         self.conv3 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
         self.norm3 = nn.GroupNorm(min(32, dim), dim)
 
-    def forward(self, t, x):
+    def _func(self, t, x):
         out = self.relu(self.norm1(x))
         out = self.relu(self.norm2(self.conv2(out)))
         out = self.norm3(self.conv3(out))
         return out
+
+    def forward(self, t, x):
+        q, qt = x.chunk(2, dim=1)
+        qtt = self._func(t, q)
+        return qt, qtt
 
 
 class ODEBlock(nn.Module):
@@ -57,8 +62,16 @@ class ODEBlock(nn.Module):
 
     def forward(self, x):
         integration_time = self.integration_time.type_as(x)
-        out = odeint(self.odefunc, x, integration_time, method="euler", rtol=1e-3, atol=1e-3)
-        return out[-1]
+        q = x
+        qt = torch.zeros_like(x)
+        coords = torch.cat([q, qt], dim=1)  # (bs, 2 * c, h, w)
+        print("coords: ", coords.shape)
+        trajs = odeint(self.odefunc, coords, integration_time, method="euler", rtol=1e-3, atol=1e-3)  # (n_trajs, bs, 2*c, h, w)
+        print("trajs: ", trajs.shape)
+        out = trajs[-1]
+        q, qt = out.chunk(2, dim=1)
+        print("q: ", q.shape)
+        return q
 
 
 class Reminder_feats_module(nn.Module):
@@ -80,7 +93,7 @@ class Reminder_feats_module(nn.Module):
 
     def forward(self, feats):
         bs = feats.size(0)
-        reminder_feats = self.ode_net(feats)
+        reminder_feats = self.ode_net(feats)  # (bs, c, h, w)
         return reminder_feats
 
 
