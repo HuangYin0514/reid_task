@@ -145,11 +145,14 @@ if __name__ == "__main__":
     # Config
     parser = argparse.ArgumentParser(description=None)  ## Parse command-line arguments
     parser.add_argument("--config_file", type=str, help="Path to the config.py file")
+    parser.add_argument("--dataset_path", type=str, help="Path to the Dataset")
     parser.add_argument("--some_float", type=float, default=0.0, help="")
     parser.add_argument("--some_int", type=int, default=0, help="")
     args = parser.parse_args()
     config = utils.common.read_config_file(args.config_file)  ## Read the configuration from the provided file
     # config.some_float = args.some_float ## Set command-line to config
+
+    config.dataset_path = args.dataset_path  ## Set command-line to config
 
     # Directory
     ## Set up the dataset directory
