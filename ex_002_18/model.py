@@ -28,7 +28,7 @@ class ODEfunc(nn.Module):
 
         self.relu = nn.ReLU(inplace=True)
 
-        self.norm1 = nn.GroupNorm(min(32, dim), dim)
+        self.norm1 = nn.GroupNorm(min(32, dim * 2), dim * 2)
 
         self.conv2 = nn.Conv2d(dim * 2, dim, kernel_size=3, stride=1, padding=1, bias=False)
         self.norm2 = nn.GroupNorm(min(32, dim), dim)
