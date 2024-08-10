@@ -44,7 +44,7 @@ class ODEfunc(nn.Module):
 
     def forward(self, t, x):
         q, qt = x.chunk(2, dim=1)
-        qtt = self._func(t, q) - qt
+        qtt = self._func(t, q)
         return torch.cat([qt, qtt], dim=1)
 
 
@@ -61,6 +61,9 @@ class ODEBlock(nn.Module):
         self.integration_time = torch.tensor([0, 0.02, 0.04]).float()
 
         conv11 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
+        bn = nn.BatchNorm2d(2048)
+        act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+
         self.v0_layer = nn.Sequential(conv11)
 
     def forward(self, x):
