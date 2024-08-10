@@ -30,7 +30,7 @@ class ODEfunc(nn.Module):
 
         self.norm1 = nn.GroupNorm(min(32, dim), dim)
 
-        self.conv2 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv2 = nn.Conv2d(dim * 2, dim, kernel_size=3, stride=1, padding=1, bias=False)
         self.norm2 = nn.GroupNorm(min(32, dim), dim)
 
         self.conv3 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
@@ -44,7 +44,7 @@ class ODEfunc(nn.Module):
 
     def forward(self, t, x):
         q, qt = x.chunk(2, dim=1)
-        qtt = self._func(t, q)
+        qtt = self._func(t, x)
         return torch.cat([qt, qtt], dim=1)
 
 
