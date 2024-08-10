@@ -28,9 +28,9 @@ class ODEfunc(nn.Module):
 
         self.relu = nn.ReLU(inplace=True)
 
-        self.norm1 = nn.GroupNorm(min(32, dim * 2), dim * 2)
+        self.norm1 = nn.GroupNorm(min(32, dim), dim)
 
-        self.conv2 = nn.Conv2d(dim * 2, dim, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv2 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
         self.norm2 = nn.GroupNorm(min(32, dim), dim)
 
         self.conv3 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
@@ -44,7 +44,7 @@ class ODEfunc(nn.Module):
 
     def forward(self, t, x):
         q, qt = x.chunk(2, dim=1)
-        qtt = self._func(t, x)
+        qtt = self._func(t, q)
         return torch.cat([qt, qtt], dim=1)
 
 
@@ -63,8 +63,9 @@ class ODEBlock(nn.Module):
         conv11 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
         bn = nn.BatchNorm2d(2048)
         act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+        sigmoid = nn.Sigmoid()
 
-        self.v0_layer = nn.Sequential(conv11)
+        self.v0_layer = nn.Sequential(conv11, sigmoid)
 
     def forward(self, x):
         integration_time = self.integration_time.type_as(x)
