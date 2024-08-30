@@ -61,11 +61,11 @@ class ODEBlock(nn.Module):
         self.integration_time = torch.tensor([0, 0.02, 0.04]).float()
 
         conv11 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
-        bn = nn.BatchNorm2d(2048)
+        # bn = nn.BatchNorm2d(2048)
         # act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
         act = nn.Sigmoid()
 
-        self.v0_layer = nn.Sequential(conv11, bn, act)
+        self.v0_layer = nn.Sequential(conv11, act)
 
     def forward(self, x):
         integration_time = self.integration_time.type_as(x)
