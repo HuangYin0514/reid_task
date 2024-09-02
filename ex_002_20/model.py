@@ -36,16 +36,11 @@ class ODEfunc(nn.Module):
         self.conv3 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
         self.norm3 = nn.GroupNorm(min(32, dim), dim)
 
-    def _func(self, t, x):
+    def forward(self, t, x):
         out = self.relu(self.norm1(x))
         out = self.relu(self.norm2(self.conv2(out)))
         out = self.norm3(self.conv3(out))
         return out
-
-    def forward(self, t, x):
-        q, qt = x.chunk(2, dim=1)
-        qtt = self._func(t, q)
-        return torch.cat([qt, qtt], dim=1)
 
 
 class ODEBlock(nn.Module):
@@ -60,25 +55,10 @@ class ODEBlock(nn.Module):
         # self.integration_time = torch.tensor([0, 0.01]).float()
         self.integration_time = torch.tensor([0, 0.02, 0.04]).float()
 
-        conv11 = nn.Conv2d(2048, 2048, kernel_size=3, stride=1, padding=1, bias=False)
-        # bn = nn.BatchNorm2d(2048)
-        # act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
-        # act = nn.Sigmoid()
-
-        self.v0_layer = nn.Sequential(conv11)
-
     def forward(self, x):
         integration_time = self.integration_time.type_as(x)
-        q = x
-        qt = self.v0_layer(x)
-        coords = torch.cat([q, qt], dim=1)  # (bs, 2 * c, h, w)
-        # print("coords: ", coords.shape)
-        trajs = odeint(self.odefunc, coords, integration_time, method="euler", rtol=1e-3, atol=1e-3)  # (n_trajs, bs, 2*c, h, w)
-        # print("trajs: ", trajs.shape)
-        out = trajs[-1]
-        q, qt = out.chunk(2, dim=1)
-        # print("q: ", q.shape)
-        return q
+        out = odeint(self.odefunc, x, integration_time, method="euler", rtol=1e-3, atol=1e-3)
+        return out[-1]
 
 
 class Reminder_feats_module(nn.Module):
@@ -100,7 +80,7 @@ class Reminder_feats_module(nn.Module):
 
     def forward(self, feats):
         bs = feats.size(0)
-        reminder_feats = self.ode_net(feats)  # (bs, c, h, w)
+        reminder_feats = self.ode_net(feats)
         return reminder_feats
 
 
