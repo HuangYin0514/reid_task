@@ -97,21 +97,16 @@ class Integrate_feats_module(nn.Module):
         c, h, w = feats.size(1), feats.size(2), feats.size(3)
         chunk_size = int(bs / num_same_id)  # 15
 
-        # Weights
-        # weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
-        # print("backbone_cls_score", backbone_cls_score[torch.arange(bs), pids].shape)
+        # classifier weights
         weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4)  # (chunk_size, 4)
-        # print("weights", weights)
         weights_norm = torch.softmax(weights, dim=1)
-        # print("weights_norm", weights_norm)
 
+        # CAM weights
         classifier_params = list(self.classifier_head.classifier.named_parameters())[-1]  # classifier 最后一层
         params_selected = classifier_params[1]  # classifier 参数
-        weights_feats = torch.einsum("bc, bcij -> bij", params_selected[pids], feats).unsqueeze(1)  # (b, c, h, w) -> (b, 1, h, w)
-        weights_feats = feats * weights_feats  # (b, 1, h, w) -> (b, c, h, w)
-
-        # Ids cluster
-        ids_feats = weights_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
+        CAM_weights = torch.einsum("bc, bcij -> bij", params_selected[pids], feats).unsqueeze(1)  # (b, c, h, w) -> (b, 1, h, w)
+        weighted_feats = feats * CAM_weights  # (b, 1, h, w) -> (b, c, h, w)
+        ids_feats = weighted_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
         # Integrate
         integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, ids_feats)  # (chunk_size, c, h, w)
