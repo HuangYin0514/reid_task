@@ -107,10 +107,11 @@ class Integrate_feats_module(nn.Module):
 
         classifier_params = list(self.classifier_head.classifier.named_parameters())[-1]  # classifier 最后一层
         params_selected = classifier_params[1]  # classifier 参数
-        re_weights_feats = torch.einsum("bc, bcij -> bij", params_selected[pids], feats)
+        weights_feats = torch.einsum("bc, bcij -> bij", params_selected[pids], feats)
+        weights_feats = feats * weights_feats
 
         # Ids cluster
-        ids_feats = re_weights_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
+        ids_feats = weights_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
         # Integrate
         integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, ids_feats)  # (chunk_size, c, h, w)
