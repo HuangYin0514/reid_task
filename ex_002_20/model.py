@@ -110,7 +110,7 @@ class Integrate_feats_module(nn.Module):
 
         classifier_params = list(self.classifier_head.classifier.named_parameters())[-1]  # classifier 最后一层
         params_selected = classifier_params[1]  # classifier 参数
-        re_weights_feats = torch.einsum("bc, bcij -> bij", params_selected[pids], ids_feats).detach()
+        re_weights_feats = torch.einsum("bc, bcij -> bij", params_selected[pids], ids_feats)
 
         # Integrate
         integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, re_weights_feats)  # (chunk_size, c, h, w)
