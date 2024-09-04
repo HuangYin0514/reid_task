@@ -90,6 +90,8 @@ class Integrate_feats_module(nn.Module):
         self.config = config
         self.logger = logger
 
+        self.classifier_head = classifier_head
+
     def forward(self, feats, pids, backbone_cls_score, num_same_id=4):
         bs = feats.size(0)
         c, h, w = feats.size(1), feats.size(2), feats.size(3)
@@ -106,8 +108,12 @@ class Integrate_feats_module(nn.Module):
         weights_norm = torch.softmax(weights, dim=1)
         # print("weights_norm", weights_norm)
 
+        classifier_params = list(self.classifier_head.classifier.named_parameters())[-1]  # classifier 最后一层
+        params_selected = classifier_params[1]  # classifier 参数
+        re_weights_feats = torch.einsum("bc, bcij -> bij", params_selected[pids], ids_feats).detach()
+
         # Integrate
-        integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, ids_feats)  # (chunk_size, c, h, w)
+        integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, re_weights_feats)  # (chunk_size, c, h, w)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
         return integrate_feats, integrate_pids
