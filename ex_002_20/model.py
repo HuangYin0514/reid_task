@@ -97,9 +97,6 @@ class Integrate_feats_module(nn.Module):
         c, h, w = feats.size(1), feats.size(2), feats.size(3)
         chunk_size = int(bs / num_same_id)  # 15
 
-        # Ids cluster
-        ids_feats = feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
-
         # Weights
         # weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
         # print("backbone_cls_score", backbone_cls_score[torch.arange(bs), pids].shape)
@@ -110,10 +107,13 @@ class Integrate_feats_module(nn.Module):
 
         classifier_params = list(self.classifier_head.classifier.named_parameters())[-1]  # classifier 最后一层
         params_selected = classifier_params[1]  # classifier 参数
-        re_weights_feats = torch.einsum("bc, bcij -> bij", params_selected[pids], ids_feats)
+        re_weights_feats = torch.einsum("bc, bcij -> bij", params_selected[pids], feats)
+
+        # Ids cluster
+        ids_feats = re_weights_feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
 
         # Integrate
-        integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, re_weights_feats)  # (chunk_size, c, h, w)
+        integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, ids_feats)  # (chunk_size, c, h, w)
         integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
 
         return integrate_feats, integrate_pids
