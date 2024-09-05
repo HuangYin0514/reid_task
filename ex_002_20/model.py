@@ -98,7 +98,7 @@ class Integrate_feats_module(nn.Module):
         chunk_size = int(bs / num_same_id)  # 15
 
         # classifier weights
-        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4) * 5  # (chunk_size, 4)
+        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4)  # (chunk_size, 4)
         weights_norm = torch.softmax(weights, dim=1)
 
         # CAM weights
