@@ -104,7 +104,9 @@ def brain(config, logger):
             time_remaining = (config.epochs - epoch) * (time.time() - start_time) / (epoch + 1)
             time_remaining_H = time_remaining // 3600
             time_remaining_M = time_remaining / 60 % 60
-            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M)
+            message = ("Epoch {0}/{1}\t" "Training Loss: {epoch_loss:.4f}\t" "Time remaining is {time_H:.0f}h:{time_M:.0f}m").format(
+                epoch + 1, config.epochs, epoch_loss=epoch_loss, time_H=time_remaining_H, time_M=time_remaining_M
+            )
             logger.info(message)
 
             ### Record train information
@@ -120,7 +122,9 @@ def brain(config, logger):
             CMC, mAP = metrics.test_function(model, query_loader, gallery_loader, config=config, logger=logger)
 
             ### Log test information
-            message = ("Epoch {}/{}\t" "Testing: dataset_name: {} top1: {:.3f} top5: {:.3f} top10: {:.3f} mAP: {:.3f}").format(epoch + 1, config.epochs, config.dataset_name, CMC[0] * 100, CMC[4] * 100, CMC[9] * 100, mAP * 100)
+            message = ("Epoch {}/{}\t" "Testing: dataset_name: {} top1: {:.3f} top5: {:.3f} top10: {:.3f} mAP: {:.3f}").format(
+                epoch + 1, config.epochs, config.dataset_name, CMC[0] * 100, CMC[4] * 100, CMC[9] * 100, mAP * 100
+            )
             logger.info(message)
 
             ### Save model
@@ -151,7 +155,8 @@ if __name__ == "__main__":
     config = utils.common.read_config_file(args.config_file)  ## Read the configuration from the provided file
     # config.some_float = args.some_float ## Set command-line to config
 
-    config.dataset_path = args.dataset_path  ## Set command-line to config
+    if args.dataset_path is not None:
+        config.dataset_path = args.dataset_path  ## Set command-line to config
 
     # Directory
     ## Set up the dataset directory
