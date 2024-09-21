@@ -1,5 +1,6 @@
 from .cuhk03 import CUHK03
-from .cuhk03_splited import *
 from .dukemtmcreid import *
 from .market1501 import *
 from .msmt17 import *
+from .occ_reid import *
+from .p_dukemtmcreid import *
