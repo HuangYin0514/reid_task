@@ -124,3 +124,16 @@
 2024-09-21 19:33:20 INFO Epoch 109/120	Training Loss: 0.9047	Time remaining is 0h:15m
 2024-09-21 19:34:33 INFO Epoch 110/120	Training Loss: 0.9019	Time remaining is 0h:14m
 2024-09-21 19:35:33 INFO Testing: dataset_name: Occluded_Duke top1: 51.493 top5: 68.009 top10: 73.801 mAP: 43.748
+2024-09-21 19:36:46 INFO Epoch 111/120	Training Loss: 0.9015	Time remaining is 0h:13m
+2024-09-21 19:37:59 INFO Epoch 112/120	Training Loss: 0.8975	Time remaining is 0h:11m
+2024-09-21 19:39:12 INFO Epoch 113/120	Training Loss: 0.9018	Time remaining is 0h:10m
+2024-09-21 19:40:25 INFO Epoch 114/120	Training Loss: 0.9057	Time remaining is 0h:9m
+2024-09-21 19:41:39 INFO Epoch 115/120	Training Loss: 0.9019	Time remaining is 0h:8m
+2024-09-21 19:42:39 INFO Testing: dataset_name: Occluded_Duke top1: 52.353 top5: 68.824 top10: 74.887 mAP: 44.265
+2024-09-21 19:43:52 INFO Epoch 116/120	Training Loss: 0.9045	Time remaining is 0h:6m
+2024-09-21 19:45:05 INFO Epoch 117/120	Training Loss: 0.9015	Time remaining is 0h:5m
+2024-09-21 19:46:19 INFO Epoch 118/120	Training Loss: 0.9053	Time remaining is 0h:4m
+2024-09-21 19:47:33 INFO Epoch 119/120	Training Loss: 0.9097	Time remaining is 0h:3m
+2024-09-21 19:48:47 INFO Epoch 120/120	Training Loss: 0.9017	Time remaining is 0h:1m
+2024-09-21 19:49:47 INFO Testing: dataset_name: Occluded_Duke top1: 52.081 top5: 68.190 top10: 74.344 mAP: 44.049
+2024-09-21 19:49:47 INFO The running time of training: 2.56 h
