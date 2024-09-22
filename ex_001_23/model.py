@@ -46,7 +46,7 @@ class Auxiliary_classifier_head(nn.Module):
         self.logger = logger
 
         # Pooling
-        self.pool_layer = nn.AdaptiveAvgPool2d(1)
+        self.pool_layer = network.layers.GeneralizedMeanPoolingP()
 
         # BatchNorm
         self.BN = nn.BatchNorm1d(feat_dim)
@@ -79,7 +79,7 @@ class Classifier_head(nn.Module):
         self.logger = logger
 
         # Pooling
-        self.pool_layer = nn.AdaptiveAvgPool2d(1)
+        self.pool_layer = network.layers.GeneralizedMeanPoolingP()
 
         # BatchNorm
         self.BN = nn.BatchNorm1d(feat_dim)

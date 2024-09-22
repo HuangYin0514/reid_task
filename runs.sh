@@ -5,14 +5,9 @@
 ####################################################################################
 
 
-# python ex_000_1/train.py --config ex_000_1/config.py
-# python ex_000_2/train.py --config ex_000_2/config.py
-# python ex_000_3/train.py --config ex_000_3/config.py
-python ex_000_4/train.py --config ex_000_4/config.py
-python ex_000_5/train.py --config ex_000_5/config.py
-python ex_000_6/train.py --config ex_000_6/config.py
-# python ex_000_7/train.py --config ex_000_7/config.py
 # python ex_000_8/train.py --config ex_000_8/config.py
+
+python ex_001_23/train.py --config ex_001_23/config.py
 
 
 sh other_runs.sh
