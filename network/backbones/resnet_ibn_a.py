@@ -3,6 +3,12 @@ from os.path import dirname, join, realpath
 
 import torch
 import torch.nn as nn
+import torch.utils.model_zoo as model_zoo
+
+# https://github.com/XingangPan/IBN-Net
+model_urls = {
+    "resnet50": "https://github.com/XingangPan/IBN-Net/releases/download/v1.0/resnet50_ibn_a-d9d0bb7b.pth",
+}
 
 
 def weights_init_kaiming(m):
@@ -150,6 +156,11 @@ class ResNet(nn.Module):
 def resnet50_ibn_a(pretrained=False, **kwargs):
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        model.load_state_dict(torch.load(join(realpath(dirname(__file__)), "pretrained_model/ResNet-50/r50_ibn_a.pth")))
-        print("successfully load imagenet pre-trained resnet50-ibn model")
-        return model
+        # model.load_state_dict(torch.load(join(realpath(dirname(__file__)), "pretrained_model/ResNet-50/r50_ibn_a.pth")))
+        # print("successfully load imagenet pre-trained resnet50-ibn model")
+        # return model
+        pretrained_state_dict = model_zoo.load_url(model_urls["resnet50"])
+        now_state_dict = model.state_dict()
+        now_state_dict.update(pretrained_state_dict)
+        model.load_state_dict(now_state_dict)
+    return model

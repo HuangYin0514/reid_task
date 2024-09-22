@@ -107,8 +107,8 @@ class Backbone(nn.Module):
         super(Backbone, self).__init__()
 
         # Backbone
-        resnet = network.backbones.resnet50(pretrained=True)
-        # resnet = network.backbones.resnet50_ibn_a(pretrained=True)
+        # resnet = network.backbones.resnet50(pretrained=True)
+        resnet = network.backbones.resnet50_ibn_a(pretrained=True)
 
         # Modifiy backbone
         ## Modifiy the stride of last conv layer
