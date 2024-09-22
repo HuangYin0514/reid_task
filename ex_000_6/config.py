@@ -8,7 +8,7 @@ import torch
 ########################################################################
 # For general settings
 taskname = "ReID_Task"
-seed = 1
+seed = 3407
 device = "cuda" if torch.cuda.is_available() else "cpu"
 dtype = torch.float32  # torch.float32 / torch.double
 

@@ -23,7 +23,7 @@ temps_outputs_path = os.path.join(outputs_path, "temps")
 
 ########################################################################
 # For data settings
-batch_size = 60
+batch_size = 64
 test_batch_size = 256
 img_height = 256
 img_width = 128

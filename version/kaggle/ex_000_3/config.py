@@ -30,9 +30,7 @@ img_width = 128
 
 # Path setting
 dataset_name = "Occluded_Duke"
-# dataset_path = "/kaggle/input/market1501/Market-1501-v15.09.15"
 dataset_path = "/home/hy/project/data/Occluded_Duke"
-# dataset_path = "/home/hy/project/data/P-DukeMTMC-reid/format"
 
 ########################################################################
 # For training settings

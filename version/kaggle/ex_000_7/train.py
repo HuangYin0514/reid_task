@@ -85,7 +85,8 @@ def brain(config, logger):
             ### Loss
             #### Gloab loss
             backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
-            backbone_loss = backbone_ce_loss
+            backbone_tri_loss = triplet_loss(backbone_pool_feats, pids)
+            backbone_loss = backbone_ce_loss + backbone_tri_loss
 
             #### All loss
             loss = backbone_loss
