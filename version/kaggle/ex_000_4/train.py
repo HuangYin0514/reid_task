@@ -45,7 +45,7 @@ def brain(config, logger):
     KLDivLoss = nn.KLDivLoss(reduction="batchmean")
 
     # Optimizer
-    model_params_group = [{"params": model.parameters(), "lr": 0.00035, "weight_decay": 0.0005}]
+    model_params_group = [{"params": model.parameters(), "lr": 0.0003, "weight_decay": 0.0005}]
     optimizer = torch.optim.Adam(model_params_group)
 
     # Scheduler
@@ -85,8 +85,7 @@ def brain(config, logger):
             ### Loss
             #### Gloab loss
             backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
-            backbone_tri_loss = triplet_loss(backbone_pool_feats, pids)
-            backbone_loss = backbone_ce_loss + backbone_tri_loss
+            backbone_loss = backbone_ce_loss
 
             #### All loss
             loss = backbone_loss
