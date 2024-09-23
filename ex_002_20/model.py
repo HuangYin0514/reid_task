@@ -29,10 +29,12 @@ class ODEfunc(nn.Module):
 
         self.norm1 = nn.GroupNorm(min(32, dim), dim)
 
-        self.conv2 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
+        # self.conv2 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv2 = nn.Conv2d(dim, dim, kernel_size=1, stride=1, padding=0, bias=False)
         self.norm2 = nn.GroupNorm(min(32, dim), dim)
 
-        self.conv3 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
+        # self.conv3 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv3 = nn.Conv2d(dim, dim, kernel_size=1, stride=1, padding=0, bias=False)
         self.norm3 = nn.GroupNorm(min(32, dim), dim)
 
     def forward(self, t, x):
@@ -81,6 +83,7 @@ class Reminder_feats_module(nn.Module):
         bs = feats.size(0)
         reminder_feats = self.ode_net(feats)
         return reminder_feats
+        # return feats
 
 
 class Integrate_feats_module(nn.Module):
