@@ -5,6 +5,85 @@ from torch.nn import functional as F
 from torchvision import models
 
 import network
+from torchdiffeq import odeint_adjoint as odeint
+
+
+class Feats_Fusion_Module(nn.Module):
+    def __init__(self, config, logger):
+        super(Feats_Fusion_Module, self).__init__()
+        self.config = config
+        self.logger = logger
+
+    def forward(self, feats1, feats2):
+        bs = feats1.size(0)
+        alpha = 0.01
+        fusion_feats = (1 - alpha) * feats1 + alpha * feats2
+        return fusion_feats
+
+
+class ODEfunc(nn.Module):
+    def __init__(self, dim=2048):
+        super(ODEfunc, self).__init__()
+
+        self.relu = nn.ReLU(inplace=True)
+
+        self.norm1 = nn.GroupNorm(min(32, dim), dim)
+
+        # self.conv2 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv2 = nn.Conv2d(dim, dim, kernel_size=1, stride=1, padding=0, bias=False)
+        self.norm2 = nn.GroupNorm(min(32, dim), dim)
+
+        # self.conv3 = nn.Conv2d(dim, dim, kernel_size=3, stride=1, padding=1, bias=False)
+        self.conv3 = nn.Conv2d(dim, dim, kernel_size=1, stride=1, padding=0, bias=False)
+        self.norm3 = nn.GroupNorm(min(32, dim), dim)
+
+    def forward(self, t, x):
+        out = self.relu(self.norm1(x))
+        out = self.relu(self.norm2(self.conv2(out)))
+        out = self.norm3(self.conv3(out))
+        return out
+
+
+class ODEBlock(nn.Module):
+
+    def __init__(self, config, logger):
+        super(ODEBlock, self).__init__()
+        self.config = config
+        self.logger = logger
+
+        self.odefunc = ODEfunc()
+        # self.integration_time = torch.tensor([0, 0.01, 0.02, 0.03]).float()
+        # self.integration_time = torch.tensor([0, 0.01]).float()
+        self.integration_time = torch.tensor([0, 0.02, 0.04]).float()
+
+    def forward(self, x):
+        integration_time = self.integration_time.type_as(x)
+        out = odeint(self.odefunc, x, integration_time, method="euler", rtol=1e-3, atol=1e-3)
+        return out[-1]
+
+
+class Reminder_feats_module(nn.Module):
+    def __init__(self, config, logger):
+        super(Reminder_feats_module, self).__init__()
+        self.config = config
+        self.logger = logger
+
+        # conv11 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
+        # bn = nn.BatchNorm2d(2048)
+        # act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+
+        # conv11_1 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
+        # bn_1 = nn.BatchNorm2d(2048)
+        # act_1 = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+
+        # self.suggest_layer = nn.Sequential(conv11, bn, act, conv11_1, bn_1, act_1)
+        self.ode_net = ODEBlock(config, logger)
+
+    def forward(self, feats):
+        bs = feats.size(0)
+        reminder_feats = self.ode_net(feats)
+        return reminder_feats
+        # return feats
 
 
 class Integrate_feats_module(nn.Module):
@@ -156,16 +235,24 @@ class ReidNet(nn.Module):
         # Integrat Feats Module
         self.integrate_feats_module = Integrate_feats_module(self.classifier_head, config, logger)
 
+        # Reminder Feats Module
+        self.reminder_feats_module = Reminder_feats_module(config, logger)
+
+        # Feats Fusion Module
+        self.feats_Fusion_Module = Feats_Fusion_Module(config, logger)
+
     def forward(self, x):
         bs = x.size(0)
 
         # Backbone
         resnet_feats = self.backbone(x)  # (bs, 2048, 16, 8)
+        reminder_feats = self.reminder_feats_module(resnet_feats)  # (bs, 2048, 16, 8)
+        fusion_feats = self.feats_Fusion_Module(resnet_feats, reminder_feats)  # (bs, 2048, 16, 8)
 
         # Classifier head
-        backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(resnet_feats)
+        backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(fusion_feats)
 
         if self.training:
-            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats
+            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, reminder_feats, fusion_feats
         else:
             return backbone_bn_feats
