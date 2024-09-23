@@ -87,8 +87,13 @@ def brain(config, logger):
             backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
             backbone_loss = backbone_ce_loss
 
+            #### Integrate loss
+            integrate_feats, integrate_pids = model.integrate_feats_module(resnet_feats, pids, backbone_cls_score, num_same_id=4)
+            integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
+            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
+
             #### All loss
-            loss = backbone_loss
+            loss = backbone_loss + 1 * integrate_ce_loss
 
             ### Update the parameters
             loss.backward()
