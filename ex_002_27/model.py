@@ -22,7 +22,7 @@ class Feats_Fusion_Module(nn.Module):
 
 
 class ODEfunc(nn.Module):
-    def __init__(self, dim=2048):
+    def __init__(self, dim=256):
         super(ODEfunc, self).__init__()
 
         self.relu = nn.ReLU(inplace=True)
@@ -74,7 +74,7 @@ class Reminder_feats_module(nn.Module):
         self.down_layers = nn.Sequential(conv11, bn, act)
 
         conv11_1 = nn.Conv2d(256, 2048, kernel_size=1, stride=1, bias=False)
-        bn_1 = nn.BatchNorm2d(256)
+        bn_1 = nn.BatchNorm2d(2048)
         act_1 = nn.LeakyReLU(negative_slope=0.1, inplace=True)
 
         self.up_layers = nn.Sequential(conv11_1, bn_1, act_1)
@@ -105,7 +105,7 @@ class Integrate_feats_module(nn.Module):
         # Weights
         # weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
         # print("backbone_cls_score", backbone_cls_score[torch.arange(bs), pids].shape)
-        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4) * 5  # (chunk_size, 4)
+        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4)  # (chunk_size, 4)
         # print("weights", weights)
         weights_norm = torch.softmax(weights, dim=1)
         # print("weights_norm", weights_norm)
