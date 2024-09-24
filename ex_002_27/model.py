@@ -68,22 +68,24 @@ class Reminder_feats_module(nn.Module):
         self.config = config
         self.logger = logger
 
-        # conv11 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
-        # bn = nn.BatchNorm2d(2048)
-        # act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+        conv11 = nn.Conv2d(2048, 256, kernel_size=1, stride=1, bias=False)
+        bn = nn.BatchNorm2d(256)
+        act = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+        self.down_layers = nn.Sequential(conv11, bn, act)
 
-        # conv11_1 = nn.Conv2d(2048, 2048, kernel_size=1, stride=1, bias=False)
-        # bn_1 = nn.BatchNorm2d(2048)
-        # act_1 = nn.LeakyReLU(negative_slope=0.1, inplace=True)
+        conv11_1 = nn.Conv2d(256, 2048, kernel_size=1, stride=1, bias=False)
+        bn_1 = nn.BatchNorm2d(256)
+        act_1 = nn.LeakyReLU(negative_slope=0.1, inplace=True)
 
-        # self.suggest_layer = nn.Sequential(conv11, bn, act, conv11_1, bn_1, act_1)
+        self.up_layers = nn.Sequential(conv11_1, bn_1, act_1)
         self.ode_net = ODEBlock(config, logger)
 
     def forward(self, feats):
         bs = feats.size(0)
+        feats = self.down_layers(feats)
         reminder_feats = self.ode_net(feats)
+        reminder_feats = self.up_layers(reminder_feats)
         return reminder_feats
-        # return feats
 
 
 class Integrate_feats_module(nn.Module):
