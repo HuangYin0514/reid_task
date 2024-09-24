@@ -8,56 +8,16 @@ import network
 from torchdiffeq import odeint_adjoint as odeint
 
 
-class Channel_attention(nn.Module):
-    # https://github.com/EvilPsyCHo/Attention-PyTorch
-    def __init__(self, in_planes, rotio=16):
-        super(Channel_attention, self).__init__()
-
-        rotio = 4  # Mine
-
-        self.avg_pool = nn.AdaptiveAvgPool2d(1)
-        self.max_pool = nn.AdaptiveMaxPool2d(1)
-
-        self.sharedMLP = nn.Sequential(nn.Conv2d(in_planes, in_planes // rotio, 1, bias=False), nn.ReLU(), nn.Conv2d(in_planes // rotio, in_planes, 1, bias=False))
-        self.sigmoid = nn.Sigmoid()
-
-    def forward(self, x):
-        avgout = self.sharedMLP(self.avg_pool(x))
-        maxout = self.sharedMLP(self.max_pool(x))
-        return self.sigmoid(avgout + maxout)
-
-
-class Spatial_attention(nn.Module):
-    # https://github.com/EvilPsyCHo/Attention-PyTorch
-    def __init__(self, kernel_size=7):
-        super(Spatial_attention, self).__init__()
-        assert kernel_size in (3, 7), "kernel size must be 3 or 7"
-        padding = 3 if kernel_size == 7 else 1
-
-        self.conv = nn.Conv2d(2, 1, kernel_size, padding=padding, bias=False)
-        self.sigmoid = nn.Sigmoid()
-
-    def forward(self, x):
-        avgout = torch.mean(x, dim=1, keepdim=True)
-        maxout, _ = torch.max(x, dim=1, keepdim=True)
-        x = torch.cat([avgout, maxout], dim=1)
-        x = self.conv(x)
-        return self.sigmoid(x)
-
-
 class Feats_Fusion_Module(nn.Module):
     def __init__(self, config, logger):
         super(Feats_Fusion_Module, self).__init__()
         self.config = config
         self.logger = logger
 
-        self.ca = Channel_attention(in_planes=2048)  # planes是feature map的通道个数
-        self.sa = Spatial_attention()
-
     def forward(self, feats1, feats2):
         bs = feats1.size(0)
         alpha = 0.01
-        fusion_feats = (1 - alpha) * feats1 + alpha * (feats2 * self.sa(feats2) + feats2 * self.sa(feats2))
+        fusion_feats = (1 - alpha) * feats1 + alpha * feats2
         return fusion_feats
 
 
@@ -143,7 +103,7 @@ class Integrate_feats_module(nn.Module):
         # Weights
         # weights = torch.ones(15, 4, device=self.config.device)  # (chunk_size, 4)
         # print("backbone_cls_score", backbone_cls_score[torch.arange(bs), pids].shape)
-        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4) * 5  # (chunk_size, 4)
+        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4)  # (chunk_size, 4)
         # print("weights", weights)
         weights_norm = torch.softmax(weights, dim=1)
         # print("weights_norm", weights_norm)
