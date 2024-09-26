@@ -26,28 +26,29 @@ class Integrate_feats_module(nn.Module):
         weights_norm = torch.softmax(weights, dim=1)
 
         # Integrate
-        ids_feats = feats.view(chunk_size, num_same_id, f_dim)  # (chunk_size, 4, c, 2048)
-        # integrate_feats = torch.einsum("bx,bxd->bd", weights_norm, ids_feats)  # (chunk_size, 2048)
-        integrate_pids = pids[::num_same_id]  # 直接从 pids 中获取 integrate_pids
+        ids_feats = feats.view(chunk_size, num_same_id, f_dim)  # (chunk_size, 4, 2048)
+        integrate_pids = pids[::num_same_id]
 
         # Consistency
-        consistency_features = self.ShareMLP(ids_feats)
-        avg_consistency_features = torch.mean(consistency_features, dim=1)  # (chunk_size, 256)
+        consistency_features = self.ShareMLP(ids_feats)  # (chunk_size, 4, 256)
 
         # Specific
         specific_features = self.SpecificMLP(ids_feats)  # (chunk_size, 4, 256)
 
-        return consistency_features, avg_consistency_features, specific_features, integrate_pids
+        return consistency_features, specific_features, integrate_pids
 
 
 class Auxiliary_classifier_head(nn.Module):
-    def __init__(self, feat_dim, num_classes, config, logger, **kwargs):
+    def __init__(self, num_classes, config, logger, **kwargs):
         super(
             Auxiliary_classifier_head,
             self,
         ).__init__()
+
         self.config = config
         self.logger = logger
+
+        feat_dim = 256
 
         # Pooling
         self.pool_layer = network.layers.GeneralizedMeanPoolingP()
@@ -63,12 +64,8 @@ class Auxiliary_classifier_head(nn.Module):
 
     def forward(self, feat):  # (batch_size, dim)
         bs = feat.size(0)
-        # pool
-        # pool_feat = self.pool_layer(feat)  # (batch_size, 2048, 1, 1)
-        feat = feat.view(bs, -1)  # (batch_size, 2048)
-        # BN
-        bn_feat = self.BN(feat)  # (batch_size, 2048)
-        # Classifier
+        feat = feat.view(bs, -1)
+        bn_feat = self.BN(feat)
         cls_score = self.classifier(bn_feat)  # ([N, num_classes]）
         return cls_score
 
@@ -155,7 +152,7 @@ class ReidNet(nn.Module):
         self.classifier_head = Classifier_head(2048, num_classes, config, logger)
 
         # Auxiliary classifier
-        self.auxiliary_classifier_head = Auxiliary_classifier_head(1280, num_classes, config, logger)
+        self.auxiliary_classifier_head = Auxiliary_classifier_head(num_classes, config, logger)
 
         # Integrat Feats Module
         self.integrate_feats_module = Integrate_feats_module(self.classifier_head, config, logger)

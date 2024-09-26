@@ -87,27 +87,8 @@ def brain(config, logger):
             backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
             backbone_loss = backbone_ce_loss
 
-            #### Multi-view loss
-            consistency_features, avg_consistency_features, specific_features, integrate_pids = model.integrate_feats_module(backbone_pool_feats, pids, backbone_cls_score, num_same_id=4)
-            consistency_loss = mse_loss(consistency_features, avg_consistency_features.unsqueeze(1).repeat_interleave(4, dim=1))
-
-            # specific_similarity_matrix = torch.matmul(consistency_features, specific_features.transpose(-1, -2))
-            # mask = torch.eye(4).bool().to(specific_similarity_matrix.device)
-            # similarity_matrix_no_diag = specific_similarity_matrix.masked_fill(mask, 0)
-            # specific_loss_1 = torch.norm(similarity_matrix_no_diag, p=2)
-
-            # specific_similarity_matrix = torch.matmul(specific_features, specific_features.transpose(-1, -2))
-            # mask = torch.eye(4).bool().to(specific_similarity_matrix.device)
-            # similarity_matrix_no_diag = specific_similarity_matrix.masked_fill(mask, 0)
-            # specific_loss_2 = torch.norm(similarity_matrix_no_diag, p=2)
-
-            integrate_feature = torch.cat([avg_consistency_features.unsqueeze(1), specific_features], dim=1)
-            integrate_cls_score = model.auxiliary_classifier_head(integrate_feature)
-            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
-            multi_view_loss = consistency_loss + integrate_ce_loss
-
             #### All loss
-            loss = backbone_loss + 0.1 * multi_view_loss
+            loss = backbone_loss
 
             ### Update the parameters
             loss.backward()

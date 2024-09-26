@@ -82,13 +82,21 @@ def brain(config, logger):
             optimizer.zero_grad()
             backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats = model(inputs)
 
-            ### Loss
             #### Gloab loss
             backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
             backbone_loss = backbone_ce_loss
 
+            #### Multi-view loss
+            consistency_features, specific_features, integrate_pids = model.integrate_feats_module(backbone_pool_feats, pids, backbone_cls_score, num_same_id=4)
+            avg_consistency_features = torch.mean(consistency_features, dim=1, keepdim=True)
+            consistency_loss = mse_loss(consistency_features, avg_consistency_features.repeat_interleave(4, dim=1))
+            avg_consistency_cls_score = model.auxiliary_classifier_head(avg_consistency_features)
+            consistency_ce_loss = ce_loss(avg_consistency_cls_score, integrate_pids)
+            multi_view_loss = consistency_loss + consistency_ce_loss
+
             #### All loss
-            loss = backbone_loss
+            loss = backbone_loss + 0.1 * multi_view_loss
+            # print(multi_view_loss, backbone_ce_loss)
 
             ### Update the parameters
             loss.backward()
