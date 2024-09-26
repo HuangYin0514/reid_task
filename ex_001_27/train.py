@@ -80,26 +80,15 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, reminder_feats, fusion_feats = model(inputs)
+            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats = model(inputs)
 
             ### Loss
             #### Gloab loss
             backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
             backbone_loss = backbone_ce_loss
 
-            #### Integrate loss
-            integrate_feats, integrate_pids = model.integrate_feats_module(resnet_feats, pids, backbone_cls_score, num_same_id=4)
-            integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
-            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
-
-            #### Contrast loss
-            reminder_mse_loss = mse_loss(reminder_feats, integrate_feats.repeat_interleave(4, dim=0))
-            reminder_cls_score = model.auxiliary_classifier_head(reminder_feats)
-            reminder_ce_loss = ce_loss(reminder_cls_score, pids)
-
             #### All loss
-            loss = backbone_loss + 0.1 * integrate_ce_loss + 0.1 * reminder_mse_loss + 0.1 * reminder_ce_loss
-            # print(backbone_loss.item(), integrate_ce_loss.item(), reminder_mse_loss.item(), reminder_ce_loss.item())
+            loss = backbone_loss
 
             ### Update the parameters
             loss.backward()

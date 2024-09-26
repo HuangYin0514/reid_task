@@ -5,5 +5,5 @@
 ####################################################################################
 
 
-python ex_002_27/train.py --config ex_002_27/config.py
+# python ex_002_27/train.py --config ex_002_27/config.py
 

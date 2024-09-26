@@ -7,7 +7,7 @@
 
 # python ex_000_8/train.py --config ex_000_8/config.py
 
-python ex_002_25/train.py --config ex_002_25/config.py
+python ex_001_26/train.py --config ex_001_26/config.py
 
 
 sh other_runs.sh
