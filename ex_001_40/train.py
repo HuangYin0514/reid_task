@@ -96,6 +96,7 @@ def brain(config, logger):
 
             #### All loss
             loss = backbone_loss + 0.1 * hierarchical_aggregation_loss
+            # print(backbone_loss, hierarchical_aggregation_loss)
 
             ### Update the parameters
             loss.backward()

@@ -7,10 +7,33 @@ from torchvision import models
 import network
 
 
-class Multi_granularity(nn.Module):
-    def __init__(self, feat_dim, num_classes, config, logger, **kwargs):
+class Integrate_feats_module(nn.Module):
+    def __init__(self, config, logger):
+        super(Integrate_feats_module, self).__init__()
+        self.config = config
+        self.logger = logger
+
+    def forward(self, feats, pids, backbone_cls_score, num_same_id=4):
+        bs, c, h, w = feats.size(0), feats.size(1), feats.size(2), feats.size(3)
+        chunk_size = int(bs / num_same_id)
+
+        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4)  # (chunk_size, 4)
+        weights = torch.softmax(weights, dim=1)
+        weights = weights.unsqueeze(2).unsqueeze(3).unsqueeze(4)  # (chunk_size, 4, 1, 1, 1)
+
+        ids_feats = feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
+        integrate_feats = weights * ids_feats  # (chunk_size, c, h, w)
+        integrate_feats = torch.sum(integrate_feats, dim=1)
+
+        integrate_pids = pids[::num_same_id]
+
+        return integrate_feats, integrate_pids
+
+
+class Hierarchical_aggregation(nn.Module):
+    def __init__(self, num_classes, config, logger, **kwargs):
         super(
-            Multi_granularity,
+            Hierarchical_aggregation,
             self,
         ).__init__()
 
@@ -21,31 +44,53 @@ class Multi_granularity(nn.Module):
         self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
         self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256), nn.ReLU())
-        self.reduction_p2 = nn.Sequential(nn.Conv2d(768, 768, 1, bias=False), nn.BatchNorm2d(768), nn.ReLU())
-        self.reduction_p3 = nn.Sequential(nn.Conv2d(1792, 1792, 1, bias=False), nn.BatchNorm2d(1792), nn.ReLU())
+        self.integrate_feats_module = Integrate_feats_module(config, logger)
+
+        self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256))
+        self.reduction_p2 = nn.Sequential(nn.Conv2d(768, 768, 1, bias=False), nn.BatchNorm2d(768))
+        self.reduction_p3 = nn.Sequential(nn.Conv2d(1792, 1792, 1, bias=False), nn.BatchNorm2d(1792))
+
+        self.norm_p1_1 = nn.BatchNorm2d(256)
+        self.norm_p2_1 = nn.BatchNorm2d(512)
+        self.norm_p3_1 = nn.BatchNorm2d(1024)
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
         self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
         self.fc_3 = Auxiliary_classifier_head(1792, num_classes, config, logger)
 
-    def forward(self, x1, x2, x3):  # (batch_size, dim)
+    def forward(
+        self,
+        x1,
+        x2,
+        x3,
+        backbone_cls_score,
+        pids,
+    ):  # (batch_size, dim)
         pool_p1 = self.pool_p1(x1)
-        p1 = self.reduction_p1(pool_p1).squeeze(dim=3).squeeze(dim=2)
+        integrate_feats_p1, integrate_pids = self.integrate_feats_module(pool_p1, pids, backbone_cls_score)
+        integrate_feats_p1 = self.norm_p1_1(integrate_feats_p1)
+        p1 = self.reduction_p1(integrate_feats_p1).squeeze(dim=3).squeeze(dim=2)
+        # p1 = self.reduction_p1(pool_p1).squeeze(dim=3).squeeze(dim=2)
 
         pool_p2 = self.pool_p2(x2)
-        cat_p2 = torch.cat([pool_p2, p1], dim=1)
+        integrate_feats_p2, integrate_pids = self.integrate_feats_module(pool_p2, pids, backbone_cls_score)
+        integrate_feats_p2 = self.norm_p2_1(integrate_feats_p2)
+        cat_p2 = torch.cat([integrate_feats_p2, p1], dim=1)
+        # cat_p2 = torch.cat([pool_p2, p1], dim=1)
         p2 = self.reduction_p2(cat_p2).squeeze(dim=3).squeeze(dim=2)
 
         pool_p3 = self.pool_p3(x3)
-        cat_p3 = torch.cat([pool_p3, p2], dim=1)
+        integrate_feats_p3, integrate_pids = self.integrate_feats_module(pool_p3, pids, backbone_cls_score)
+        integrate_feats_p3 = self.norm_p3_1(integrate_feats_p3)
+        cat_p3 = torch.cat([integrate_feats_p3, p2], dim=1)
+        # cat_p3 = torch.cat([pool_p3, p2], dim=1)
         p3 = self.reduction_p3(cat_p3).squeeze(dim=3).squeeze(dim=2)
 
         fc_1_score = self.fc_1(p1)
         fc_2_score = self.fc_2(p2)
         fc_3_score = self.fc_3(p3)
 
-        return fc_1_score, fc_2_score, fc_3_score
+        return fc_1_score, fc_2_score, fc_3_score, integrate_pids
 
 
 class Auxiliary_classifier_head(nn.Module):
@@ -73,9 +118,9 @@ class Auxiliary_classifier_head(nn.Module):
         bs = feat.size(0)
         # pool
         pool_feat = self.pool_layer(feat)  # (batch_size, 2048, 1, 1)
-        feat = pool_feat.view(bs, -1)  # (batch_size, 2048)
+        pool_feat = pool_feat.view(bs, -1)  # (batch_size, 2048)
         # BN
-        bn_feat = self.BN(feat)  # (batch_size, 2048)
+        bn_feat = self.BN(pool_feat)  # (batch_size, 2048)
         # Classifier
         cls_score = self.classifier(bn_feat)  # ([N, num_classes]）
         return cls_score
@@ -169,7 +214,7 @@ class ReidNet(nn.Module):
         self.auxiliary_classifier_head = Auxiliary_classifier_head(1280, num_classes, config, logger)
 
         # Multi_granularity
-        self.multi_granularity = Multi_granularity(256, num_classes, config, logger)
+        self.hierarchical_aggregation = Hierarchical_aggregation(num_classes, config, logger)
 
     def forward(self, x):
         bs = x.size(0)

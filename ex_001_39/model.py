@@ -16,11 +16,17 @@ class Integrate_feats_module(nn.Module):
     def forward(self, feats, pids, backbone_cls_score, num_same_id=4):
         bs, c, h, w = feats.size(0), feats.size(1), feats.size(2), feats.size(3)
         chunk_size = int(bs / num_same_id)
+
         weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4)  # (chunk_size, 4)
-        weights_norm = torch.softmax(weights, dim=1)
+        weights = torch.softmax(weights, dim=1)
+        weights = weights.unsqueeze(2).unsqueeze(3).unsqueeze(4)  # (chunk_size, 4, 1, 1, 1)
+
         ids_feats = feats.view(chunk_size, num_same_id, c, h, w)  # (chunk_size, 4, c, h, w)
-        integrate_feats = torch.einsum("bx,bxchw->bchw", weights_norm, ids_feats)  # (chunk_size, c, h, w)
+        integrate_feats = weights * ids_feats  # (chunk_size, c, h, w)
+        integrate_feats = torch.sum(integrate_feats, dim=1)
+
         integrate_pids = pids[::num_same_id]
+
         return integrate_feats, integrate_pids
 
 
@@ -40,13 +46,13 @@ class Hierarchical_aggregation(nn.Module):
 
         self.integrate_feats_module = Integrate_feats_module(config, logger)
 
-        self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=True), nn.BatchNorm2d(256), nn.ReLU())
-        self.reduction_p2 = nn.Sequential(nn.Conv2d(768, 768, 1, bias=True), nn.BatchNorm2d(768), nn.ReLU())
-        self.reduction_p3 = nn.Sequential(nn.Conv2d(1792, 1792, 1, bias=True), nn.BatchNorm2d(1792), nn.ReLU())
+        self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256))
+        self.reduction_p2 = nn.Sequential(nn.Conv2d(512, 512, 1, bias=False), nn.BatchNorm2d(512))
+        self.reduction_p3 = nn.Sequential(nn.Conv2d(1024, 1024, 1, bias=False), nn.BatchNorm2d(1024))
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
-        self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
-        self.fc_3 = Auxiliary_classifier_head(1792, num_classes, config, logger)
+        self.fc_2 = Auxiliary_classifier_head(512, num_classes, config, logger)
+        self.fc_3 = Auxiliary_classifier_head(1024, num_classes, config, logger)
 
     def forward(
         self,
@@ -57,27 +63,29 @@ class Hierarchical_aggregation(nn.Module):
         pids,
     ):  # (batch_size, dim)
         pool_p1 = self.pool_p1(x1)
-        # integrate_feats_p1, integrate_pids = self.integrate_feats_module(pool_p1, pids, backbone_cls_score)
-        # p1 = self.reduction_p1(integrate_feats_p1).squeeze(dim=3).squeeze(dim=2)
-        p1 = self.reduction_p1(pool_p1).squeeze(dim=3).squeeze(dim=2)
+        integrate_feats_p1, integrate_pids = self.integrate_feats_module(pool_p1, pids, backbone_cls_score)
+        p1 = self.reduction_p1(integrate_feats_p1).squeeze(dim=3).squeeze(dim=2)
+        # p1 = self.reduction_p1(pool_p1).squeeze(dim=3).squeeze(dim=2)
 
         pool_p2 = self.pool_p2(x2)
-        # integrate_feats_p2, integrate_pids = self.integrate_feats_module(pool_p2, pids, backbone_cls_score)
+        integrate_feats_p2, integrate_pids = self.integrate_feats_module(pool_p2, pids, backbone_cls_score)
         # cat_p2 = torch.cat([integrate_feats_p2, p1], dim=1)
-        cat_p2 = torch.cat([pool_p2, p1], dim=1)
-        p2 = self.reduction_p2(cat_p2).squeeze(dim=3).squeeze(dim=2)
+        # cat_p2 = torch.cat([pool_p2, p1], dim=1)
+        # p2 = self.reduction_p2(cat_p2).squeeze(dim=3).squeeze(dim=2)
+        p2 = self.reduction_p2(integrate_feats_p2).squeeze(dim=3).squeeze(dim=2)
 
         pool_p3 = self.pool_p3(x3)
-        # integrate_feats_p3, integrate_pids = self.integrate_feats_module(pool_p3, pids, backbone_cls_score)
+        integrate_feats_p3, integrate_pids = self.integrate_feats_module(pool_p3, pids, backbone_cls_score)
         # cat_p3 = torch.cat([integrate_feats_p3, p2], dim=1)
-        cat_p3 = torch.cat([pool_p3, p2], dim=1)
-        p3 = self.reduction_p3(cat_p3).squeeze(dim=3).squeeze(dim=2)
+        # cat_p3 = torch.cat([pool_p3, p2], dim=1)
+        # p3 = self.reduction_p3(cat_p3).squeeze(dim=3).squeeze(dim=2)
+        p3 = self.reduction_p3(integrate_feats_p3).squeeze(dim=3).squeeze(dim=2)
 
         fc_1_score = self.fc_1(p1)
         fc_2_score = self.fc_2(p2)
         fc_3_score = self.fc_3(p3)
 
-        return fc_1_score, fc_2_score, fc_3_score, pids
+        return fc_1_score, fc_2_score, fc_3_score, integrate_pids
 
 
 class Auxiliary_classifier_head(nn.Module):
