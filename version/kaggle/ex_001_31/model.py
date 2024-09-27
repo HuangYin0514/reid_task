@@ -7,48 +7,56 @@ from torchvision import models
 import network
 
 
-class Integrate_feats_module(nn.Module):
-    def __init__(self, classifier_head, config, logger):
-        super(Integrate_feats_module, self).__init__()
-        self.config = config
-        self.logger = logger
-
-        self.ShareMLP = nn.Linear(2048, 2048, bias=False)
-        self.SpecificMLP = nn.Linear(2048, 2048, bias=False)
-
-    def forward(self, feats, pids, backbone_cls_score, num_same_id=4):
-        bs = feats.size(0)
-        f_dim = feats.size(1)
-        chunk_size = int(bs / num_same_id)  # 15
-
-        # Weights
-        weights = backbone_cls_score[torch.arange(bs), pids].view(chunk_size, 4)  # (chunk_size, 4)
-        weights_norm = torch.softmax(weights, dim=1)
-
-        # Integrate
-        ids_feats = feats.view(chunk_size, num_same_id, f_dim)  # (chunk_size, 4, 2048)
-        integrate_pids = pids[::num_same_id]
-
-        # Consistency
-        consistency_features = self.ShareMLP(ids_feats)  # (chunk_size, 4, 256)
-
-        # Specific
-        specific_features = self.SpecificMLP(ids_feats)  # (chunk_size, 4, 256)
-
-        return consistency_features, specific_features, integrate_pids
-
-
-class Auxiliary_classifier_head(nn.Module):
-    def __init__(self, num_classes, config, logger, **kwargs):
+class Multi_granularity(nn.Module):
+    def __init__(self, feat_dim, num_classes, config, logger, **kwargs):
         super(
-            Auxiliary_classifier_head,
+            Multi_granularity,
             self,
         ).__init__()
 
         self.config = config
         self.logger = logger
 
-        feat_dim = 2048
+        self.maxpool_zg_p1 = nn.MaxPool2d(kernel_size=(64, 32))
+        self.maxpool_zg_p2 = nn.MaxPool2d(kernel_size=(32, 16))
+        self.maxpool_zg_p3 = nn.MaxPool2d(kernel_size=(16, 8))
+
+        self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256), nn.ReLU())
+        self.reduction_p2 = nn.Sequential(nn.Conv2d(512, 512, 1, bias=False), nn.BatchNorm2d(512), nn.ReLU())
+        self.reduction_p3 = nn.Sequential(nn.Conv2d(1024, 1024, 1, bias=False), nn.BatchNorm2d(1024), nn.ReLU())
+
+        self.fc_1 = nn.Linear(256, num_classes)
+        self.fc_2 = nn.Linear(512, num_classes)
+        self.fc_3 = nn.Linear(1024, num_classes)
+
+        # self.fc_id_2048_0.apply(network.utils.weights_init_classifier)
+        # self.fc_id_2048_1.apply(network.utils.weights_init_classifier)
+        # self.fc_id_2048_2.apply(network.utils.weights_init_classifier)
+
+    def forward(self, x1, x2, x3):  # (batch_size, dim)
+        zg_p1 = self.maxpool_zg_p1(x1)
+        zg_p2 = self.maxpool_zg_p2(x2)
+        zg_p3 = self.maxpool_zg_p3(x3)
+
+        fg_p1 = self.reduction_p1(zg_p1).squeeze(dim=3).squeeze(dim=2)
+        fg_p2 = self.reduction_p2(zg_p2).squeeze(dim=3).squeeze(dim=2)
+        fg_p3 = self.reduction_p3(zg_p3).squeeze(dim=3).squeeze(dim=2)
+
+        fc_1_score = self.fc_1(fg_p1)
+        fc_2_score = self.fc_2(fg_p2)
+        fc_3_score = self.fc_3(fg_p3)
+
+        return fc_1_score, fc_2_score, fc_3_score
+
+
+class Auxiliary_classifier_head(nn.Module):
+    def __init__(self, feat_dim, num_classes, config, logger, **kwargs):
+        super(
+            Auxiliary_classifier_head,
+            self,
+        ).__init__()
+        self.config = config
+        self.logger = logger
 
         # Pooling
         self.pool_layer = network.layers.GeneralizedMeanPoolingP()
@@ -64,8 +72,12 @@ class Auxiliary_classifier_head(nn.Module):
 
     def forward(self, feat):  # (batch_size, dim)
         bs = feat.size(0)
-        feat = feat.view(bs, -1)
-        bn_feat = self.BN(feat)
+        # pool
+        # pool_feat = self.pool_layer(feat)  # (batch_size, 2048, 1, 1)
+        feat = feat.view(bs, -1)  # (batch_size, 2048)
+        # BN
+        bn_feat = self.BN(feat)  # (batch_size, 2048)
+        # Classifier
         cls_score = self.classifier(bn_feat)  # ([N, num_classes]）
         return cls_score
 
@@ -132,10 +144,13 @@ class Backbone(nn.Module):
         x = self.resnet_maxpool(x)
 
         x = self.resnet_layer1(x)
+        x1 = x
         x = self.resnet_layer2(x)
+        x2 = x
         x = self.resnet_layer3(x)
+        x3 = x
         x = self.resnet_layer4(x)
-        return x
+        return x, x1, x2, x3
 
 
 class ReidNet(nn.Module):
@@ -152,21 +167,21 @@ class ReidNet(nn.Module):
         self.classifier_head = Classifier_head(2048, num_classes, config, logger)
 
         # Auxiliary classifier
-        self.auxiliary_classifier_head = Auxiliary_classifier_head(num_classes, config, logger)
+        self.auxiliary_classifier_head = Auxiliary_classifier_head(1280, num_classes, config, logger)
 
-        # Integrat Feats Module
-        self.integrate_feats_module = Integrate_feats_module(self.classifier_head, config, logger)
+        # Multi_granularity
+        self.multi_granularity = Multi_granularity(256, num_classes, config, logger)
 
     def forward(self, x):
         bs = x.size(0)
 
         # Backbone
-        resnet_feats = self.backbone(x)  # (bs, 2048, 16, 8)
+        resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3 = self.backbone(x)  # (bs, 2048, 16, 8)
 
         # Classifier head
         backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(resnet_feats)
 
         if self.training:
-            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats
+            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3
         else:
             return backbone_bn_feats

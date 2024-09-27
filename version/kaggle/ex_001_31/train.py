@@ -80,23 +80,22 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats = model(inputs)
+            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3 = model(inputs)
 
+            ### Loss
             #### Gloab loss
             backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
             backbone_loss = backbone_ce_loss
 
-            #### Multi-view loss
-            consistency_features, specific_features, integrate_pids = model.integrate_feats_module(backbone_pool_feats, pids, backbone_cls_score, num_same_id=4)
-            avg_consistency_features = torch.mean(consistency_features, dim=1, keepdim=True)
-            consistency_loss = mse_loss(consistency_features, avg_consistency_features.repeat_interleave(4, dim=1))
-            avg_consistency_cls_score = model.auxiliary_classifier_head(avg_consistency_features)
-            consistency_ce_loss = ce_loss(avg_consistency_cls_score, integrate_pids)
-            multi_view_loss = consistency_loss + consistency_ce_loss
+            # Multi_granularity
+            fc_1_score, fc_2_score, fc_3_score = model.multi_granularity(resnet_feats_x1, resnet_feats_x2, resnet_feats_x3)
+            fc_1_ce_loss = ce_labelsmooth_loss(fc_1_score, pids)
+            fc_2_ce_loss = ce_labelsmooth_loss(fc_2_score, pids)
+            fc_3_ce_loss = ce_labelsmooth_loss(fc_3_score, pids)
+            multi_granularity_loss = fc_1_ce_loss + fc_2_ce_loss + fc_3_ce_loss
 
             #### All loss
-            loss = backbone_loss + 0.1 * multi_view_loss
-            # print(multi_view_loss, backbone_ce_loss)
+            loss = backbone_loss + 0.1 * multi_granularity_loss
 
             ### Update the parameters
             loss.backward()
