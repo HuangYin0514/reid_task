@@ -1,0 +1,20 @@
+2024-09-27 19:43:08 INFO ##################################################
+2024-09-27 19:43:08 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_001_35	dataset_name: Occluded_Duke	dataset_path: /home/hy/project/data/Occluded_Duke	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 120	img_height: 256	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_001_35/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_001_35/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_001_35/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_001_35/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
+2024-09-27 19:43:08 INFO Task: ReID_Task
+2024-09-27 19:43:08 INFO Using device: cuda
+2024-09-27 19:43:08 INFO Using data type: torch.float32
+2024-09-27 19:43:08 INFO Number of GPUs: 1
+2024-09-27 19:43:08 INFO GPU is_available: True
+2024-09-27 19:43:08 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-09-27 19:43:08 INFO CUDA version: 12.1
+2024-09-27 19:43:08 INFO Current device id: 0
+2024-09-27 19:43:08 INFO ##################################################
+2024-09-27 19:44:33 INFO Epoch 1/120	Training Loss: 7.1723	Time remaining is 2h:50m
+2024-09-27 19:45:57 INFO Epoch 2/120	Training Loss: 6.0866	Time remaining is 2h:48m
+2024-09-27 19:47:23 INFO Epoch 3/120	Training Loss: 4.7389	Time remaining is 2h:47m
+2024-09-27 19:48:48 INFO Epoch 4/120	Training Loss: 3.5436	Time remaining is 2h:46m
+2024-09-27 19:50:12 INFO Epoch 5/120	Training Loss: 2.7515	Time remaining is 2h:44m
+2024-09-27 19:51:38 INFO Epoch 6/120	Training Loss: 2.3221	Time remaining is 2h:43m
+2024-09-27 19:53:03 INFO Epoch 7/120	Training Loss: 2.0848	Time remaining is 2h:41m
+2024-09-27 19:54:28 INFO Epoch 8/120	Training Loss: 1.9298	Time remaining is 2h:40m
+2024-09-27 19:55:54 INFO Epoch 9/120	Training Loss: 1.8205	Time remaining is 2h:39m
