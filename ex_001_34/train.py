@@ -87,15 +87,15 @@ def brain(config, logger):
             backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
             backbone_loss = backbone_ce_loss
 
-            # hierarchical_aggregation
-            fc_1_score, fc_2_score, fc_3_score, integrate_pids = model.hierarchical_aggregation(resnet_feats_x1, resnet_feats_x2, resnet_feats_x3, backbone_cls_score, pids)
-            fc_1_ce_loss = ce_loss(fc_1_score, integrate_pids)
-            fc_2_ce_loss = ce_loss(fc_2_score, integrate_pids)
-            fc_3_ce_loss = ce_loss(fc_3_score, integrate_pids)
-            hierarchical_aggregation_loss = fc_1_ce_loss + fc_2_ce_loss + fc_3_ce_loss
+            # Multi_granularity
+            fc_1_score, fc_2_score, fc_3_score = model.multi_granularity(resnet_feats_x1, resnet_feats_x2, resnet_feats_x3)
+            fc_1_ce_loss = ce_loss(fc_1_score, pids)
+            fc_2_ce_loss = ce_loss(fc_2_score, pids)
+            fc_3_ce_loss = ce_loss(fc_3_score, pids)
+            multi_granularity_loss = fc_1_ce_loss + fc_2_ce_loss + fc_3_ce_loss
 
             #### All loss
-            loss = backbone_loss + 0.1 * hierarchical_aggregation_loss
+            loss = backbone_loss + 0.1 * multi_granularity_loss
 
             ### Update the parameters
             loss.backward()
