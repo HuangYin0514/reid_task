@@ -7,6 +7,31 @@ from torchvision import models
 import network
 
 
+class RK2(nn.Module):
+    def __init__(self, n_feats, config, logger, bias=False):
+        super(RK2, self).__init__()
+        self.config = config
+        self.logger = logger
+
+        self.k1 = nn.Sequential(nn.Conv2d(n_feats, n_feats, 1, stride=1, padding=0, bias=False), nn.PReLU(n_feats, 0.25))
+        self.k2 = nn.Sequential(nn.Conv2d(n_feats, n_feats, 1, stride=1, padding=0, bias=False), nn.PReLU(n_feats, 0.25))
+        self.alpha = nn.Parameter(torch.FloatTensor([0]), requires_grad=True)
+
+    def forward(self, x):
+        b_1 = torch.exp(-torch.exp(self.alpha))
+        b_2 = 1 - b_1
+        a_21 = 1 / (2 * b_2)
+
+        x_k1 = self.k1(self.k1(x))
+        x_k1 = a_21 * x_k1 + x
+
+        x_k2 = self.k2(self.k2(x_k1))
+        x_k2 = b_2 * x_k2 + b_1 * x_k1
+
+        out = x_k2 + x
+        return out
+
+
 class Integrate_feats_module(nn.Module):
     def __init__(self, config, logger):
         super(Integrate_feats_module, self).__init__()
@@ -44,9 +69,9 @@ class Hierarchical_aggregation(nn.Module):
         self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
         self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256), nn.ReLU())
-        self.reduction_p2 = nn.Sequential(nn.Conv2d(768, 768, 1, bias=False), nn.BatchNorm2d(768), nn.ReLU())
-        self.reduction_p3 = nn.Sequential(nn.Conv2d(1792, 1792, 1, bias=False), nn.BatchNorm2d(1792), nn.ReLU())
+        self.reduction_p1 = RK2(256)
+        self.reduction_p2 = RK2(768)
+        self.reduction_p3 = RK2(1792)
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
         self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
