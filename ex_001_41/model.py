@@ -1,3 +1,5 @@
+import math
+
 import torch
 import torch.nn.functional as F
 from torch import nn
@@ -7,29 +9,20 @@ from torchvision import models
 import network
 
 
-class RK2(nn.Module):
-    def __init__(self, n_feats, config, logger, bias=False):
-        super(RK2, self).__init__()
-        self.config = config
-        self.logger = logger
-
-        self.k1 = nn.Sequential(nn.Conv2d(n_feats, n_feats, 1, stride=1, padding=0, bias=False), nn.PReLU(n_feats, 0.25))
-        self.k2 = nn.Sequential(nn.Conv2d(n_feats, n_feats, 1, stride=1, padding=0, bias=False), nn.PReLU(n_feats, 0.25))
-        self.alpha = nn.Parameter(torch.FloatTensor([0]), requires_grad=True)
+class ECALayer(nn.Module):
+    def __init__(self, channels, gamma=2, b=1):
+        super().__init__()
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        t = int(abs((math.log(channels, 2) + b) / gamma))
+        k = t if t % 2 else t + 1
+        self.conv = nn.Conv1d(1, 1, kernel_size=k, padding=(k - 1) // 2, bias=False)
+        self.sigmoid = nn.Sigmoid()
 
     def forward(self, x):
-        b_1 = torch.exp(-torch.exp(self.alpha))
-        b_2 = 1 - b_1
-        a_21 = 1 / (2 * b_2)
-
-        x_k1 = self.k1(self.k1(x))
-        x_k1 = a_21 * x_k1 + x
-
-        x_k2 = self.k2(self.k2(x_k1))
-        x_k2 = b_2 * x_k2 + b_1 * x_k1
-
-        out = x_k2 + x
-        return out
+        y = self.avgpool(x)
+        y = self.conv(y.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
+        y = self.sigmoid(y)
+        return x * y.expand_as(x)
 
 
 class Integrate_feats_module(nn.Module):
@@ -69,9 +62,9 @@ class Hierarchical_aggregation(nn.Module):
         self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
         self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.reduction_p1 = RK2(256, config, logger)
-        self.reduction_p2 = RK2(768, config, logger)
-        self.reduction_p3 = RK2(1792, config, logger)
+        self.reduction_p1 = ECALayer(256)
+        self.reduction_p2 = ECALayer(768)
+        self.reduction_p3 = ECALayer(1792)
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
         self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)

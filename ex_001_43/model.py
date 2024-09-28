@@ -1,3 +1,5 @@
+import math
+
 import torch
 import torch.nn.functional as F
 from torch import nn
@@ -14,22 +16,34 @@ class RK2(nn.Module):
         self.logger = logger
 
         self.k1 = nn.Sequential(nn.Conv2d(n_feats, n_feats, 1, stride=1, padding=0, bias=False), nn.PReLU(n_feats, 0.25))
-        self.k2 = nn.Sequential(nn.Conv2d(n_feats, n_feats, 1, stride=1, padding=0, bias=False), nn.PReLU(n_feats, 0.25))
-        self.alpha = nn.Parameter(torch.FloatTensor([0]), requires_grad=True)
+
+    def forward(self, x, h=0.01):
+        k1 = self.k1(x)
+        k2 = self.k1(x + 2 / 3 * h * k1)
+        out = h * (1 / 4 * k1 + 3 / 4 * k2)
+        return out
+
+
+class ECALayer(nn.Module):
+    def __init__(self, channels, config, logger, gamma=2, b=1):
+        super().__init__()
+
+        self.config = config
+        self.logger = logger
+
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        t = int(abs((math.log(channels, 2) + b) / gamma))
+        k = t if t % 2 else t + 1
+        self.conv = nn.Conv1d(1, 1, kernel_size=k, padding=(k - 1) // 2, bias=False)
+        self.sigmoid = nn.Sigmoid()
+
+        self.RK2 = RK2(channels, config, logger)
 
     def forward(self, x):
-        b_1 = torch.exp(-torch.exp(self.alpha))
-        b_2 = 1 - b_1
-        a_21 = 1 / (2 * b_2)
-
-        x_k1 = self.k1(self.k1(x))
-        x_k1 = a_21 * x_k1 + x
-
-        x_k2 = self.k2(self.k2(x_k1))
-        x_k2 = b_2 * x_k2 + b_1 * x_k1
-
-        out = x_k2 + x
-        return out
+        y = self.avgpool(x)
+        y = self.conv(y.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
+        y = self.sigmoid(y).expand_as(x)
+        return x + y * self.RK2(x)
 
 
 class Integrate_feats_module(nn.Module):
@@ -65,17 +79,17 @@ class Hierarchical_aggregation(nn.Module):
         self.config = config
         self.logger = logger
 
-        self.pool_p1 = nn.Sequential(nn.MaxPool2d(kernel_size=(4, 4)), nn.Conv2d(256, 256, 1, stride=1, padding=0, bias=False))
-        self.pool_p2 = nn.Sequential(nn.MaxPool2d(kernel_size=(2, 2)), nn.Conv2d(512, 256, 1, stride=1, padding=0, bias=False))
-        self.pool_p3 = nn.Sequential(nn.MaxPool2d(kernel_size=(1, 1)), nn.Conv2d(1024, 256, 1, stride=1, padding=0, bias=False))
+        self.pool_p1 = nn.MaxPool2d(kernel_size=(4, 4))
+        self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
+        self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.reduction_p1 = RK2(256, config, logger)
-        self.reduction_p2 = RK2(512, config, logger)
-        self.reduction_p3 = RK2(768, config, logger)
+        self.reduction_p1 = ECALayer(256, config, logger)
+        self.reduction_p2 = ECALayer(768, config, logger)
+        self.reduction_p3 = ECALayer(1792, config, logger)
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
-        self.fc_2 = Auxiliary_classifier_head(512, num_classes, config, logger)
-        self.fc_3 = Auxiliary_classifier_head(768, num_classes, config, logger)
+        self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
+        self.fc_3 = Auxiliary_classifier_head(1792, num_classes, config, logger)
 
     def forward(
         self,
@@ -221,7 +235,7 @@ class ReidNet(nn.Module):
         self.classifier_head = Classifier_head(2048, num_classes, config, logger)
 
         # Auxiliary classifier
-        self.auxiliary_classifier_head = Auxiliary_classifier_head(768, num_classes, config, logger)
+        self.auxiliary_classifier_head = Auxiliary_classifier_head(1792, num_classes, config, logger)
 
         # Multi_granularity
         self.hierarchical_aggregation = Hierarchical_aggregation(num_classes, config, logger)
