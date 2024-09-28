@@ -47,12 +47,12 @@ class Hierarchical_aggregation(nn.Module):
         self.integrate_feats_module = Integrate_feats_module(config, logger)
 
         self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256), nn.ReLU())
-        self.reduction_p2 = nn.Sequential(nn.Conv2d(512, 512, 1, bias=False), nn.BatchNorm2d(512), nn.ReLU())
-        self.reduction_p3 = nn.Sequential(nn.Conv2d(1024, 1024, 1, bias=False), nn.BatchNorm2d(1024), nn.ReLU())
+        self.reduction_p2 = nn.Sequential(nn.Conv2d(768, 768, 1, bias=False), nn.BatchNorm2d(768), nn.ReLU())
+        self.reduction_p3 = nn.Sequential(nn.Conv2d(1792, 1792, 1, bias=False), nn.BatchNorm2d(1792), nn.ReLU())
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
-        self.fc_2 = Auxiliary_classifier_head(512, num_classes, config, logger)
-        self.fc_3 = Auxiliary_classifier_head(1024, num_classes, config, logger)
+        self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
+        self.fc_3 = Auxiliary_classifier_head(1792, num_classes, config, logger)
 
     def forward(
         self,
@@ -63,27 +63,22 @@ class Hierarchical_aggregation(nn.Module):
         pids,
     ):  # (batch_size, dim)
         pool_p1 = self.pool_p1(x1)
-        integrate_feats_p1, integrate_pids = self.integrate_feats_module(pool_p1, pids, backbone_cls_score)
-        p1 = self.reduction_p1(integrate_feats_p1).squeeze(dim=3).squeeze(dim=2)
-        # p1 = self.reduction_p1(pool_p1).squeeze(dim=3).squeeze(dim=2)
+        p1 = self.reduction_p1(pool_p1).squeeze(dim=3).squeeze(dim=2)
+        integrate_feats_p1, integrate_pids = self.integrate_feats_module(p1, pids, backbone_cls_score)
 
         pool_p2 = self.pool_p2(x2)
-        integrate_feats_p2, integrate_pids = self.integrate_feats_module(pool_p2, pids, backbone_cls_score)
-        # cat_p2 = torch.cat([integrate_feats_p2, p1], dim=1)
-        # cat_p2 = torch.cat([pool_p2, p1], dim=1)
-        # p2 = self.reduction_p2(cat_p2).squeeze(dim=3).squeeze(dim=2)
-        p2 = self.reduction_p2(integrate_feats_p2).squeeze(dim=3).squeeze(dim=2)
+        cat_p2 = torch.cat([pool_p2, p1], dim=1)
+        p2 = self.reduction_p2(cat_p2).squeeze(dim=3).squeeze(dim=2)
+        integrate_feats_p2, integrate_pids = self.integrate_feats_module(p2, pids, backbone_cls_score)
 
         pool_p3 = self.pool_p3(x3)
-        integrate_feats_p3, integrate_pids = self.integrate_feats_module(pool_p3, pids, backbone_cls_score)
-        # cat_p3 = torch.cat([integrate_feats_p3, p2], dim=1)
-        # cat_p3 = torch.cat([pool_p3, p2], dim=1)
-        # p3 = self.reduction_p3(cat_p3).squeeze(dim=3).squeeze(dim=2)
-        p3 = self.reduction_p3(integrate_feats_p3).squeeze(dim=3).squeeze(dim=2)
+        cat_p3 = torch.cat([pool_p3, p2], dim=1)
+        p3 = self.reduction_p3(cat_p3).squeeze(dim=3).squeeze(dim=2)
+        integrate_feats_p3, integrate_pids = self.integrate_feats_module(p3, pids, backbone_cls_score)
 
-        fc_1_score = self.fc_1(p1)
-        fc_2_score = self.fc_2(p2)
-        fc_3_score = self.fc_3(p3)
+        fc_1_score = self.fc_1(integrate_feats_p1)
+        fc_2_score = self.fc_2(integrate_feats_p2)
+        fc_3_score = self.fc_3(integrate_feats_p3)
 
         return fc_1_score, fc_2_score, fc_3_score, integrate_pids
 
