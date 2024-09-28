@@ -21,7 +21,7 @@ class RK2(nn.Module):
         k1 = self.k1(x)
         k2 = self.k1(x + 2 / 3 * h * k1)
         out = h * (1 / 4 * k1 + 3 / 4 * k2)
-        return out
+        return k1, out
 
 
 class ECALayer(nn.Module):
@@ -37,13 +37,15 @@ class ECALayer(nn.Module):
         self.conv = nn.Conv1d(1, 1, kernel_size=k, padding=(k - 1) // 2, bias=False)
         self.sigmoid = nn.Sigmoid()
 
-        self.RK2 = RK2(channels, config, logger)
+        self.RK = RK2(channels, config, logger)
 
     def forward(self, x):
         y = self.avgpool(x)
         y = self.conv(y.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
         y = self.sigmoid(y).expand_as(x)
-        return x + y * self.RK2(x)
+
+        k1, rk_out = self.RK(x)
+        return k1 + y * rk_out
 
 
 class Integrate_feats_module(nn.Module):
