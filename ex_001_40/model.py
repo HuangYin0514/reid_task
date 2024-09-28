@@ -65,17 +65,17 @@ class Hierarchical_aggregation(nn.Module):
         self.config = config
         self.logger = logger
 
-        self.pool_p1 = nn.MaxPool2d(kernel_size=(4, 4))
-        self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
-        self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
+        self.pool_p1 = nn.Sequential(nn.MaxPool2d(kernel_size=(4, 4)), nn.Conv2d(256, 256, 1, stride=1, padding=0, bias=False))
+        self.pool_p2 = nn.Sequential(nn.MaxPool2d(kernel_size=(2, 2)), nn.Conv2d(512, 256, 1, stride=1, padding=0, bias=False))
+        self.pool_p3 = nn.Sequential(nn.MaxPool2d(kernel_size=(1, 1)), nn.Conv2d(1024, 256, 1, stride=1, padding=0, bias=False))
 
         self.reduction_p1 = RK2(256, config, logger)
-        self.reduction_p2 = RK2(768, config, logger)
-        self.reduction_p3 = RK2(1792, config, logger)
+        self.reduction_p2 = RK2(512, config, logger)
+        self.reduction_p3 = RK2(768, config, logger)
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
-        self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
-        self.fc_3 = Auxiliary_classifier_head(1792, num_classes, config, logger)
+        self.fc_2 = Auxiliary_classifier_head(512, num_classes, config, logger)
+        self.fc_3 = Auxiliary_classifier_head(768, num_classes, config, logger)
 
     def forward(
         self,
@@ -221,7 +221,7 @@ class ReidNet(nn.Module):
         self.classifier_head = Classifier_head(2048, num_classes, config, logger)
 
         # Auxiliary classifier
-        self.auxiliary_classifier_head = Auxiliary_classifier_head(1792, num_classes, config, logger)
+        self.auxiliary_classifier_head = Auxiliary_classifier_head(768, num_classes, config, logger)
 
         # Multi_granularity
         self.hierarchical_aggregation = Hierarchical_aggregation(num_classes, config, logger)
