@@ -44,8 +44,6 @@ class Hierarchical_aggregation(nn.Module):
         self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
         self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.integrate_feats_module = Integrate_feats_module(config, logger)
-
         self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256), nn.ReLU())
         self.reduction_p2 = nn.Sequential(nn.Conv2d(768, 768, 1, bias=False), nn.BatchNorm2d(768), nn.ReLU())
         self.reduction_p3 = nn.Sequential(nn.Conv2d(1792, 1792, 1, bias=False), nn.BatchNorm2d(1792), nn.ReLU())
@@ -64,23 +62,20 @@ class Hierarchical_aggregation(nn.Module):
     ):  # (batch_size, dim)
         pool_p1 = self.pool_p1(x1)
         p1 = self.reduction_p1(pool_p1).squeeze(dim=3).squeeze(dim=2)
-        integrate_feats_p1, integrate_pids = self.integrate_feats_module(p1, pids, backbone_cls_score)
 
         pool_p2 = self.pool_p2(x2)
         cat_p2 = torch.cat([pool_p2, p1], dim=1)
         p2 = self.reduction_p2(cat_p2).squeeze(dim=3).squeeze(dim=2)
-        integrate_feats_p2, integrate_pids = self.integrate_feats_module(p2, pids, backbone_cls_score)
 
         pool_p3 = self.pool_p3(x3)
         cat_p3 = torch.cat([pool_p3, p2], dim=1)
         p3 = self.reduction_p3(cat_p3).squeeze(dim=3).squeeze(dim=2)
-        integrate_feats_p3, integrate_pids = self.integrate_feats_module(p3, pids, backbone_cls_score)
 
-        fc_1_score = self.fc_1(integrate_feats_p1)
-        fc_2_score = self.fc_2(integrate_feats_p2)
-        fc_3_score = self.fc_3(integrate_feats_p3)
+        fc_1_score = self.fc_1(p1)
+        fc_2_score = self.fc_2(p2)
+        fc_3_score = self.fc_3(p3)
 
-        return fc_1_score, fc_2_score, fc_3_score, integrate_pids
+        return fc_1_score, fc_2_score, fc_3_score, p3
 
 
 class Auxiliary_classifier_head(nn.Module):
@@ -201,10 +196,13 @@ class ReidNet(nn.Module):
         self.classifier_head = Classifier_head(2048, num_classes, config, logger)
 
         # Auxiliary classifier
-        self.auxiliary_classifier_head = Auxiliary_classifier_head(1280, num_classes, config, logger)
+        self.auxiliary_classifier_head = Auxiliary_classifier_head(1792, num_classes, config, logger)
 
         # Multi_granularity
         self.hierarchical_aggregation = Hierarchical_aggregation(num_classes, config, logger)
+
+        # Integrate_feats
+        self.integrate_feats_module = Integrate_feats_module(config, logger)
 
     def forward(self, x):
         bs = x.size(0)
