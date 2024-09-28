@@ -9,21 +9,6 @@ from torchvision import models
 import network
 
 
-class RK2(nn.Module):
-    def __init__(self, n_feats, config, logger, bias=False):
-        super(RK2, self).__init__()
-        self.config = config
-        self.logger = logger
-
-        self.k1 = nn.Sequential(nn.Conv2d(n_feats, n_feats, 1, stride=1, padding=0, bias=False), nn.PReLU(n_feats, 0.25))
-
-    def forward(self, x, h=0.01):
-        k1 = self.k1(x)
-        k2 = self.k1(x + 2 / 3 * h * k1)
-        out = h * (1 / 4 * k1 + 3 / 4 * k2)
-        return out
-
-
 class ECALayer(nn.Module):
     def __init__(self, channels, config, logger, gamma=2, b=1):
         super().__init__()
@@ -37,17 +22,25 @@ class ECALayer(nn.Module):
         self.conv = nn.Conv1d(1, 1, kernel_size=k, padding=(k - 1) // 2, bias=False)
         self.sigmoid = nn.Sigmoid()
 
-        self.att_func = nn.Sequential(nn.Conv2d(channels, channels, 1, stride=1, padding=0, bias=False), nn.PReLU(channels, 0.25))
-        self.RK = RK2(channels, config, logger)
+        self.att_func_1 = nn.Sequential(nn.Conv2d(channels, channels, 1, stride=1, padding=0, bias=False), nn.PReLU(channels, 0.25))
+        self.att_func_2 = nn.Sequential(nn.Conv2d(channels, channels, 1, stride=1, padding=0, bias=False), nn.PReLU(channels, 0.25))
+        # self.RK = RK2(channels, config, logger)
+
+    def rk2(self, x, M, h=0.01):
+        att_F = self.att_func_1(x)
+
+        k1 = self.att_func_2(att_F)
+        k2 = self.att_func_2(att_F + 2 / 3 * h * k1)
+        out = att_F + M * h * (1 / 4 * k1 + 3 / 4 * k2)
+        return out
 
     def forward(self, x):
         y = self.avgpool(x)
         y = self.conv(y.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
         y = self.sigmoid(y).expand_as(x)
 
-        att_F = self.att_func(x)
-        rk_out = self.RK(att_F)
-        return att_F + y * rk_out
+        rk_out = self.rk2(x, M=y)
+        return rk_out
 
 
 class Integrate_feats_module(nn.Module):
