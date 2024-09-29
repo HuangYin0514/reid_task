@@ -48,6 +48,28 @@ class Integrate_feats_module(nn.Module):
         return integrate_feats, integrate_pids
 
 
+class Features_enhance_module(nn.Module):
+    def __init__(self, feats_dim, config, logger, **kwargs):
+        super(
+            Features_enhance_module,
+            self,
+        ).__init__()
+
+        hidden_dim = 256
+        self.block_1 = nn.Sequential(
+            nn.Conv2d(feats_dim, hidden_dim, kernel_size=1, stride=1, padding=0, bias=False), nn.BatchNorm2d(hidden_dim)
+        )
+        self.block_2 = nn.Sequential(
+            nn.Conv2d(hidden_dim, feats_dim, kernel_size=1, stride=1, padding=0, bias=False), nn.BatchNorm2d(feats_dim)
+        )
+        self.act = nn.ReLU(inplace=True)
+
+    def forward(self, x):
+        out_block_1 = self.act(self.block_1(x))
+        out_block_2 = self.act(self.block_2(out_block_1))
+        return out_block_2
+
+
 class Hierarchical_aggregation(nn.Module):
     def __init__(self, num_classes, config, logger, **kwargs):
         super(
@@ -62,9 +84,9 @@ class Hierarchical_aggregation(nn.Module):
         self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
         self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.reduction_p1 = nn.Sequential(ECALayer(256), nn.BatchNorm2d(256), nn.ReLU())
-        self.reduction_p2 = nn.Sequential(ECALayer(768), nn.BatchNorm2d(768), nn.ReLU())
-        self.reduction_p3 = nn.Sequential(ECALayer(1792), nn.BatchNorm2d(1792), nn.ReLU())
+        self.feats_enhance_1 = Features_enhance_module(256, config, logger)
+        self.feats_enhance_2 = Features_enhance_module(768, config, logger)
+        self.feats_enhance_3 = Features_enhance_module(1792, config, logger)
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
         self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
@@ -79,15 +101,15 @@ class Hierarchical_aggregation(nn.Module):
         pids,
     ):  # (batch_size, dim)
         pool_p1 = self.pool_p1(x1)
-        p1 = self.reduction_p1(pool_p1).squeeze(dim=3).squeeze(dim=2)
+        p1 = self.feats_enhance_1(pool_p1).squeeze(dim=3).squeeze(dim=2)
 
         pool_p2 = self.pool_p2(x2)
         cat_p2 = torch.cat([pool_p2, p1], dim=1)
-        p2 = self.reduction_p2(cat_p2).squeeze(dim=3).squeeze(dim=2)
+        p2 = self.feats_enhance_2(cat_p2).squeeze(dim=3).squeeze(dim=2)
 
         pool_p3 = self.pool_p3(x3)
         cat_p3 = torch.cat([pool_p3, p2], dim=1)
-        p3 = self.reduction_p3(cat_p3).squeeze(dim=3).squeeze(dim=2)
+        p3 = self.feats_enhance_3(cat_p3).squeeze(dim=3).squeeze(dim=2)
 
         fc_1_score = self.fc_1(p1)
         fc_2_score = self.fc_2(p2)
@@ -232,6 +254,14 @@ class ReidNet(nn.Module):
         backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(resnet_feats)
 
         if self.training:
-            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3
+            return (
+                backbone_cls_score,
+                backbone_pool_feats,
+                backbone_bn_feats,
+                resnet_feats,
+                resnet_feats_x1,
+                resnet_feats_x2,
+                resnet_feats_x3,
+            )
         else:
             return backbone_bn_feats

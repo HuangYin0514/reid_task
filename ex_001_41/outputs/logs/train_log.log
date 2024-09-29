@@ -1,16 +1,11 @@
-2024-09-29 10:54:05 INFO ##################################################
-2024-09-29 10:54:05 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_001_41	dataset_name: Occluded_Duke	dataset_path: /home/hy/project/data/Occluded_Duke	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 120	img_height: 256	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
-2024-09-29 10:54:05 INFO Task: ReID_Task
-2024-09-29 10:54:05 INFO Using device: cuda
-2024-09-29 10:54:05 INFO Using data type: torch.float32
-2024-09-29 10:54:05 INFO Number of GPUs: 1
-2024-09-29 10:54:05 INFO GPU is_available: True
-2024-09-29 10:54:05 INFO GPU name: NVIDIA GeForce RTX 3060
-2024-09-29 10:54:05 INFO CUDA version: 12.1
-2024-09-29 10:54:05 INFO Current device id: 0
-2024-09-29 10:54:05 INFO ##################################################
-2024-09-29 10:55:27 INFO Epoch 1/120	Training Loss: 7.1805	Time remaining is 2h:43m
-2024-09-29 10:56:48 INFO Epoch 2/120	Training Loss: 6.1430	Time remaining is 2h:41m
-2024-09-29 10:58:10 INFO Epoch 3/120	Training Loss: 4.8398	Time remaining is 2h:41m
-2024-09-29 10:59:32 INFO Epoch 4/120	Training Loss: 3.6719	Time remaining is 2h:40m
-2024-09-29 11:00:53 INFO Epoch 5/120	Training Loss: 2.8866	Time remaining is 2h:38m
+2024-09-29 15:31:37 INFO ##################################################
+2024-09-29 15:31:37 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_001_41	dataset_name: Occluded_Duke	dataset_path: /home/hy/project/data/Occluded_Duke	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 120	img_height: 256	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
+2024-09-29 15:31:37 INFO Task: ReID_Task
+2024-09-29 15:31:37 INFO Using device: cuda
+2024-09-29 15:31:37 INFO Using data type: torch.float32
+2024-09-29 15:31:37 INFO Number of GPUs: 1
+2024-09-29 15:31:37 INFO GPU is_available: True
+2024-09-29 15:31:37 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-09-29 15:31:37 INFO CUDA version: 12.1
+2024-09-29 15:31:37 INFO Current device id: 0
+2024-09-29 15:31:37 INFO ##################################################
