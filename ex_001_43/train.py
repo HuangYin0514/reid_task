@@ -80,7 +80,9 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3 = model(inputs)
+            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3 = (
+                model(inputs)
+            )
 
             ### Loss
             #### Gloab loss
@@ -88,18 +90,20 @@ def brain(config, logger):
             backbone_loss = backbone_ce_loss
 
             # hierarchical_aggregation
-            fc_1_score, fc_2_score, fc_3_score, p3 = model.hierarchical_aggregation(resnet_feats_x1, resnet_feats_x2, resnet_feats_x3, backbone_cls_score, pids)
+            fc_1_score, fc_2_score, fc_3_score, p3 = model.hierarchical_aggregation(
+                resnet_feats_x1, resnet_feats_x2, resnet_feats_x3, backbone_cls_score, pids
+            )
             fc_1_ce_loss = ce_loss(fc_1_score, pids)
             fc_2_ce_loss = ce_loss(fc_2_score, pids)
             fc_3_ce_loss = ce_loss(fc_3_score, pids)
             hierarchical_aggregation_loss = fc_1_ce_loss + fc_2_ce_loss + fc_3_ce_loss
 
-            integrate_feats, integrate_pids = model.integrate_feats_module(p3, pids, backbone_cls_score, num_same_id=4)
-            integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
-            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
+            # integrate_feats, integrate_pids = model.integrate_feats_module(p3, pids, backbone_cls_score, num_same_id=4)
+            # integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
+            # integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
 
             #### All loss
-            loss = backbone_loss + 0.1 * hierarchical_aggregation_loss + 0.1 * integrate_ce_loss
+            loss = backbone_loss + 0.1 * hierarchical_aggregation_loss
 
             ### Update the parameters
             loss.backward()

@@ -22,7 +22,7 @@ class ECALayer(nn.Module):
         y = self.avgpool(x)
         y = self.conv(y.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
         y = self.sigmoid(y)
-        return x * y.expand_as(x)
+        return x * (y.expand_as(x) + 1)
 
 
 class Integrate_feats_module(nn.Module):
@@ -62,9 +62,9 @@ class Hierarchical_aggregation(nn.Module):
         self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
         self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256), nn.ReLU(), ECALayer(256))
-        self.reduction_p2 = nn.Sequential(nn.Conv2d(768, 768, 1, bias=False), nn.BatchNorm2d(768), nn.ReLU(), ECALayer(768))
-        self.reduction_p3 = nn.Sequential(nn.Conv2d(1792, 1792, 1, bias=False), nn.BatchNorm2d(1792), nn.ReLU(), ECALayer(1792))
+        self.reduction_p1 = ECALayer(256)
+        self.reduction_p2 = ECALayer(768)
+        self.reduction_p3 = ECALayer(1792)
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
         self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
@@ -232,14 +232,6 @@ class ReidNet(nn.Module):
         backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(resnet_feats)
 
         if self.training:
-            return (
-                backbone_cls_score,
-                backbone_pool_feats,
-                backbone_bn_feats,
-                resnet_feats,
-                resnet_feats_x1,
-                resnet_feats_x2,
-                resnet_feats_x3,
-            )
+            return backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3
         else:
             return backbone_bn_feats

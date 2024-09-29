@@ -62,9 +62,9 @@ class Hierarchical_aggregation(nn.Module):
         self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
         self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.reduction_p1 = ECALayer(256)
-        self.reduction_p2 = ECALayer(768)
-        self.reduction_p3 = ECALayer(1792)
+        self.reduction_p1 = nn.Sequential(ECALayer(256), nn.BatchNorm2d(256), nn.ReLU())
+        self.reduction_p2 = nn.Sequential(ECALayer(768), nn.BatchNorm2d(768), nn.ReLU())
+        self.reduction_p3 = nn.Sequential(ECALayer(1792), nn.BatchNorm2d(1792), nn.ReLU())
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
         self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)

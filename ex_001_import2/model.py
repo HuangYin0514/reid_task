@@ -9,9 +9,43 @@ from torchvision import models
 import network
 
 
-class ECALayer(nn.Module):
-    def __init__(self, channels, gamma=2, b=1):
+class RK2(nn.Module):
+    def __init__(self, channels, config, logger, gamma=2, b=1):
         super().__init__()
+
+        self.attention = ECALayer(channels, config, logger)
+
+        self.x2F = nn.Sequential(
+            nn.BatchNorm2d(channels),
+            nn.Conv2d(channels, channels, 1, stride=1, padding=0, bias=False),
+            nn.BatchNorm2d(channels),
+            nn.ReLU(channels),
+        )
+        self.F2k = nn.Sequential(nn.Conv2d(channels, channels, 1, stride=1, padding=0, bias=False), nn.PReLU(channels, 0.25))
+
+    def forward(self, x, h=0.1):
+
+        deta = x
+        F1 = self.x2F(deta) + deta
+        mask_1 = self.attention(deta)
+        k1 = self.F2k(mask_1 * F1)
+
+        deta = x + 2 / 3 * h * k1
+        F2 = self.x2F(deta) + deta
+        mask_2 = self.attention(deta)
+        k2 = self.F2k(mask_2 * F2)
+
+        out = F1 + h * (1 / 4 * k1 + 3 / 4 * k2)
+        return out
+
+
+class ECALayer(nn.Module):
+    def __init__(self, channels, config, logger, gamma=2, b=1):
+        super().__init__()
+
+        self.config = config
+        self.logger = logger
+
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         t = int(abs((math.log(channels, 2) + b) / gamma))
         k = t if t % 2 else t + 1
@@ -21,8 +55,8 @@ class ECALayer(nn.Module):
     def forward(self, x):
         y = self.avgpool(x)
         y = self.conv(y.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
-        y = self.sigmoid(y)
-        return x * y.expand_as(x)
+        y = self.sigmoid(y).expand_as(x)
+        return y.expand_as(x)
 
 
 class Integrate_feats_module(nn.Module):
@@ -62,9 +96,9 @@ class Hierarchical_aggregation(nn.Module):
         self.pool_p2 = nn.MaxPool2d(kernel_size=(2, 2))
         self.pool_p3 = nn.MaxPool2d(kernel_size=(1, 1))
 
-        self.reduction_p1 = nn.Sequential(nn.Conv2d(256, 256, 1, bias=False), nn.BatchNorm2d(256), nn.ReLU(), ECALayer(256))
-        self.reduction_p2 = nn.Sequential(nn.Conv2d(768, 768, 1, bias=False), nn.BatchNorm2d(768), nn.ReLU(), ECALayer(768))
-        self.reduction_p3 = nn.Sequential(nn.Conv2d(1792, 1792, 1, bias=False), nn.BatchNorm2d(1792), nn.ReLU(), ECALayer(1792))
+        self.reduction_p1 = ECALayer(256, config, logger)
+        self.reduction_p2 = ECALayer(768, config, logger)
+        self.reduction_p3 = ECALayer(1792, config, logger)
 
         self.fc_1 = Auxiliary_classifier_head(256, num_classes, config, logger)
         self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
