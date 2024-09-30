@@ -21,8 +21,8 @@ class ECALayer(nn.Module):
     def forward(self, x):
         y = self.avgpool(x)
         y = self.conv(y.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
-        y = self.sigmoid(y).expand_as(x)
-        return y
+        y = self.sigmoid(y)
+        return x * y.expand_as(x)
 
 
 class Integrate_feats_module(nn.Module):
@@ -62,11 +62,8 @@ class Features_enhance_module(nn.Module):
 
         self.act = nn.ReLU(inplace=True)
 
-        self.attention = ECALayer(hidden_dim)
-
     def forward(self, x):
         out = self.act(self.block_1(x))
-        out = self.attention(out) * out
         return out
 
 
