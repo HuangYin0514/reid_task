@@ -1,11 +1,139 @@
-2024-09-30 08:37:53 INFO ##################################################
-2024-09-30 08:37:53 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_001_41	dataset_name: Occluded_Duke	dataset_path: /home/hy/project/data/Occluded_Duke	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 120	img_height: 256	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_001_41/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
-2024-09-30 08:37:53 INFO Task: ReID_Task
-2024-09-30 08:37:53 INFO Using device: cuda
-2024-09-30 08:37:53 INFO Using data type: torch.float32
-2024-09-30 08:37:53 INFO Number of GPUs: 1
-2024-09-30 08:37:53 INFO GPU is_available: True
-2024-09-30 08:37:53 INFO GPU name: NVIDIA GeForce RTX 3060
-2024-09-30 08:37:53 INFO CUDA version: 12.1
-2024-09-30 08:37:53 INFO Current device id: 0
-2024-09-30 08:37:53 INFO ##################################################
+2024-09-30 11:34:52 INFO ##################################################
+2024-09-30 11:34:52 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_001_42	dataset_name: Occluded_Duke	dataset_path: /home/hy/project/data/Occluded_Duke	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 120	img_height: 256	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_001_42/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_001_42/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_001_42/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_001_42/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
+2024-09-30 11:34:52 INFO Task: ReID_Task
+2024-09-30 11:34:52 INFO Using device: cuda
+2024-09-30 11:34:52 INFO Using data type: torch.float32
+2024-09-30 11:34:52 INFO Number of GPUs: 1
+2024-09-30 11:34:52 INFO GPU is_available: True
+2024-09-30 11:34:52 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-09-30 11:34:52 INFO CUDA version: 12.1
+2024-09-30 11:34:52 INFO Current device id: 0
+2024-09-30 11:34:52 INFO ##################################################
+2024-09-30 11:36:18 INFO Epoch 1/120	Training Loss: 7.1702	Time remaining is 2h:51m
+2024-09-30 11:37:43 INFO Epoch 2/120	Training Loss: 6.0715	Time remaining is 2h:49m
+2024-09-30 11:39:09 INFO Epoch 3/120	Training Loss: 4.7064	Time remaining is 2h:48m
+2024-09-30 11:40:35 INFO Epoch 4/120	Training Loss: 3.4972	Time remaining is 2h:47m
+2024-09-30 11:42:00 INFO Epoch 5/120	Training Loss: 2.7024	Time remaining is 2h:45m
+2024-09-30 11:43:26 INFO Epoch 6/120	Training Loss: 2.2904	Time remaining is 2h:44m
+2024-09-30 11:44:52 INFO Epoch 7/120	Training Loss: 2.0465	Time remaining is 2h:43m
+2024-09-30 11:46:17 INFO Epoch 8/120	Training Loss: 1.9020	Time remaining is 2h:41m
+2024-09-30 11:47:44 INFO Epoch 9/120	Training Loss: 1.7898	Time remaining is 2h:40m
+2024-09-30 11:49:09 INFO Epoch 10/120	Training Loss: 1.7125	Time remaining is 2h:39m
+2024-09-30 11:50:35 INFO Epoch 11/120	Training Loss: 1.5983	Time remaining is 2h:37m
+2024-09-30 11:52:00 INFO Epoch 12/120	Training Loss: 1.5159	Time remaining is 2h:36m
+2024-09-30 11:53:26 INFO Epoch 13/120	Training Loss: 1.4742	Time remaining is 2h:34m
+2024-09-30 11:54:52 INFO Epoch 14/120	Training Loss: 1.4284	Time remaining is 2h:33m
+2024-09-30 11:56:17 INFO Epoch 15/120	Training Loss: 1.3911	Time remaining is 2h:31m
+2024-09-30 11:57:43 INFO Epoch 16/120	Training Loss: 1.3633	Time remaining is 2h:30m
+2024-09-30 11:59:08 INFO Epoch 17/120	Training Loss: 1.3274	Time remaining is 2h:28m
+2024-09-30 12:00:34 INFO Epoch 18/120	Training Loss: 1.3222	Time remaining is 2h:27m
+2024-09-30 12:02:00 INFO Epoch 19/120	Training Loss: 1.3116	Time remaining is 2h:26m
+2024-09-30 12:03:25 INFO Epoch 20/120	Training Loss: 1.2940	Time remaining is 2h:24m
+2024-09-30 12:04:51 INFO Epoch 21/120	Training Loss: 1.2750	Time remaining is 2h:23m
+2024-09-30 12:06:17 INFO Epoch 22/120	Training Loss: 1.2623	Time remaining is 2h:21m
+2024-09-30 12:07:43 INFO Epoch 23/120	Training Loss: 1.2515	Time remaining is 2h:20m
+2024-09-30 12:09:08 INFO Epoch 24/120	Training Loss: 1.2402	Time remaining is 2h:18m
+2024-09-30 12:10:33 INFO Epoch 25/120	Training Loss: 1.2281	Time remaining is 2h:17m
+2024-09-30 12:12:00 INFO Epoch 26/120	Training Loss: 1.2298	Time remaining is 2h:16m
+2024-09-30 12:13:25 INFO Epoch 27/120	Training Loss: 1.2224	Time remaining is 2h:14m
+2024-09-30 12:14:50 INFO Epoch 28/120	Training Loss: 1.2042	Time remaining is 2h:13m
+2024-09-30 12:16:16 INFO Epoch 29/120	Training Loss: 1.2008	Time remaining is 2h:11m
+2024-09-30 12:17:42 INFO Epoch 30/120	Training Loss: 1.2034	Time remaining is 2h:10m
+2024-09-30 12:19:07 INFO Epoch 31/120	Training Loss: 1.1919	Time remaining is 2h:8m
+2024-09-30 12:20:32 INFO Epoch 32/120	Training Loss: 1.1844	Time remaining is 2h:7m
+2024-09-30 12:21:58 INFO Epoch 33/120	Training Loss: 1.1940	Time remaining is 2h:6m
+2024-09-30 12:23:23 INFO Epoch 34/120	Training Loss: 1.1763	Time remaining is 2h:4m
+2024-09-30 12:24:49 INFO Epoch 35/120	Training Loss: 1.1742	Time remaining is 2h:3m
+2024-09-30 12:26:14 INFO Epoch 36/120	Training Loss: 1.1747	Time remaining is 2h:1m
+2024-09-30 12:27:39 INFO Epoch 37/120	Training Loss: 1.1663	Time remaining is 1h:60m
+2024-09-30 12:29:05 INFO Epoch 38/120	Training Loss: 1.1794	Time remaining is 1h:58m
+2024-09-30 12:30:30 INFO Epoch 39/120	Training Loss: 1.1620	Time remaining is 1h:57m
+2024-09-30 12:31:56 INFO Epoch 40/120	Training Loss: 1.1102	Time remaining is 1h:56m
+2024-09-30 12:33:21 INFO Epoch 41/120	Training Loss: 1.0709	Time remaining is 1h:54m
+2024-09-30 12:34:47 INFO Epoch 42/120	Training Loss: 1.0573	Time remaining is 1h:53m
+2024-09-30 12:36:12 INFO Epoch 43/120	Training Loss: 1.0580	Time remaining is 1h:51m
+2024-09-30 12:37:37 INFO Epoch 44/120	Training Loss: 1.0418	Time remaining is 1h:50m
+2024-09-30 12:39:03 INFO Epoch 45/120	Training Loss: 1.0486	Time remaining is 1h:48m
+2024-09-30 12:40:28 INFO Epoch 46/120	Training Loss: 1.0428	Time remaining is 1h:47m
+2024-09-30 12:41:54 INFO Epoch 47/120	Training Loss: 1.0524	Time remaining is 1h:46m
+2024-09-30 12:43:20 INFO Epoch 48/120	Training Loss: 1.0512	Time remaining is 1h:44m
+2024-09-30 12:44:46 INFO Epoch 49/120	Training Loss: 1.0445	Time remaining is 1h:43m
+2024-09-30 12:46:11 INFO Epoch 50/120	Training Loss: 1.0433	Time remaining is 1h:41m
+2024-09-30 12:47:37 INFO Epoch 51/120	Training Loss: 1.0408	Time remaining is 1h:40m
+2024-09-30 12:49:02 INFO Epoch 52/120	Training Loss: 1.0417	Time remaining is 1h:38m
+2024-09-30 12:50:28 INFO Epoch 53/120	Training Loss: 1.0446	Time remaining is 1h:37m
+2024-09-30 12:51:53 INFO Epoch 54/120	Training Loss: 1.0315	Time remaining is 1h:36m
+2024-09-30 12:53:19 INFO Epoch 55/120	Training Loss: 1.0401	Time remaining is 1h:34m
+2024-09-30 12:54:45 INFO Epoch 56/120	Training Loss: 1.0415	Time remaining is 1h:33m
+2024-09-30 12:56:11 INFO Epoch 57/120	Training Loss: 1.0398	Time remaining is 1h:31m
+2024-09-30 12:57:37 INFO Epoch 58/120	Training Loss: 1.0434	Time remaining is 1h:30m
+2024-09-30 12:59:03 INFO Epoch 59/120	Training Loss: 1.0435	Time remaining is 1h:28m
+2024-09-30 13:00:29 INFO Epoch 60/120	Training Loss: 1.0381	Time remaining is 1h:27m
+2024-09-30 13:01:54 INFO Epoch 61/120	Training Loss: 1.0282	Time remaining is 1h:26m
+2024-09-30 13:03:19 INFO Epoch 62/120	Training Loss: 1.0373	Time remaining is 1h:24m
+2024-09-30 13:04:45 INFO Epoch 63/120	Training Loss: 1.0296	Time remaining is 1h:23m
+2024-09-30 13:06:10 INFO Epoch 64/120	Training Loss: 1.0317	Time remaining is 1h:21m
+2024-09-30 13:07:35 INFO Epoch 65/120	Training Loss: 1.0278	Time remaining is 1h:20m
+2024-09-30 13:09:02 INFO Epoch 66/120	Training Loss: 1.0396	Time remaining is 1h:18m
+2024-09-30 13:10:27 INFO Epoch 67/120	Training Loss: 1.0291	Time remaining is 1h:17m
+2024-09-30 13:11:53 INFO Epoch 68/120	Training Loss: 1.0286	Time remaining is 1h:16m
+2024-09-30 13:13:19 INFO Epoch 69/120	Training Loss: 1.0324	Time remaining is 1h:14m
+2024-09-30 13:14:44 INFO Epoch 70/120	Training Loss: 1.0202	Time remaining is 1h:13m
+2024-09-30 13:16:10 INFO Epoch 71/120	Training Loss: 1.0256	Time remaining is 1h:11m
+2024-09-30 13:17:36 INFO Epoch 72/120	Training Loss: 1.0200	Time remaining is 1h:10m
+2024-09-30 13:19:01 INFO Epoch 73/120	Training Loss: 1.0189	Time remaining is 1h:8m
+2024-09-30 13:20:26 INFO Epoch 74/120	Training Loss: 1.0098	Time remaining is 1h:7m
+2024-09-30 13:21:51 INFO Epoch 75/120	Training Loss: 1.0171	Time remaining is 1h:6m
+2024-09-30 13:23:17 INFO Epoch 76/120	Training Loss: 1.0161	Time remaining is 1h:4m
+2024-09-30 13:24:42 INFO Epoch 77/120	Training Loss: 1.0137	Time remaining is 1h:3m
+2024-09-30 13:26:08 INFO Epoch 78/120	Training Loss: 1.0193	Time remaining is 1h:1m
+2024-09-30 13:27:34 INFO Epoch 79/120	Training Loss: 1.0184	Time remaining is 0h:60m
+2024-09-30 13:28:59 INFO Epoch 80/120	Training Loss: 1.0081	Time remaining is 0h:58m
+2024-09-30 13:30:25 INFO Epoch 81/120	Training Loss: 1.0157	Time remaining is 0h:57m
+2024-09-30 13:31:51 INFO Epoch 82/120	Training Loss: 1.0210	Time remaining is 0h:56m
+2024-09-30 13:33:17 INFO Epoch 83/120	Training Loss: 1.0218	Time remaining is 0h:54m
+2024-09-30 13:34:43 INFO Epoch 84/120	Training Loss: 1.0194	Time remaining is 0h:53m
+2024-09-30 13:36:09 INFO Epoch 85/120	Training Loss: 1.0165	Time remaining is 0h:51m
+2024-09-30 13:37:34 INFO Epoch 86/120	Training Loss: 1.0148	Time remaining is 0h:50m
+2024-09-30 13:39:00 INFO Epoch 87/120	Training Loss: 1.0180	Time remaining is 0h:49m
+2024-09-30 13:40:26 INFO Epoch 88/120	Training Loss: 1.0224	Time remaining is 0h:47m
+2024-09-30 13:41:52 INFO Epoch 89/120	Training Loss: 1.0147	Time remaining is 0h:46m
+2024-09-30 13:43:17 INFO Epoch 90/120	Training Loss: 1.0096	Time remaining is 0h:44m
+2024-09-30 13:44:21 INFO Epoch 90/120	Testing: dataset_name: Occluded_Duke top1: 63.846 top5: 77.240 top10: 81.357 mAP: 54.079
+2024-09-30 13:45:47 INFO Epoch 91/120	Training Loss: 1.0191	Time remaining is 0h:43m
+2024-09-30 13:47:12 INFO Epoch 92/120	Training Loss: 1.0126	Time remaining is 0h:42m
+2024-09-30 13:48:38 INFO Epoch 93/120	Training Loss: 1.0142	Time remaining is 0h:40m
+2024-09-30 13:50:04 INFO Epoch 94/120	Training Loss: 1.0171	Time remaining is 0h:39m
+2024-09-30 13:51:31 INFO Epoch 95/120	Training Loss: 1.0201	Time remaining is 0h:37m
+2024-09-30 13:52:35 INFO Epoch 95/120	Testing: dataset_name: Occluded_Duke top1: 63.665 top5: 77.466 top10: 81.538 mAP: 54.204
+2024-09-30 13:54:01 INFO Epoch 96/120	Training Loss: 1.0133	Time remaining is 0h:36m
+2024-09-30 13:55:26 INFO Epoch 97/120	Training Loss: 1.0127	Time remaining is 0h:35m
+2024-09-30 13:56:52 INFO Epoch 98/120	Training Loss: 1.0069	Time remaining is 0h:33m
+2024-09-30 13:58:18 INFO Epoch 99/120	Training Loss: 1.0146	Time remaining is 0h:32m
+2024-09-30 13:59:44 INFO Epoch 100/120	Training Loss: 1.0162	Time remaining is 0h:30m
+2024-09-30 14:00:48 INFO Epoch 100/120	Testing: dataset_name: Occluded_Duke top1: 63.937 top5: 77.466 top10: 81.584 mAP: 54.305
+2024-09-30 14:02:13 INFO Epoch 101/120	Training Loss: 1.0153	Time remaining is 0h:29m
+2024-09-30 14:03:39 INFO Epoch 102/120	Training Loss: 1.0072	Time remaining is 0h:28m
+2024-09-30 14:05:04 INFO Epoch 103/120	Training Loss: 1.0137	Time remaining is 0h:26m
+2024-09-30 14:06:30 INFO Epoch 104/120	Training Loss: 1.0175	Time remaining is 0h:25m
+2024-09-30 14:07:56 INFO Epoch 105/120	Training Loss: 1.0131	Time remaining is 0h:23m
+2024-09-30 14:09:00 INFO Epoch 105/120	Testing: dataset_name: Occluded_Duke top1: 64.389 top5: 77.647 top10: 82.127 mAP: 54.632
+2024-09-30 14:10:25 INFO Epoch 106/120	Training Loss: 1.0021	Time remaining is 0h:22m
+2024-09-30 14:11:51 INFO Epoch 107/120	Training Loss: 1.0106	Time remaining is 0h:21m
+2024-09-30 14:13:17 INFO Epoch 108/120	Training Loss: 1.0140	Time remaining is 0h:19m
+2024-09-30 14:14:43 INFO Epoch 109/120	Training Loss: 1.0128	Time remaining is 0h:18m
+2024-09-30 14:16:09 INFO Epoch 110/120	Training Loss: 1.0127	Time remaining is 0h:16m
+2024-09-30 14:17:13 INFO Epoch 110/120	Testing: dataset_name: Occluded_Duke top1: 64.389 top5: 77.421 top10: 81.629 mAP: 54.443
+2024-09-30 14:18:39 INFO Epoch 111/120	Training Loss: 1.0100	Time remaining is 0h:15m
+2024-09-30 14:20:05 INFO Epoch 112/120	Training Loss: 1.0068	Time remaining is 0h:13m
+2024-09-30 14:21:31 INFO Epoch 113/120	Training Loss: 1.0112	Time remaining is 0h:12m
+2024-09-30 14:22:57 INFO Epoch 114/120	Training Loss: 1.0151	Time remaining is 0h:10m
+2024-09-30 14:24:23 INFO Epoch 115/120	Training Loss: 1.0102	Time remaining is 0h:9m
+2024-09-30 14:25:27 INFO Epoch 115/120	Testing: dataset_name: Occluded_Duke top1: 64.299 top5: 77.511 top10: 81.493 mAP: 54.580
+2024-09-30 14:26:53 INFO Epoch 116/120	Training Loss: 1.0150	Time remaining is 0h:7m
+2024-09-30 14:28:19 INFO Epoch 117/120	Training Loss: 1.0112	Time remaining is 0h:6m
+2024-09-30 14:29:46 INFO Epoch 118/120	Training Loss: 1.0155	Time remaining is 0h:4m
+2024-09-30 14:31:12 INFO Epoch 119/120	Training Loss: 1.0196	Time remaining is 0h:3m
+2024-09-30 14:32:38 INFO Epoch 120/120	Training Loss: 1.0105	Time remaining is 0h:1m
+2024-09-30 14:33:42 INFO Epoch 120/120	Testing: dataset_name: Occluded_Duke top1: 64.163 top5: 77.602 top10: 81.584 mAP: 54.623
+2024-09-30 14:33:43 INFO The running time of training: 2.98 h
