@@ -71,7 +71,7 @@ class Features_enhance_module(nn.Module):
     def forward(self, x):
         out = self.act(self.block_1(x))
         out = self.attention(out) * out
-        special_out = self.act(self.special_block(out))
+        special_out = self.act(self.special_block(out)) + out
         return out, special_out
 
 
