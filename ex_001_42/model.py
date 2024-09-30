@@ -21,8 +21,8 @@ class ECALayer(nn.Module):
     def forward(self, x):
         y = self.avgpool(x)
         y = self.conv(y.squeeze(-1).transpose(-1, -2)).transpose(-1, -2).unsqueeze(-1)
-        y = self.sigmoid(y)
-        return x * y.expand_as(x)
+        y = self.sigmoid(y).expand_as(x)
+        return y
 
 
 class Integrate_feats_module(nn.Module):
@@ -55,22 +55,19 @@ class Features_enhance_module(nn.Module):
             self,
         ).__init__()
 
-        hidden_dim = 256
+        hidden_dim = feats_dim
         self.block_1 = nn.Sequential(
             nn.Conv2d(feats_dim, hidden_dim, kernel_size=1, stride=1, padding=0, bias=False), nn.BatchNorm2d(hidden_dim)
         )
-        self.block_2 = nn.Sequential(
-            nn.Conv2d(hidden_dim, feats_dim, kernel_size=1, stride=1, padding=0, bias=False), nn.BatchNorm2d(feats_dim)
-        )
+
         self.act = nn.ReLU(inplace=True)
 
-        self.att = ECALayer(hidden_dim)
+        self.attention = ECALayer(hidden_dim)
 
     def forward(self, x):
-        out_block_1 = self.act(self.block_1(x))
-        out_block_1 = self.att(out_block_1)
-        out_block_2 = self.act(self.block_2(out_block_1))
-        return out_block_2
+        out = self.act(self.block_1(x))
+        out = self.attention(out) * out
+        return out
 
 
 class Hierarchical_aggregation(nn.Module):

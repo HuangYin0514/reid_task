@@ -98,12 +98,12 @@ def brain(config, logger):
             fc_3_ce_loss = ce_loss(fc_3_score, pids)
             hierarchical_aggregation_loss = fc_1_ce_loss + fc_2_ce_loss + fc_3_ce_loss
 
-            integrate_feats, integrate_pids = model.integrate_feats_module(p3, pids, backbone_cls_score, num_same_id=4)
-            integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
-            integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
+            # integrate_feats, integrate_pids = model.integrate_feats_module(p3, pids, backbone_cls_score, num_same_id=4)
+            # integrate_cls_score = model.auxiliary_classifier_head(integrate_feats)
+            # integrate_ce_loss = ce_loss(integrate_cls_score, integrate_pids)
 
             #### All loss
-            loss = backbone_loss + 0.1 * hierarchical_aggregation_loss + 0.1 * integrate_ce_loss
+            loss = backbone_loss + 0.1 * hierarchical_aggregation_loss
 
             ### Update the parameters
             loss.backward()

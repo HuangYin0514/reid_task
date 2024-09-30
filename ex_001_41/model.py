@@ -55,19 +55,16 @@ class Features_enhance_module(nn.Module):
             self,
         ).__init__()
 
-        hidden_dim = 256
+        hidden_dim = feats_dim
         self.block_1 = nn.Sequential(
             nn.Conv2d(feats_dim, hidden_dim, kernel_size=1, stride=1, padding=0, bias=False), nn.BatchNorm2d(hidden_dim)
         )
-        self.block_2 = nn.Sequential(
-            nn.Conv2d(hidden_dim, feats_dim, kernel_size=1, stride=1, padding=0, bias=False), nn.BatchNorm2d(feats_dim)
-        )
+
         self.act = nn.ReLU(inplace=True)
 
     def forward(self, x):
-        out_block_1 = self.act(self.block_1(x))
-        out_block_2 = self.act(self.block_2(out_block_1))
-        return out_block_2
+        out = self.act(self.block_1(x))
+        return out
 
 
 class Hierarchical_aggregation(nn.Module):

@@ -80,7 +80,9 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3 = model(inputs)
+            backbone_cls_score, backbone_pool_feats, backbone_bn_feats, resnet_feats, resnet_feats_x1, resnet_feats_x2, resnet_feats_x3 = (
+                model(inputs)
+            )
 
             ### Loss
             #### Gloab loss
@@ -88,7 +90,9 @@ def brain(config, logger):
             backbone_loss = backbone_ce_loss
 
             # hierarchical_aggregation
-            fc_1_score, fc_2_score, fc_3_score, p3 = model.hierarchical_aggregation(resnet_feats_x1, resnet_feats_x2, resnet_feats_x3, backbone_cls_score, pids)
+            fc_1_score, fc_2_score, fc_3_score, p3 = model.hierarchical_aggregation(
+                resnet_feats_x1, resnet_feats_x2, resnet_feats_x3, backbone_cls_score, pids
+            )
             fc_1_ce_loss = ce_loss(fc_1_score, pids)
             fc_2_ce_loss = ce_loss(fc_2_score, pids)
             fc_3_ce_loss = ce_loss(fc_3_score, pids)
