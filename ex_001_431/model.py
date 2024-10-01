@@ -66,13 +66,13 @@ class Features_enhance_module(nn.Module):
 
         self.act = nn.ReLU(inplace=True)
 
-        # self.attention = ECALayer(hidden_dim)
+        self.attention = ECALayer(hidden_dim)
 
     def forward(self, x):
         out_block_1 = self.act(self.block_1(x))
-        # out_attention = self.attention(out_block_1) * out_block_1
-        # out_special = self.act(self.special_block(out_attention))
-        return out_block_1
+        special_out = self.attention(out_block_1) * out_block_1
+        # special_out = self.act(self.special_block(special_out))
+        return out_block_1, special_out
 
 
 class Hierarchical_aggregation(nn.Module):
@@ -97,10 +97,6 @@ class Hierarchical_aggregation(nn.Module):
         self.fc_2 = Auxiliary_classifier_head(768, num_classes, config, logger)
         self.fc_3 = Auxiliary_classifier_head(1792, num_classes, config, logger)
 
-        self.attention_p1 = ECALayer(256)
-        self.attention_p2 = ECALayer(768)
-        self.attention_p3 = ECALayer(1792)
-
     def forward(
         self,
         x1,
@@ -110,24 +106,27 @@ class Hierarchical_aggregation(nn.Module):
         pids,
     ):  # (batch_size, dim)
         pool_p1 = self.pool_p1(x1)
-        p1 = self.feats_enhance_1(pool_p1)
-        out_attention_p1 = self.attention_p1(p1) * p1
+        p1, p1_special_out = self.feats_enhance_1(pool_p1)
+        p1 = p1.squeeze(dim=3).squeeze(dim=2)
+        p1_special_out = p1_special_out.squeeze(dim=3).squeeze(dim=2)
 
         pool_p2 = self.pool_p2(x2)
-        cat_p2 = torch.cat([pool_p2, out_attention_p1], dim=1)
-        p2 = self.feats_enhance_2(cat_p2)
-        out_attention_p2 = self.attention_p2(p2) * p2
+        cat_p2 = torch.cat([pool_p2, p1_special_out], dim=1)
+        p2, p2_special_out = self.feats_enhance_2(cat_p2)
+        p2 = p2.squeeze(dim=3).squeeze(dim=2)
+        p2_special_out = p2_special_out.squeeze(dim=3).squeeze(dim=2)
 
         pool_p3 = self.pool_p3(x3)
-        cat_p3 = torch.cat([pool_p3, out_attention_p2], dim=1)
-        p3 = self.feats_enhance_3(cat_p3)
-        out_attention_p3 = self.attention_p3(p3) * p3
+        cat_p3 = torch.cat([pool_p3, p2_special_out], dim=1)
+        p3, p3_special_out = self.feats_enhance_3(cat_p3)
+        p3 = p3.squeeze(dim=3).squeeze(dim=2)
+        p3_special_out = p3_special_out.squeeze(dim=3).squeeze(dim=2)
 
         fc_1_score = self.fc_1(p1)
         fc_2_score = self.fc_2(p2)
         fc_3_score = self.fc_3(p3)
 
-        return fc_1_score, fc_2_score, fc_3_score, out_attention_p3
+        return fc_1_score, fc_2_score, fc_3_score, p3_special_out
 
 
 class Auxiliary_classifier_head(nn.Module):
