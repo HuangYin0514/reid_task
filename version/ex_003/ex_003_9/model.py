@@ -59,7 +59,7 @@ class Conv_bn_relu(nn.Module):
         self.logger = logger
 
         hidden_dim = feats_dim
-        self.block_1 = nn.Sequential(
+        self.block = nn.Sequential(
             nn.Conv2d(feats_dim, hidden_dim, kernel_size=1, stride=1, padding=0, bias=False), nn.BatchNorm2d(hidden_dim)
         )
 
