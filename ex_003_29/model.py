@@ -58,7 +58,6 @@ class Part_module(nn.Module):
         for i in range(self.num_parts):
             stripe_feat_H = self.part_local_conv_list[i](feat[:, :, i, :])
             part_feats_list.append(stripe_feat_H)
-
         return part_feats_list
 
 
@@ -127,15 +126,17 @@ class ReidNet(nn.Module):
         # Backbone
         resnet_feats = self.backbone(x)  # (bs, 2048, 16, 8)
 
+        # Gloab
+        backbone_bn_feats, backbone_cls_score = self.classifier_head(resnet_feats)
+
         # PCB
         part_feats_list = self.part_module(resnet_feats)  # (bs, 6, 256)
+        part_score_list = [self.part_classifier_head_list[i](part_feats_list[i].view(bs, -1)) for i in range(self.num_parts)]
+
+        norm_part_feats = torch.cat(part_feats_list, dim=2)
+        norm_part_feats = F.normalize(norm_part_feats, p=2, dim=1).view(bs, -1)
 
         if self.training:
-            return part_feats_list
+            return part_score_list, norm_part_feats, backbone_cls_score, backbone_bn_feats
         else:
-            part_feats_list = torch.cat(part_feats_list, dim=2)
-            part_feats_list = F.normalize(part_feats_list, p=2, dim=1)
-            part_feats = part_feats_list.view(bs, -1)
-
-            # backbone_pool_feats, backbone_bn_feats, backbone_cls_score = self.classifier_head(resnet_feats)
-            return part_feats
+            return norm_part_feats

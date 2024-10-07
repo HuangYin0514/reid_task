@@ -81,18 +81,24 @@ def brain(config, logger):
 
             ### prediction
             optimizer.zero_grad()
-            part_feats_list = model(inputs)
+            part_score_list, norm_part_feats, backbone_cls_score, backbone_bn_feats = model(inputs)
 
             ### Loss
             #### Part loss
             part_ce_loss = 0.0
-            part_score_list = [model.part_classifier_head_list[i](part_feats_list[i].view(bs, -1)) for i in range(model.num_parts)]
             for score in part_score_list:
                 ce_loss = ce_labelsmooth_loss(score, pids)
-                part_ce_loss += ce_loss
+                part_ce_loss += 1 / model.num_parts * ce_loss
+
+            part_tri_loss = triplet_loss(norm_part_feats, pids)
+            part_loss = part_ce_loss + part_tri_loss
+
+            #### Gloab loss
+            # backbone_ce_loss = ce_labelsmooth_loss(backbone_cls_score, pids)
+            # backbone_loss = backbone_ce_loss
 
             #### All loss
-            loss = part_ce_loss
+            loss = part_loss
 
             ### Update the parameters
             loss.backward()
