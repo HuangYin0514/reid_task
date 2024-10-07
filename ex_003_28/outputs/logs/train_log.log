@@ -9,3 +9,8 @@
 2024-10-07 17:10:17 INFO CUDA version: 12.1
 2024-10-07 17:10:17 INFO Current device id: 0
 2024-10-07 17:10:17 INFO ##################################################
+2024-10-07 17:11:34 INFO Epoch 1/120	Training Loss: 5.6926	Time remaining is 2h:32m
+2024-10-07 17:12:49 INFO Epoch 2/120	Training Loss: 5.5562	Time remaining is 2h:31m
+2024-10-07 17:14:06 INFO Epoch 3/120	Training Loss: 5.4402	Time remaining is 2h:30m
+2024-10-07 17:15:22 INFO Epoch 4/120	Training Loss: 5.2069	Time remaining is 2h:29m
+2024-10-07 17:16:39 INFO Epoch 5/120	Training Loss: 4.9573	Time remaining is 2h:27m
