@@ -1,0 +1,139 @@
+2024-10-09 01:07:47 INFO ##################################################
+2024-10-09 01:07:47 INFO Config values: batch_size: 60	current_directory: /home/hy/project/reid_task/ex_003_35	dataset_name: Occluded_Duke	dataset_path: /home/hy/project/data/Occluded_Duke	device: cuda	dtype: torch.float32	epoch_start_test: 90	epochs: 120	img_height: 256	img_width: 128	logs_outputs_path: /home/hy/project/reid_task/ex_003_35/./outputs/logs	models_outputs_path: /home/hy/project/reid_task/ex_003_35/./outputs/models	np: <module 'numpy' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/numpy/__init__.py'>	os: <module 'os' from '/home/hy/anaconda3/envs/py396/lib/python3.9/os.py'>	outputs_dir: ./outputs/	outputs_path: /home/hy/project/reid_task/ex_003_35/./outputs/	print_every: 1	seed: 1	taskname: ReID_Task	temps_outputs_path: /home/hy/project/reid_task/ex_003_35/./outputs/temps	test_batch_size: 256	test_every: 5	torch: <module 'torch' from '/home/hy/anaconda3/envs/py396/lib/python3.9/site-packages/torch/__init__.py'>
+2024-10-09 01:07:47 INFO Task: ReID_Task
+2024-10-09 01:07:47 INFO Using device: cuda
+2024-10-09 01:07:47 INFO Using data type: torch.float32
+2024-10-09 01:07:47 INFO Number of GPUs: 1
+2024-10-09 01:07:47 INFO GPU is_available: True
+2024-10-09 01:07:47 INFO GPU name: NVIDIA GeForce RTX 3060
+2024-10-09 01:07:47 INFO CUDA version: 12.1
+2024-10-09 01:07:47 INFO Current device id: 0
+2024-10-09 01:07:47 INFO ##################################################
+2024-10-09 01:09:08 INFO Epoch 1/120	Training Loss: 13.2443	accuracy: 14.3510	Time remaining is 2h:42m
+2024-10-09 01:10:28 INFO Epoch 2/120	Training Loss: 11.2295	accuracy: 28.7259	Time remaining is 2h:39m
+2024-10-09 01:11:49 INFO Epoch 3/120	Training Loss: 9.4237	accuracy: 42.0395	Time remaining is 2h:38m
+2024-10-09 01:13:09 INFO Epoch 4/120	Training Loss: 7.6026	accuracy: 66.3216	Time remaining is 2h:37m
+2024-10-09 01:14:29 INFO Epoch 5/120	Training Loss: 6.2169	accuracy: 83.8741	Time remaining is 2h:35m
+2024-10-09 01:15:49 INFO Epoch 6/120	Training Loss: 5.2995	accuracy: 91.8208	Time remaining is 2h:34m
+2024-10-09 01:17:10 INFO Epoch 7/120	Training Loss: 4.5471	accuracy: 94.5521	Time remaining is 2h:33m
+2024-10-09 01:18:30 INFO Epoch 8/120	Training Loss: 3.9383	accuracy: 95.8590	Time remaining is 2h:31m
+2024-10-09 01:19:51 INFO Epoch 9/120	Training Loss: 3.4244	accuracy: 96.7178	Time remaining is 2h:30m
+2024-10-09 01:21:11 INFO Epoch 10/120	Training Loss: 3.0406	accuracy: 97.1145	Time remaining is 2h:29m
+2024-10-09 01:22:31 INFO Epoch 11/120	Training Loss: 2.7039	accuracy: 97.6444	Time remaining is 2h:27m
+2024-10-09 01:23:51 INFO Epoch 12/120	Training Loss: 2.5261	accuracy: 98.0973	Time remaining is 2h:26m
+2024-10-09 01:25:11 INFO Epoch 13/120	Training Loss: 2.4354	accuracy: 98.3333	Time remaining is 2h:25m
+2024-10-09 01:26:32 INFO Epoch 14/120	Training Loss: 2.3554	accuracy: 98.5316	Time remaining is 2h:23m
+2024-10-09 01:27:52 INFO Epoch 15/120	Training Loss: 2.2889	accuracy: 98.7812	Time remaining is 2h:22m
+2024-10-09 01:29:13 INFO Epoch 16/120	Training Loss: 2.2557	accuracy: 98.7758	Time remaining is 2h:21m
+2024-10-09 01:30:33 INFO Epoch 17/120	Training Loss: 2.1981	accuracy: 99.0782	Time remaining is 2h:19m
+2024-10-09 01:31:53 INFO Epoch 18/120	Training Loss: 2.2074	accuracy: 99.0162	Time remaining is 2h:18m
+2024-10-09 01:33:13 INFO Epoch 19/120	Training Loss: 2.2036	accuracy: 99.0118	Time remaining is 2h:17m
+2024-10-09 01:34:33 INFO Epoch 20/120	Training Loss: 2.1877	accuracy: 99.0192	Time remaining is 2h:15m
+2024-10-09 01:35:53 INFO Epoch 21/120	Training Loss: 2.1724	accuracy: 99.0896	Time remaining is 2h:14m
+2024-10-09 01:37:14 INFO Epoch 22/120	Training Loss: 2.1652	accuracy: 99.0969	Time remaining is 2h:12m
+2024-10-09 01:38:34 INFO Epoch 23/120	Training Loss: 2.1375	accuracy: 99.1043	Time remaining is 2h:11m
+2024-10-09 01:39:55 INFO Epoch 24/120	Training Loss: 2.1368	accuracy: 99.2330	Time remaining is 2h:10m
+2024-10-09 01:41:15 INFO Epoch 25/120	Training Loss: 2.1241	accuracy: 99.2478	Time remaining is 2h:8m
+2024-10-09 01:42:36 INFO Epoch 26/120	Training Loss: 2.1375	accuracy: 99.2325	Time remaining is 2h:7m
+2024-10-09 01:43:56 INFO Epoch 27/120	Training Loss: 2.1315	accuracy: 99.2257	Time remaining is 2h:6m
+2024-10-09 01:45:16 INFO Epoch 28/120	Training Loss: 2.1062	accuracy: 99.2330	Time remaining is 2h:4m
+2024-10-09 01:46:36 INFO Epoch 29/120	Training Loss: 2.1007	accuracy: 99.3025	Time remaining is 2h:3m
+2024-10-09 01:47:57 INFO Epoch 30/120	Training Loss: 2.1103	accuracy: 99.2330	Time remaining is 2h:2m
+2024-10-09 01:49:17 INFO Epoch 31/120	Training Loss: 2.0779	accuracy: 99.4100	Time remaining is 2h:0m
+2024-10-09 01:50:37 INFO Epoch 32/120	Training Loss: 2.0724	accuracy: 99.4248	Time remaining is 1h:59m
+2024-10-09 01:51:58 INFO Epoch 33/120	Training Loss: 2.1057	accuracy: 99.3025	Time remaining is 1h:58m
+2024-10-09 01:53:17 INFO Epoch 34/120	Training Loss: 2.0681	accuracy: 99.3630	Time remaining is 1h:56m
+2024-10-09 01:54:38 INFO Epoch 35/120	Training Loss: 2.0775	accuracy: 99.4053	Time remaining is 1h:55m
+2024-10-09 01:55:58 INFO Epoch 36/120	Training Loss: 2.0718	accuracy: 99.4787	Time remaining is 1h:54m
+2024-10-09 01:57:18 INFO Epoch 37/120	Training Loss: 2.0462	accuracy: 99.4519	Time remaining is 1h:52m
+2024-10-09 01:58:39 INFO Epoch 38/120	Training Loss: 2.0704	accuracy: 99.4493	Time remaining is 1h:51m
+2024-10-09 01:59:58 INFO Epoch 39/120	Training Loss: 2.0606	accuracy: 99.3778	Time remaining is 1h:50m
+2024-10-09 02:01:18 INFO Epoch 40/120	Training Loss: 1.9906	accuracy: 99.6386	Time remaining is 1h:48m
+2024-10-09 02:02:38 INFO Epoch 41/120	Training Loss: 1.9285	accuracy: 99.8525	Time remaining is 1h:47m
+2024-10-09 02:03:59 INFO Epoch 42/120	Training Loss: 1.9081	accuracy: 99.8525	Time remaining is 1h:46m
+2024-10-09 02:05:19 INFO Epoch 43/120	Training Loss: 1.9050	accuracy: 99.8752	Time remaining is 1h:44m
+2024-10-09 02:06:39 INFO Epoch 44/120	Training Loss: 1.8763	accuracy: 99.9333	Time remaining is 1h:43m
+2024-10-09 02:07:59 INFO Epoch 45/120	Training Loss: 1.8842	accuracy: 99.9189	Time remaining is 1h:42m
+2024-10-09 02:09:19 INFO Epoch 46/120	Training Loss: 1.8688	accuracy: 99.9630	Time remaining is 1h:40m
+2024-10-09 02:10:39 INFO Epoch 47/120	Training Loss: 1.8890	accuracy: 99.9123	Time remaining is 1h:39m
+2024-10-09 02:11:59 INFO Epoch 48/120	Training Loss: 1.8815	accuracy: 99.8899	Time remaining is 1h:38m
+2024-10-09 02:13:20 INFO Epoch 49/120	Training Loss: 1.8686	accuracy: 99.9263	Time remaining is 1h:36m
+2024-10-09 02:14:40 INFO Epoch 50/120	Training Loss: 1.8616	accuracy: 99.9410	Time remaining is 1h:35m
+2024-10-09 02:16:00 INFO Epoch 51/120	Training Loss: 1.8611	accuracy: 99.9631	Time remaining is 1h:34m
+2024-10-09 02:17:20 INFO Epoch 52/120	Training Loss: 1.8594	accuracy: 99.9263	Time remaining is 1h:32m
+2024-10-09 02:18:40 INFO Epoch 53/120	Training Loss: 1.8616	accuracy: 99.9633	Time remaining is 1h:31m
+2024-10-09 02:20:00 INFO Epoch 54/120	Training Loss: 1.8398	accuracy: 99.9407	Time remaining is 1h:30m
+2024-10-09 02:21:20 INFO Epoch 55/120	Training Loss: 1.8585	accuracy: 99.9633	Time remaining is 1h:28m
+2024-10-09 02:22:41 INFO Epoch 56/120	Training Loss: 1.8567	accuracy: 99.9633	Time remaining is 1h:27m
+2024-10-09 02:24:01 INFO Epoch 57/120	Training Loss: 1.8557	accuracy: 99.9559	Time remaining is 1h:26m
+2024-10-09 02:25:22 INFO Epoch 58/120	Training Loss: 1.8637	accuracy: 99.9415	Time remaining is 1h:24m
+2024-10-09 02:26:43 INFO Epoch 59/120	Training Loss: 1.8612	accuracy: 99.9488	Time remaining is 1h:23m
+2024-10-09 02:28:04 INFO Epoch 60/120	Training Loss: 1.8507	accuracy: 99.9413	Time remaining is 1h:22m
+2024-10-09 02:29:23 INFO Epoch 61/120	Training Loss: 1.8325	accuracy: 99.9259	Time remaining is 1h:20m
+2024-10-09 02:30:44 INFO Epoch 62/120	Training Loss: 1.8469	accuracy: 99.9559	Time remaining is 1h:19m
+2024-10-09 02:32:03 INFO Epoch 63/120	Training Loss: 1.8393	accuracy: 99.9410	Time remaining is 1h:18m
+2024-10-09 02:33:23 INFO Epoch 64/120	Training Loss: 1.8405	accuracy: 99.9705	Time remaining is 1h:16m
+2024-10-09 02:34:43 INFO Epoch 65/120	Training Loss: 1.8340	accuracy: 99.9705	Time remaining is 1h:15m
+2024-10-09 02:36:04 INFO Epoch 66/120	Training Loss: 1.8536	accuracy: 99.9561	Time remaining is 1h:14m
+2024-10-09 02:37:24 INFO Epoch 67/120	Training Loss: 1.8341	accuracy: 99.9484	Time remaining is 1h:12m
+2024-10-09 02:38:44 INFO Epoch 68/120	Training Loss: 1.8343	accuracy: 99.9631	Time remaining is 1h:11m
+2024-10-09 02:40:04 INFO Epoch 69/120	Training Loss: 1.8404	accuracy: 99.9559	Time remaining is 1h:10m
+2024-10-09 02:41:24 INFO Epoch 70/120	Training Loss: 1.8215	accuracy: 99.9407	Time remaining is 1h:8m
+2024-10-09 02:42:45 INFO Epoch 71/120	Training Loss: 1.8387	accuracy: 99.9708	Time remaining is 1h:7m
+2024-10-09 02:44:06 INFO Epoch 72/120	Training Loss: 1.8290	accuracy: 99.9853	Time remaining is 1h:6m
+2024-10-09 02:45:26 INFO Epoch 73/120	Training Loss: 1.8253	accuracy: 99.9853	Time remaining is 1h:4m
+2024-10-09 02:46:46 INFO Epoch 74/120	Training Loss: 1.8096	accuracy: 99.9926	Time remaining is 1h:3m
+2024-10-09 02:48:06 INFO Epoch 75/120	Training Loss: 1.8208	accuracy: 99.9631	Time remaining is 1h:2m
+2024-10-09 02:49:26 INFO Epoch 76/120	Training Loss: 1.8197	accuracy: 99.9631	Time remaining is 1h:0m
+2024-10-09 02:50:46 INFO Epoch 77/120	Training Loss: 1.8172	accuracy: 99.9853	Time remaining is 0h:59m
+2024-10-09 02:52:06 INFO Epoch 78/120	Training Loss: 1.8259	accuracy: 99.9706	Time remaining is 0h:58m
+2024-10-09 02:53:27 INFO Epoch 79/120	Training Loss: 1.8240	accuracy: 99.9927	Time remaining is 0h:56m
+2024-10-09 02:54:46 INFO Epoch 80/120	Training Loss: 1.8059	accuracy: 99.9852	Time remaining is 0h:55m
+2024-10-09 02:56:06 INFO Epoch 81/120	Training Loss: 1.8179	accuracy: 99.9558	Time remaining is 0h:53m
+2024-10-09 02:57:27 INFO Epoch 82/120	Training Loss: 1.8323	accuracy: 99.9854	Time remaining is 0h:52m
+2024-10-09 02:58:47 INFO Epoch 83/120	Training Loss: 1.8325	accuracy: 99.9708	Time remaining is 0h:51m
+2024-10-09 03:00:08 INFO Epoch 84/120	Training Loss: 1.8264	accuracy: 99.9853	Time remaining is 0h:49m
+2024-10-09 03:01:29 INFO Epoch 85/120	Training Loss: 1.8215	accuracy: 99.9853	Time remaining is 0h:48m
+2024-10-09 03:02:49 INFO Epoch 86/120	Training Loss: 1.8178	accuracy: 99.9853	Time remaining is 0h:47m
+2024-10-09 03:04:09 INFO Epoch 87/120	Training Loss: 1.8223	accuracy: 99.9780	Time remaining is 0h:45m
+2024-10-09 03:05:30 INFO Epoch 88/120	Training Loss: 1.8309	accuracy: 99.9927	Time remaining is 0h:44m
+2024-10-09 03:06:50 INFO Epoch 89/120	Training Loss: 1.8142	accuracy: 99.9779	Time remaining is 0h:43m
+2024-10-09 03:08:10 INFO Epoch 90/120	Training Loss: 1.8071	accuracy: 99.9630	Time remaining is 0h:41m
+2024-10-09 03:09:15 INFO Epoch 90/120	Testing: dataset_name: Occluded_Duke top1: 57.149 top5: 71.041 top10: 76.878 mAP: 49.409
+2024-10-09 03:10:36 INFO Epoch 91/120	Training Loss: 1.8252	accuracy: 99.9780	Time remaining is 0h:40m
+2024-10-09 03:11:56 INFO Epoch 92/120	Training Loss: 1.8126	accuracy: 99.9926	Time remaining is 0h:39m
+2024-10-09 03:13:17 INFO Epoch 93/120	Training Loss: 1.8138	accuracy: 99.9705	Time remaining is 0h:38m
+2024-10-09 03:14:38 INFO Epoch 94/120	Training Loss: 1.8213	accuracy: 99.9853	Time remaining is 0h:36m
+2024-10-09 03:15:59 INFO Epoch 95/120	Training Loss: 1.8275	accuracy: 99.9854	Time remaining is 0h:35m
+2024-10-09 03:17:04 INFO Epoch 95/120	Testing: dataset_name: Occluded_Duke top1: 57.195 top5: 71.176 top10: 76.833 mAP: 49.286
+2024-10-09 03:18:25 INFO Epoch 96/120	Training Loss: 1.8140	accuracy: 99.9779	Time remaining is 0h:34m
+2024-10-09 03:19:45 INFO Epoch 97/120	Training Loss: 1.8141	accuracy: 99.9705	Time remaining is 0h:33m
+2024-10-09 03:21:06 INFO Epoch 98/120	Training Loss: 1.8034	accuracy: 99.9926	Time remaining is 0h:31m
+2024-10-09 03:22:26 INFO Epoch 99/120	Training Loss: 1.8145	accuracy: 99.9631	Time remaining is 0h:30m
+2024-10-09 03:23:47 INFO Epoch 100/120	Training Loss: 1.8189	accuracy: 99.9927	Time remaining is 0h:29m
+2024-10-09 03:24:52 INFO Epoch 100/120	Testing: dataset_name: Occluded_Duke top1: 57.557 top5: 71.086 top10: 76.742 mAP: 49.537
+2024-10-09 03:26:12 INFO Epoch 101/120	Training Loss: 1.8139	accuracy: 99.9779	Time remaining is 0h:27m
+2024-10-09 03:27:32 INFO Epoch 102/120	Training Loss: 1.8026	accuracy: 99.9852	Time remaining is 0h:26m
+2024-10-09 03:28:53 INFO Epoch 103/120	Training Loss: 1.8101	accuracy: 99.9853	Time remaining is 0h:25m
+2024-10-09 03:30:13 INFO Epoch 104/120	Training Loss: 1.8205	accuracy: 99.9927	Time remaining is 0h:23m
+2024-10-09 03:31:34 INFO Epoch 105/120	Training Loss: 1.8133	accuracy: 99.9853	Time remaining is 0h:22m
+2024-10-09 03:32:39 INFO Epoch 105/120	Testing: dataset_name: Occluded_Duke top1: 57.511 top5: 71.855 top10: 76.923 mAP: 49.878
+2024-10-09 03:33:58 INFO Epoch 106/120	Training Loss: 1.7961	accuracy: 99.9777	Time remaining is 0h:21m
+2024-10-09 03:35:19 INFO Epoch 107/120	Training Loss: 1.8094	accuracy: 100.0000	Time remaining is 0h:19m
+2024-10-09 03:36:39 INFO Epoch 108/120	Training Loss: 1.8101	accuracy: 99.9558	Time remaining is 0h:18m
+2024-10-09 03:38:00 INFO Epoch 109/120	Training Loss: 1.8172	accuracy: 99.9853	Time remaining is 0h:17m
+2024-10-09 03:39:21 INFO Epoch 110/120	Training Loss: 1.8127	accuracy: 99.9705	Time remaining is 0h:15m
+2024-10-09 03:40:26 INFO Epoch 110/120	Testing: dataset_name: Occluded_Duke top1: 57.692 top5: 71.946 top10: 77.195 mAP: 49.797
+2024-10-09 03:41:47 INFO Epoch 111/120	Training Loss: 1.8091	accuracy: 100.0000	Time remaining is 0h:14m
+2024-10-09 03:43:07 INFO Epoch 112/120	Training Loss: 1.8017	accuracy: 99.9852	Time remaining is 0h:12m
+2024-10-09 03:44:28 INFO Epoch 113/120	Training Loss: 1.8116	accuracy: 99.9853	Time remaining is 0h:11m
+2024-10-09 03:45:48 INFO Epoch 114/120	Training Loss: 1.8156	accuracy: 99.9780	Time remaining is 0h:10m
+2024-10-09 03:47:09 INFO Epoch 115/120	Training Loss: 1.8097	accuracy: 99.9853	Time remaining is 0h:8m
+2024-10-09 03:48:15 INFO Epoch 115/120	Testing: dataset_name: Occluded_Duke top1: 57.738 top5: 71.674 top10: 77.195 mAP: 50.074
+2024-10-09 03:49:35 INFO Epoch 116/120	Training Loss: 1.8161	accuracy: 100.0000	Time remaining is 0h:7m
+2024-10-09 03:50:56 INFO Epoch 117/120	Training Loss: 1.8086	accuracy: 99.9853	Time remaining is 0h:6m
+2024-10-09 03:52:16 INFO Epoch 118/120	Training Loss: 1.8154	accuracy: 99.9853	Time remaining is 0h:4m
+2024-10-09 03:53:37 INFO Epoch 119/120	Training Loss: 1.8255	accuracy: 99.9854	Time remaining is 0h:3m
+2024-10-09 03:54:57 INFO Epoch 120/120	Training Loss: 1.8082	accuracy: 99.9926	Time remaining is 0h:1m
+2024-10-09 03:56:03 INFO Epoch 120/120	Testing: dataset_name: Occluded_Duke top1: 58.054 top5: 71.991 top10: 77.421 mAP: 49.953
+2024-10-09 03:56:03 INFO The running time of training: 2.8 h
